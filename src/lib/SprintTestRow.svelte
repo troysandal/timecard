@@ -1,5 +1,14 @@
 <script>
     import { SprintTest } from '../sprint'
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
+
+	function onDelete() {
+		dispatch('delete', {
+			index
+		});
+	}
 
     export let testDatum
     export let index
@@ -16,7 +25,7 @@
 </script>
 
 <tr>
-    <th>{index + 1}</th>
+    <th>{index + 1} <button on:click={onDelete}>&#x274C;</button></th>
     <th><input class="enterTime" bind:value={testDatum.enter}></th>
     <th><input class="exitTime" bind:value={testDatum.exit}></th>
     <th>{score}</th>

@@ -21,6 +21,11 @@
         }
         return enduro.scoreString
     }
+    function deleteTest(event) {
+        if (window.confirm(`You sure you want to delete test ${event.detail.index + 1}?`)) {
+            testData = testData.filter((v, index) => index !== event.detail.index)
+        }
+    }
 </script>
   
 <table class="scorecard">
@@ -34,7 +39,7 @@
     </thead>
     <tbody>
         {#each testData as testDatum, index}
-            <SprintTestRow bind:testDatum={testDatum} index={index} />
+            <SprintTestRow bind:testDatum={testDatum} index={index} on:delete={deleteTest}/>
         {/each}
     </tbody>
     <tfoot>
