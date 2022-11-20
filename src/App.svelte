@@ -11,15 +11,6 @@
       members sometimes enter something incorrectly.  This lets you 
       quickly and easily verify that posted scores are correct.
   </p>
-<table>
-    <tr>
-        <th>
-            <div class="scorecard">
-                <TimeCard />
-            </div>
-        </th>
-        <th><img alt="hi mom" src="card.jpg" width="300" /></th>
-    </tr>
-</table>
+  <TimeCard />
 </main>
 

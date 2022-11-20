@@ -6,12 +6,19 @@ function scoreString(delta: Date): string {
 }
 
 function timeStringToDate(timeString:string): Date | undefined {
+    if (!timeString) {
+        return undefined
+    }
     timeString = timeString.trim()
 
     if (timeString.length === 0) {
         return undefined
     }
-    if (timeString.split(':').length !== 3) {
+    const split = timeString.split(':')
+    if (split.length !== 3) {
+        return undefined
+    }
+    if (split.some((v) => v.length === 0)) {
         return undefined
     }
     const date = new Date(`1970-01-01 ${timeString}`)

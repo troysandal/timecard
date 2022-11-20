@@ -8,7 +8,9 @@ describe('Sprint Enduro', () => {
     }
 
     it('detects invalie time strings', () => {
+        expect(SprintTest.fromTimes(undefined, undefined)).to.not.exist
         expect(SprintTest.fromTimes('', '')).to.not.exist
+        expect(SprintTest.fromTimes('00:10:', '00:10:')).to.not.exist
         expect(SprintTest.fromTimes(' ', '\t')).to.not.exist
         expect(SprintTest.fromTimes('x', '-1:-1:-1')).to.not.exist
         expect(SprintTest.fromTimes('00:00:00', '24:00:01')).to.not.exist
