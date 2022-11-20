@@ -1,6 +1,6 @@
 <script>
   import svelteLogo from './assets/svelte.svg'
-  import TimeCard from './lib/TimeCard.svelte'
+  import TimeCard from './lib/SprintEnduro.svelte'
 </script>
 
 <main>
