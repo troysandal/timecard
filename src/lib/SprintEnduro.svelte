@@ -45,7 +45,7 @@
     <tfoot>
         <tr>
             <th colspan="4">
-                <button on:click={addTestData}>Add a Test</button>
+                <button id="addTest" on:click={addTestData}>Add a Test</button>
                 <p>Total Score: <span class="score">{score}</span></p>
             </th>            
         </tr>

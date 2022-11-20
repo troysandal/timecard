@@ -4,7 +4,7 @@ import { createEventDispatcher } from "svelte"
 
 describe('empty spec', () => {
   function createTest(enter: string, exit: string) {
-    cy.get('button').first().click()
+    cy.get('button#addTest').first().click()
     cy.get('tbody tr:last-child').within(() => {
       cy.get('input.enterTime').clear().type(enter)
       cy.get('input.exitTime').clear().type(exit)
