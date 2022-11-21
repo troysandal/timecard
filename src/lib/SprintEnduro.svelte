@@ -2,8 +2,7 @@
     import SprintTestRow from './SprintTestRow.svelte'
     import { SprintTest, SprintEnduro } from '../sprint'
 
-
-    let testData = []
+    let testData = [{enter:'', exit:''}, {enter:'', exit:''}]
     
     function addTestData() {
         testData[testData.length] = {enter:'', exit:''}
@@ -28,13 +27,13 @@
     }
 </script>
   
-<table class="scorecard">
+<table>
     <thead>
         <tr>
             <th>Test #</th>
             <th>Time In</th>
             <th>Time Out</th>
-            <th>SCORE</th>
+            <th>Score</th>
         </tr>
     </thead>
     <tbody>
@@ -45,8 +44,8 @@
     <tfoot>
         <tr>
             <th colspan="4">
+                <div id="overallScore">Total Score: <span class="score">{score}</span></div>
                 <button id="addTest" on:click={addTestData}>Add a Test</button>
-                <p>Total Score: <span class="score">{score}</span></p>
             </th>            
         </tr>
     </tfoot>

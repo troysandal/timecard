@@ -8,8 +8,7 @@
   <p>You can verify your Sprint Enduro score cards
       using this web site. Why would you do that?  Because races are 
       busy places and with hundreds of riders, those hard working club 
-      members sometimes enter something incorrectly.  This lets you 
-      quickly and easily verify that posted scores are correct.
+      members sometimes enter something incorrectly.
   </p>
   <TimeCard />
 </main>

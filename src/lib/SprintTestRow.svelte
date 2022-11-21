@@ -25,8 +25,8 @@
 </script>
 
 <tr>
-    <th>{index + 1} <button on:click={onDelete}>&#x274C;</button></th>
-    <th><input class="enterTime" bind:value={testDatum.enter}></th>
-    <th><input class="exitTime" bind:value={testDatum.exit}></th>
-    <th>{score}</th>
+    <td>{index + 1} <button on:click={onDelete}>&#x274C;</button></td>
+    <td><input size="8" class="enterTime" bind:value={testDatum.enter}></td>
+    <td><input size="8" class="exitTime" bind:value={testDatum.exit}></td>
+    <td>{score}</td>
 </tr>
