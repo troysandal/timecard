@@ -10,6 +10,9 @@
       busy places and with hundreds of riders, those hard working club 
       members sometimes enter something incorrectly.
   </p>
+  <p>
+    Enter <b>Time In</b> and <b>Time Out</b> as HH:MM:SS.
+  </p>
   <TimeCard />
 </main>
 
