@@ -2,13 +2,10 @@
     import SprintTestRow from './SprintTestRow.svelte'
     import { SprintTest, SprintEnduro } from '../sprint'
 
-    function newTest() {
-        return {enter:'', exit:''}
-    }
     function initialTests(MAX) {
         const tests = []
         for (let i = 0 ; i < MAX ; i++) {
-            tests.push(newTest)
+            tests.push({enter:'', exit:''})
         }
         return tests
     }
@@ -16,7 +13,7 @@
     let testData = initialTests(7)
     
     function addTestData() {
-        testData[testData.length] = newTest()
+        testData[testData.length] = {enter:'', exit:''}
     }
     
     $: score = computeScore(testData);
