@@ -6,6 +6,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  font-size: 16px;
 }
 
 table, th, td { 
@@ -16,8 +17,3 @@ table, th, td {
 tfoot {
   padding: 10px;
 }
-
-/* #overallScore {
-  margin-top: 10px;
-  margin-bottom: 10px;
-} */
