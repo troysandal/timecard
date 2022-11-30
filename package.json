@@ -5,7 +5,7 @@
   "author": "Troy Sandal",
   "license": "Creative Commons Attribution-ShareAlike 4.0 International License.",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build --base=/timecard",
     "preview": "vite preview",
     "test": "mocha",
