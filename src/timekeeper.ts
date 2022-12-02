@@ -11,9 +11,9 @@ export interface Checkpoint {
     type: CheckpointTypes
     minute: number
     seconds: number
-    disqualified: boolean
 
-    points(riderMinute: number) : number;
+    points(riderMinute: number) : number
+    disqualified(riderMinute: number): boolean
 }
 
 /**
@@ -29,7 +29,6 @@ export class Start implements Checkpoint {
     type = CheckpointTypes.Start
     minute = 0
     seconds = 0
-    disqualified = false
 
     constructor(minute: number) {
         this.minute = minute
@@ -44,6 +43,10 @@ export class Start implements Checkpoint {
         } 
         return score
     }
+
+    disqualified(riderMinute: number): boolean {
+        return false
+    }
 }
 
 /**
@@ -54,27 +57,15 @@ export class Start implements Checkpoint {
  * penalty for being up to 15 minutes early, but late points are accumulated.  
  * Arriving more than 15 minutes early results in disqualification.
 */
-export class Known implements Checkpoint {
+export class Known extends Start {
     type = CheckpointTypes.Known
-    minute = 0
-    seconds = 0
-    disqualified = false
 
     constructor(minute: number) {
-        this.minute = minute
+        super(minute)
     }
 
-    points(riderMinute: number): number {
-        let score = 0
-
-        if (this.minute >= riderMinute) {
-            // Only late points is 1pt/min
-            score = this.minute - riderMinute
-        } else if (riderMinute - this.minute > 15) {
-            // Early is ok up to 15 minutes, after that Disqualified
-            this.disqualified = true
-        }
-        return score
+    disqualified(riderMinute: number): boolean {
+        return (riderMinute - this.minute) > 15
     }
 }
 
@@ -89,7 +80,6 @@ export class Secret implements Checkpoint {
     type = CheckpointTypes.Secret
     minute = 0
     seconds = 0
-    disqualified = false
 
     constructor(minute: number) {
         this.minute = minute
@@ -104,6 +94,10 @@ export class Secret implements Checkpoint {
             score = 5 * (riderMinute - this.minute) - 3
         }
         return score
+    }
+
+    disqualified(riderMinute: number): boolean {
+        return false
     }
 }
 
@@ -124,7 +118,6 @@ export class Secret implements Checkpoint {
 */
 export class Emergency extends Secret {
     type = CheckpointTypes.Emergency
-    disqualified = false
 
     constructor(minute: number, seconds: number) {
         super(minute)
@@ -132,9 +125,13 @@ export class Emergency extends Secret {
     }
 
     emergencyPoints(riderMinute: number): number {
-        const pivot = new Date(`1970-01-01 00:${riderMinute}:30`)
-        const time = new Date(`1970-01-01 00:${this.minute}:${this.seconds}`)
-        return Math.abs(time.valueOf() - pivot.valueOf()) / 1000
+        if (this.minute === riderMinute) {
+            return Math.abs(this.seconds - 30)
+        } else if (this.minute > riderMinute) {
+            return 30 + this.seconds + 60 * (this.minute - riderMinute - 1)
+        } else {
+            return 30 + (60 - this.seconds) + 60 * (riderMinute - this.minute - 1)
+        }
     }
 }
 
@@ -169,6 +166,6 @@ export class TimeKeeperEnduro {
     }
 
     get disqualified(): boolean {
-        return this.checkpoints.some((checkpoint => checkpoint.disqualified))
+        return this.checkpoints.some((checkpoint => checkpoint.disqualified(this.riderMinute)))
     }
 }

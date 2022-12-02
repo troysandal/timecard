@@ -1,23 +1,29 @@
 <script>
-    import SprintTestRow from './SprintTestRow.svelte'
-    import { SprintTest, SprintEnduro } from '../sprint'
+    import SprintTestRow from "./SprintTestRow.svelte"
+    import { SprintTest, SprintEnduro } from "../sprint"
 
     function initialTests(MAX) {
         const tests = []
         for (let i = 0 ; i < MAX ; i++) {
-            tests.push({enter:'', exit:''})
+            tests.push({ enter: '', exit: '' })
         }
         return tests
     }
 
     let testData = initialTests(7)
-    
+
     function addTestData() {
-        testData[testData.length] = {enter:'', exit:''}
+        testData[testData.length] = { enter: '', exit: '' }
     }
-    
-    $: score = computeScore(testData);
-    
+
+    function resetCard() {
+        if (window.confirm('Are you sure you want to reset the Sprint Enduro?')) {
+            testData = initialTests(7)
+        }
+    }
+
+    $: score = computeScore(testData)
+
     function computeScore() {
         let enduro = new SprintEnduro()
         for (let testDatum of testData) {
@@ -30,11 +36,13 @@
     }
     function deleteTest(event) {
         if (window.confirm(`You sure you want to delete test ${event.detail.index + 1}?`)) {
-            testData = testData.filter((v, index) => index !== event.detail.index)
+            testData = testData.filter(
+                (v, index) => index !== event.detail.index
+            )
         }
     }
 </script>
-  
+
 <table>
     <thead>
         <tr>
@@ -46,15 +54,30 @@
     </thead>
     <tbody>
         {#each testData as testDatum, index}
-            <SprintTestRow bind:testDatum={testDatum} index={index} on:delete={deleteTest}/>
+            <SprintTestRow bind:testDatum {index} on:delete={deleteTest} />
         {/each}
     </tbody>
     <tfoot>
         <tr>
             <th colspan="4">
-                <div id="overallScore">Total Score: <span class="score">{score}</span></div>
+                <div id="overallScore">
+                    Total Score: <span class="score">{score}</span>
+                </div>
                 <button id="addTest" on:click={addTestData}>Add a Test</button>
-            </th>            
+                <button id="reset" on:click={resetCard}>Reset</button>
+            </th>
         </tr>
     </tfoot>
-</table>  
+</table>
+
+<style>
+    table,
+    th {
+        border: 1px solid grey;
+        border-collapse: collapse;
+    }
+
+    tfoot {
+        padding: 10px;
+    }
+</style>

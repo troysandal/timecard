@@ -28,6 +28,7 @@ describe('Time Keeper Enduro', () => {
         expect(enduro.checkpoints.length).to.equal(13)
         expect(enduro.points).to.equal(16)
         expect(enduro.emergencyPoints).to.equal(816)
+        expect(enduro.disqualified).to.be.false
     })
 
     describe('Start Controls', () => {
@@ -154,6 +155,11 @@ describe('Time Keeper Enduro', () => {
     describe('Emergency Controls', () => {
         it('Has correct type', () => {
             expect(new Emergency(0, 0).type).to.equal(CheckpointTypes.Emergency)
+        })
+
+        it('Supports Rider Minutes > 59', () => {
+            const check = new Emergency(60, 30)
+            expect(check.emergencyPoints(60)).to.equal(0)
         })
 
         it("Zero'ing", () => {

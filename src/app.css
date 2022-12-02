@@ -1,19 +1,17 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-
+  font-size: 12px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  font-size: 16px;
 }
 
-table, th, td { 
-  border: 1px solid grey;
-  border-collapse: collapse;
-}
-
-tfoot {
-  padding: 10px;
+input:disabled {
+  font-weight: bold;
+  color: black;
+  background-color: lightgray;
+  -webkit-text-fill-color: #000000;
+  opacity: 1; /* required on iOS */
 }
