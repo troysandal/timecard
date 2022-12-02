@@ -1,6 +1,6 @@
-# Sprint Enduro Time Card
+# Enduro Time Card
 
-Simple app to compute Sprint Enduro time card scores so you can quickly verify
+Simple app to compute Enduro time card scores so you can quickly verify
 times posted by the club to make sure no errors were made (unless they are 
 yours:)).
 
