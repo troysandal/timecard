@@ -31,7 +31,6 @@ npm cypress open
   - [ ] User Interface
     - Is it always 2 pts / 5pts for burning?
     - Red input border when invalid #
-    - Cypress Tests
 
 ## Mobile App
 Goal here is for a universal app for iOS and Android racers can put on their 

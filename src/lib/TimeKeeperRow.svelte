@@ -79,10 +79,10 @@
 <tr class={droppedRow}>
     <td><img src={flagSrc} alt="Flag" on:click={toggleType} on:keydown={() => {}}/></td>
     <td>{index + 1}</td>
-    <td><input class="{droppedRow}" size="3" style="width:2em" pattern="[0-9]*" bind:value={check.minute} use:initRow></td>
+    <td><input class="{droppedRow}" size="3" style="width:2em" type="number" bind:value={check.minute} use:initRow></td>
     <td>
         {#if check.type === CheckpointTypes.Emergency}
-        <input class="{droppedRow}" size="2" style="width:2em" pattern="[0-9]*" min="0" max="59" bind:value={check.seconds}>
+        <input class="{droppedRow}" size="2" style="width:2em" type="number" pattern="[0-9]*" min="0" max="59" bind:value={check.seconds}>
         {/if}
     </td>
     <td><input class="{droppedRow}" disabled value={points} size="3" style="width:2em" /></td>
