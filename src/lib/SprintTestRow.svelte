@@ -26,8 +26,8 @@
 
 <tr>
     <td>{index + 1} <button on:click={onDelete}>&#x274C;</button></td>
-    <td><input size="8" class="enterTime" bind:value={testDatum.enter} /></td>
-    <td><input size="8" class="exitTime" bind:value={testDatum.exit} /></td>
+    <td><input placeholder="hh:mm:ss" size="8" class="enterTime" bind:value={testDatum.enter} /></td>
+    <td><input placeholder="hh:mm:ss" size="8" class="exitTime" bind:value={testDatum.exit} /></td>
     <td>{score}</td>
 </tr>
 
