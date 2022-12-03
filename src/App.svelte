@@ -2,20 +2,10 @@
   import svelteLogo from './assets/svelte.svg'
   import logo from './assets/icon.png';
   import TimeCard from './lib/SprintEnduro.svelte'
-  import Tabs from './lib/Tabs.svelte'
-  import SprintTab from './lib/SprintTab.svelte'
-  import TimeKeeperTab from './lib/TimeKeeperTab.svelte'
+  import SprintEnduro from './lib/SprintEnduro.svelte';
+  import TimeKeeperEnduro from './lib/TimeKeeperEnduro.svelte';
 
-  const items = [
-    { label: "Sprint Enduro",
-		 value: 2,
-		 component: SprintTab
-		},
-    { label: "Time Keeper Enduro",
-		 value: 1,
-		 component: TimeKeeperTab
-		},
-  ]
+  let current = "sprint"
 </script>
 
 <svelte:head>
@@ -32,7 +22,23 @@
       you do that?  Because races are busy places and with hundreds of riders,
       those hard working club members sometimes enter something incorrectly.
     </p>
-    <Tabs {items} />
+    <button class:selected={current === "sprint"} on:click={() => current = "sprint"}>Sprint</button>
+    <button class:selected={current === "timeKeeper"} on:click={() => current = "timeKeeper"}>Time Keeper</button>
+    {#if current === "sprint"}
+      <div id="sprint">
+        <h2>Sprint Enduro</h2>
+        <p>
+            Enter <b>Time In</b> and <b>Time Out</b> as HH:MM:SS.
+        </p>
+        <TimeCard />
+      </div>
+    {:else}
+        <div id="timeKeeper">
+          <h2>Time Keeper Enduro</h2>
+          <p>Tap Flags to change check type.</p>
+          <TimeKeeperEnduro />
+      </div>
+    {/if}
   </center>
 </main>
 
@@ -40,5 +46,8 @@
   :root(body) {
     -webkit-user-select: none;
     user-select: none;
+  }
+  .selected {
+		font-weight: bold;
   }
 </style>
