@@ -6,6 +6,14 @@
   import TimeKeeperEnduro from './lib/TimeKeeperEnduro.svelte';
 
   let current = "sprint"
+  function switchTimeCard(nextCard) {
+    if (current === nextCard) {
+      return
+    }
+    if (window.confirm('Switching time cards will lose all data. Are you sure?')) {
+      current = nextCard
+    }
+  }
 </script>
 
 <svelte:head>
@@ -22,8 +30,8 @@
       you do that?  Because races are busy places and with hundreds of riders,
       those hard working club members sometimes enter something incorrectly.
     </p>
-    <button class:selected={current === "sprint"} on:click={() => current = "sprint"}>Sprint</button>
-    <button class:selected={current === "timeKeeper"} on:click={() => current = "timeKeeper"}>Time Keeper</button>
+    <button class:selected={current === "sprint"} on:click={() => switchTimeCard("sprint")}>Sprint</button>
+    <button class:selected={current === "timeKeeper"} on:click={() => switchTimeCard("timeKeeper")}>Time Keeper</button>
     {#if current === "sprint"}
       <div id="sprint">
         <h2>Sprint Enduro</h2>
