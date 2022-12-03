@@ -5,12 +5,11 @@ describe('empty spec', () => {
 
     it('passes', () => {
       cy.visit('http://127.0.0.1:5173')
-      cy.get('li span').contains('Time Keeper Enduro').first().click()
       cy.on('window:confirm', (text) => {
         console.log(text);
         return true
       });
-      
+      cy.get('button').contains('Time Keeper').first().click()      
       cy.get('div#riderMinute input').first().clear().type('17')
 
       addSecret(16)

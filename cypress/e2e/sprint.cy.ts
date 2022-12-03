@@ -10,11 +10,11 @@ describe('empty spec', () => {
   }
   it('passes', () => {
     cy.visit('http://127.0.0.1:5173')
-    cy.get('li span').contains('Sprint Enduro').first().click()
     cy.on('window:confirm', (text) => {
       console.log(text);
       return true
     });
+    cy.get('button').contains('Sprint').first().click()
     
     cy.get('tbody tr:last-child button').first().click()
     cy.get('tbody tr:last-child button').first().click()
