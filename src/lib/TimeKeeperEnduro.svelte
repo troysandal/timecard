@@ -111,7 +111,7 @@
 </script>
 
 <div id="riderMinute">
-Rider Minute: <input pattern="[0-9]*" size="3" min="1" bind:value="{riderMinute}" />
+Rider Minute: <input type="number" pattern="[0-9]*" size="3" min="1" bind:value="{riderMinute}" />
 </div>
 
 <table>

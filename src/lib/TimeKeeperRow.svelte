@@ -48,10 +48,7 @@
             const seconds = parseInt(checkDatum.seconds)
 
             if (!isNaN(minute + seconds)) {
-                console.log(minute, seconds, riderMinute)
                 const emergency = new Emergency(minute, seconds)
-                console.log(emergency)
-                console.log(emergency.emergencyPoints(riderMinute))
                 return emergency.emergencyPoints(riderMinute)
             }
         }

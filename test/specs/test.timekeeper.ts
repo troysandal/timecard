@@ -157,6 +157,14 @@ describe('Time Keeper Enduro', () => {
             expect(new Emergency(0, 0).type).to.equal(CheckpointTypes.Emergency)
         })
 
+        it('BUG: negative e-points in same minute', () => {
+            let check = new Emergency(17, 31)
+            expect(check.emergencyPoints(17)).to.equal(1)
+            
+            check = new Emergency(17, 29)
+            expect(check.emergencyPoints(17)).to.equal(1)
+        })
+
         it('Supports Rider Minutes > 59', () => {
             const check = new Emergency(60, 30)
             expect(check.emergencyPoints(60)).to.equal(0)
