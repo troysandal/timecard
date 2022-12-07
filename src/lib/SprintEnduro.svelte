@@ -1,11 +1,11 @@
 <script>
     import SprintTestRow from "./SprintTestRow.svelte"
-    import { SprintTest, SprintEnduro } from "../sprint"
+    import { SprintTest, SprintEnduro, isValidTime } from "../sprint"
 
     function initialTests(MAX) {
         const tests = []
         for (let i = 0 ; i < MAX ; i++) {
-            tests.push({ enter: '', exit: '' })
+            tests.push({ enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} })
         }
         return tests
     }
@@ -13,7 +13,7 @@
     let testData = initialTests(7)
 
     function addTestData() {
-        testData[testData.length] = { enter: '', exit: '' }
+        testData[testData.length] = { enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} }
     }
 
     function resetCard() {
@@ -27,9 +27,11 @@
     function computeScore() {
         let enduro = new SprintEnduro()
         for (let testDatum of testData) {
-            const test = SprintTest.fromTimes(testDatum.enter, testDatum.exit)
-            if (test) {
-                enduro.tests.push(test)
+            if (isValidTime(testDatum.enter) && isValidTime(testDatum.exit)) {
+                const test = SprintTest.fromTimes(testDatum.enter, testDatum.exit)
+                if (test) {
+                    enduro.tests.push(test)
+                }
             }
         }
         return enduro.scoreString
@@ -54,7 +56,7 @@
     </thead>
     <tbody>
         {#each testData as testDatum, index}
-            <SprintTestRow bind:testDatum {index} on:delete={deleteTest} />
+            <SprintTestRow bind:testDatumEnter={testDatum.enter} bind:testDatumExit={testDatum.exit} {index} on:delete={deleteTest} />
         {/each}
     </tbody>
     <tfoot>

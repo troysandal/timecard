@@ -36,7 +36,7 @@
       <div id="sprint">
         <h2>Sprint Enduro</h2>
         <p>
-            Enter <b>Time In</b> and <b>Time Out</b> as HH:MM:SS.
+            Enter <b>Hours</b> in 24 Hour Time, e.g. 2PM == 14
         </p>
         <TimeCard />
       </div>

@@ -14,6 +14,12 @@ npm run test
 # Integration Tests
 npm run dev
 npm cypress open
+
+# Deploy
+npm run test
+npx cyrpress run
+git push origin main
+
 ```
 
 ## To Dos
@@ -25,12 +31,6 @@ npm cypress open
     - Icons
   - Android
     - Icons
-- Sprint
-  - [] Switch to numeric inputs like Enduro?
-- Time Keeper Enduro
-  - [ ] User Interface
-    - Is it always 2 pts / 5pts for burning?
-    - Red input border when invalid #
 
 ## Mobile App
 Goal here is for a universal app for iOS and Android racers can put on their 

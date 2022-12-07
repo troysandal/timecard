@@ -4,10 +4,17 @@ describe('empty spec', () => {
   function createTest(enter: string, exit: string) {
     cy.get('button#addTest').first().click()
     cy.get('tbody tr:last-child').within(() => {
-      cy.get('input.enterTime').clear().type(enter)
-      cy.get('input.exitTime').clear().type(exit)
+      let fragments = enter.split(':')
+      cy.get('input.enterTime').eq(0).clear().type(fragments[0])
+      cy.get('input.enterTime').eq(1).clear().type(fragments[1])
+      cy.get('input.enterTime').eq(2).clear().type(fragments[2])
+      fragments = exit.split(':')
+      cy.get('input.exitTime').eq(0).clear().type(fragments[0])
+      cy.get('input.exitTime').eq(1).clear().type(fragments[1])
+      cy.get('input.exitTime').eq(2).clear().type(fragments[2])
     })
   }
+
   it('passes', () => {
     cy.visit('http://127.0.0.1:5173')
     cy.on('window:confirm', (text) => {

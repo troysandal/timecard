@@ -1,6 +1,9 @@
 <script>
-    import { SprintTest } from "../sprint";
-    import { createEventDispatcher } from "svelte";
+    import { SprintTest, isValidTime } from "../sprint"
+    import { createEventDispatcher } from "svelte"
+    import NumberInput from "./NumberInput.svelte"
+    import SprintNumberInput from "./SprintNumberInput.svelte"
+    import SprintTime from './SprintTime.svelte'
 
     const dispatch = createEventDispatcher();
 
@@ -10,24 +13,40 @@
         });
     }
 
-    export let testDatum;
     export let index;
+    export let testDatumEnter;
+    export let testDatumExit;
 
-    $: score = computeScore(testDatum);
+    $: score = computeScore(testDatumEnter, testDatumExit);
 
-    function computeScore(testDatum) {
-        const test = SprintTest.fromTimes(testDatum.enter, testDatum.exit);
-        if (test) {
-            return test.scoreString;
+    function computeScore(testDatumEnter, testDatumExit) {
+        if (isValidTime(testDatumEnter) && isValidTime(testDatumExit)) {
+            const test = SprintTest.fromTimes(testDatumEnter, testDatumExit);
+            if (test) {
+                return test.scoreString;
+            }
         }
         return "";
+    }
+    function initRow(row) {
+        row.focus()
     }
 </script>
 
 <tr>
     <td>{index + 1} <button on:click={onDelete}>&#x274C;</button></td>
-    <td><input placeholder="hh:mm:ss" size="8" class="enterTime" bind:value={testDatum.enter} /></td>
-    <td><input placeholder="hh:mm:ss" size="8" class="exitTime" bind:value={testDatum.exit} /></td>
+    <td>
+        <SprintTime initRow={initRow}
+            bind:hour={testDatumEnter.hour}
+            bind:minute={testDatumEnter.minute}
+            bind:second={testDatumEnter.second} />
+    </td>
+    <td>
+        <SprintTime
+            bind:hour={testDatumExit.hour}
+            bind:minute={testDatumExit.minute}
+            bind:second={testDatumExit.second} />
+    </td>
     <td>{score}</td>
 </tr>
 
