@@ -8,7 +8,7 @@
 <table style="margin:auto">
     <tbody>
         <tr>
-            <th>#<br />Checks</th>
+            <th>Checks</th>
             <th>Points</th>
             <th>Emergency<br />Points</th>
             <th>Disqualified</th>
