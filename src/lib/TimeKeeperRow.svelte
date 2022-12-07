@@ -1,5 +1,6 @@
 <script>
     import { CheckpointTypes, Emergency, Secret, Start, Known } from '../timekeeper'
+    import NumberInput from './NumberInput.svelte';
 
     export let check
     export let index
@@ -43,16 +44,11 @@
     }
 
     function computeEmergencyPoints(checkDatum, riderMinute) {
-        if (checkDatum.type === CheckpointTypes.Emergency) {
-            const minute = parseInt(checkDatum.minute)
-            const seconds = parseInt(checkDatum.seconds)
-
-            if (!isNaN(minute + seconds)) {
-                const emergency = new Emergency(minute, seconds)
-                return emergency.emergencyPoints(riderMinute)
-            }
+        const check = createCheckpoint(checkDatum)
+        if (check && check.type === CheckpointTypes.Emergency) {
+            return check.emergencyPoints(riderMinute)
         }
-        return ''
+        return 0
     }
 
     function flagSource(checkDatum) {
@@ -64,9 +60,11 @@
         }
         return FLAGS[checkDatum.type]
     }
+
     function toggleType() {
         check.type = (check.type + 1) % 4
     }
+
     function initRow(row) {
         row.focus()
     }
@@ -76,10 +74,12 @@
 <tr class={droppedRow}>
     <td><img src={flagSrc} alt="Flag" on:click={toggleType} on:keydown={() => {}}/></td>
     <td>{index + 1}</td>
-    <td><input class="{droppedRow}" size="3" style="width:2em" type="number" bind:value={check.minute} use:initRow></td>
+    <td>
+        <NumberInput on:value={(v) => {check.minute = v.detail.value}} initRow={initRow} value={check.minute} class="{droppedRow}" attrs={{size:"3", style:"width:2em"}} />
+    </td>
     <td>
         {#if check.type === CheckpointTypes.Emergency}
-        <input class="{droppedRow}" size="2" style="width:2em" type="number" pattern="[0-9]*" min="0" max="59" bind:value={check.seconds}>
+            <NumberInput on:value={(v) => {check.seconds = v.detail.value}} value={check.seconds} class="{droppedRow}" attrs={{size:"2", style:"width:2em", min:"0", max:"59", defaultValue:"30", numeric:true}} />
         {/if}
     </td>
     <td><input class="{droppedRow}" disabled value={points} size="3" style="width:2em" /></td>
@@ -107,4 +107,8 @@
     .dropped {
         text-decoration: line-through;
     }
+    :global(.dropped) {
+        text-decoration: line-through;
+    }
+
 </style>

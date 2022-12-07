@@ -2,6 +2,7 @@
     import TimeKeeperRow from "./TimeKeeperRow.svelte";
     import { CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../timekeeper";
     import TimeKeeperScore from "./TimeKeeperScore.svelte";
+    import NumberInput from "./NumberInput.svelte";
 
     let riderMinute = 1
     let checkData = initialChecks(1)
@@ -111,7 +112,7 @@
 </script>
 
 <div id="riderMinute">
-Rider Minute: <input type="number" pattern="[0-9]*" size="3" min="1" bind:value="{riderMinute}" />
+Rider Minute: <NumberInput value={riderMinute} on:value={(v) => {riderMinute = v.detail.value}} attrs={{size:"3", min:"1", style:"width:3em", numeric:true}} />
 </div>
 
 <table>
