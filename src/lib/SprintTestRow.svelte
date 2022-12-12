@@ -31,18 +31,21 @@
     function initRow(row) {
         row.focus()
     }
+    let refHour
 </script>
 
 <tr>
     <td>{index + 1} <button on:click={onDelete}>&#x274C;</button></td>
     <td>
         <SprintTime initRow={initRow}
+            onSeconds={() => {refHour.focus()}}
             bind:hour={testDatumEnter.hour}
             bind:minute={testDatumEnter.minute}
             bind:second={testDatumEnter.second} />
     </td>
     <td>
         <SprintTime
+            bind:refHour
             bind:hour={testDatumExit.hour}
             bind:minute={testDatumExit.minute}
             bind:second={testDatumExit.second} />

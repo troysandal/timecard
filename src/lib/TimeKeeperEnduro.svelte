@@ -109,10 +109,16 @@
         }
         return 'NO'
     }
+    function validMinute(value) {
+        if (value === undefined || value === '') {
+            return false
+        }
+        return !isNaN(parseInt(value)) && (value >= 1)
+    }
 </script>
 
 <div id="riderMinute">
-Rider Minute: <NumberInput value={riderMinute} on:value={(v) => {riderMinute = v.detail.value}} attrs={{size:"3", min:"1", style:"width:3em", numeric:true}} />
+Rider Minute: <NumberInput bind:value={riderMinute} validator={validMinute} size="3" min="1" style="width:3em" />
 </div>
 
 <table>

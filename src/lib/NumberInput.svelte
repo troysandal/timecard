@@ -1,38 +1,38 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-    export let attrs
-    export let value
-    export let initRow = () => {}
-    
-    const dispatch = createEventDispatcher();
-
-    function handleInput(e) {
-        dispatch("value", { value: e.target.value });
-    }
+    export let placeholder = "";
+    export let value = "";
+    export let ref = null;
+    export let pad = null;
+    export let maxlength = null;
+    export let pattern = "[0-9]*"
+    export let validator = () => true;
+    export let style;
+    export let initRow = () => {};
+    export let inputmode
 
     function isValid(value) {
-        const intValue = parseInt(value)
-
-        if (isNaN(intValue)) {
-            return false
-        }
-        if (attrs.min !== undefined) {
-            if (intValue < attrs.min) {
-                return false
-            }
-        }
-
-        if (attrs.max !== undefined) {
-            if (intValue > attrs.max) {
-                return false
-            }
-        }
-        return true
+        return validator(value);
     }
-    $: error = !isValid(value) ? 'error' : ''
+    function padValue() {
+        if (pad > 0 && value && isValid(value) && value.length === 1) {
+            value = value.padStart(pad, "0");
+        }
+    }
 </script>
 
-<input class="{error} {$$props.class}" pattern={attrs.numeric ? "[0-9]*" : null} type="number" on:input={handleInput} {...attrs} value={value} use:initRow />
+<input
+    class:error={!isValid(value)}
+    class={$$props.class}
+    {style}
+    {placeholder}
+    {maxlength}
+    {pattern}
+    {inputmode}
+    bind:value
+    bind:this={ref}
+    on:blur={padValue}
+    use:initRow
+/>
 
 <style>
     .error {

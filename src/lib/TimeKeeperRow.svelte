@@ -69,17 +69,32 @@
         row.focus()
     }
     $: droppedRow = check.drop ? 'dropped' : ''
+
+    function validMinute(value) {
+        console.log(`${value}`)
+        if (value === undefined || value === null || value === '') {
+            return false
+        }
+        return true
+    }
+    function validSeconds(value) {
+        if (value === undefined || value === '') {
+            return false
+        }
+        return !isNaN(parseInt(value)) && (value >= 0) && (value <= 59)
+    }
+
 </script>
 
 <tr class={droppedRow}>
     <td><img src={flagSrc} alt="Flag" on:click={toggleType} on:keydown={() => {}}/></td>
     <td>{index + 1}</td>
     <td>
-        <NumberInput on:value={(v) => {check.minute = v.detail.value}} initRow={initRow} value={check.minute} class="{droppedRow}" attrs={{size:"3", style:"width:2em"}} />
+        <NumberInput bind:value={check.minute} pattern={null} validator={validMinute} initRow={initRow} class="{droppedRow}" size="3" style="width:2em" />
     </td>
     <td>
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput on:value={(v) => {check.seconds = v.detail.value}} value={check.seconds} class="{droppedRow}" attrs={{size:"2", style:"width:2em", min:"0", max:"59", defaultValue:"30", numeric:true}} />
+            <NumberInput bind:value={check.seconds} validator={validSeconds} class="{droppedRow}" size="2" style="width:2em" />
         {/if}
     </td>
     <td><input class="{droppedRow}" disabled value={points} size="3" style="width:2em" /></td>

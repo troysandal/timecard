@@ -4,21 +4,57 @@
     export let hour
     export let minute
     export let second
+    export let onSeconds = () => {}
+
+    export let refHour
+    let refMinute, refSecond
+  
+    function valid(min, max) {
+    return (value) => {
+        if (value === undefined || value === '') {
+            return true
+        }
+        return !isNaN(parseInt(value)) && (value >= min) && (value <= max)
+        }
+    }
+    
+    const validHour = valid(0, 23)
+    const validMinute = valid(0, 59)
+    const validSecond = valid(0, 59)
+    
+    function nextInput(field, input, validator = () => true) {
+        if (field && field.length == 2 && validator(field)) {
+            input.focus()
+        }
+    }
+    function onSecond() {
+        if (second && second.length == 2 && validSecond(second)) {
+            onSeconds()
+        }
+    }
+    
+    $: hour, nextInput(hour, refMinute, validHour)
+    $: minute, nextInput(minute, refSecond, validMinute)
+    $: second, onSecond()
+    $: score = `${hour}:${minute}:${second}`
 </script>
 
 <SprintNumberInput 
-    attrs={{placeholder:"hh", min:"0", max:"23"}} 
+    placeholder="hh" 
     class={$$props.initRow ? "enterTime" : 'exitTime' }
-    value={hour}
+    validator={validHour}
     initRow={$$props.initRow}
-    on:value={(v) => {hour = v.detail.value}} />
+    bind:ref={refHour}
+    bind:value={hour} />
 <SprintNumberInput 
-    attrs={{placeholder:"mm", min:"0", max:"59"}} 
+    placeholder="mm" 
     class={$$props.initRow ? "enterTime" : 'exitTime' }
-    value={minute}
-    on:value={(v) => {minute = v.detail.value}} />
+    validator={validMinute}
+    bind:ref={refMinute}
+    bind:value={minute} />
 <SprintNumberInput 
-    attrs={{placeholder:"ss", min:"0", max:"59"}} 
+    placeholder="ss"
     class={$$props.initRow ? "enterTime" : 'exitTime' }
-    value={second}
-    on:value={(v) => {second = v.detail.value}} />
+    validator={validSecond}
+    bind:ref={refSecond}
+    bind:value={second} />

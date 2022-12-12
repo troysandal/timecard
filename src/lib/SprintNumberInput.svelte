@@ -1,6 +1,7 @@
 <script>
     import NumberInput from "./NumberInput.svelte";
-    export let attrs
+    export let value
+    export let ref = null
 </script>
 
-<NumberInput {...$$restProps} attrs={{...attrs, size:"2", style:"width:1.75em", numeric: true}} on:value />
+<NumberInput {...$$props} pad="2" maxlength="2" style="width:1.75em" bind:value bind:ref/>
