@@ -24,12 +24,6 @@ describe('empty spec', () => {
     cy.get('button').contains('Sprint').first().click()
     
     cy.get('tbody tr:last-child button').first().click()
-    cy.get('tbody tr:last-child button').first().click()
-    cy.get('tbody tr:last-child button').first().click()
-    cy.get('tbody tr:last-child button').first().click()
-    cy.get('tbody tr:last-child button').first().click()
-    cy.get('tbody tr:last-child button').first().click()
-    cy.get('tbody tr:last-child button').first().click()
 
     createTest('09:18:00', '09:47:19')
     createTest('09:56:20', '10:03:32')

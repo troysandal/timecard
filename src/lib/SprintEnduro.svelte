@@ -10,7 +10,7 @@
         return tests
     }
 
-    let testData = initialTests(7)
+    let testData = initialTests(1)
 
     function addTestData() {
         testData[testData.length] = { enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} }
