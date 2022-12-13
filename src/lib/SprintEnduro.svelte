@@ -1,16 +1,17 @@
 <script>
     import SprintTestRow from "./SprintTestRow.svelte"
     import { SprintTest, SprintEnduro, isValidTime } from "../sprint"
-
-    function initialTests(MAX) {
+    
+    function initialTests() {
         const tests = []
+        const MAX = 1
         for (let i = 0 ; i < MAX ; i++) {
             tests.push({ enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} })
         }
         return tests
     }
 
-    let testData = initialTests(1)
+    let testData = initialTests()
 
     function addTestData() {
         testData[testData.length] = { enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} }
@@ -18,7 +19,7 @@
 
     function resetCard() {
         if (window.confirm('Are you sure you want to reset the Sprint Enduro?')) {
-            testData = initialTests(7)
+            testData = initialTests()
         }
     }
 
