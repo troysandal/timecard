@@ -25,6 +25,7 @@
 <style>
     th {
         vertical-align: bottom;
+        font-size: 12px;
     }
     input {
         text-align: center;
