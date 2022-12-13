@@ -29,7 +29,7 @@
         return "";
     }
     function initRow(row) {
-        row.focus()
+        row.focus() 
     }
     let refHour
 </script>
@@ -50,12 +50,19 @@
             bind:minute={testDatumExit.minute}
             bind:second={testDatumExit.second} />
     </td>
-    <td>{score}</td>
+    <td>
+        <input disabled value={score} class="score"/>
+    </td>
 </tr>
 
 <style>
     td {
         border: 1px solid grey;
         border-collapse: collapse;
+        padding: 2px;
+    }
+    .score {
+        width: 7ch;
+        text-align: center;
     }
 </style>
