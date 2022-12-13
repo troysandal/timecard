@@ -8,7 +8,7 @@
     export let validator = () => true;
     export let style;
     export let initRow = () => {};
-    export let inputmode
+    export let inputmode = defaultInputMode()
 
     function isValid(value) {
         return validator(value);
@@ -18,6 +18,13 @@
             value = value.padStart(pad, "0");
         }
     }
+    function defaultInputMode() {
+        let isChrome = !!window.chrome
+        isChrome = isChrome && /Android|iPhone/i.test(navigator.userAgent)
+        return isChrome ? 'numeric' : undefined
+    }
+    
+
 </script>
 
 <input
