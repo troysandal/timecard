@@ -24,17 +24,23 @@ git push origin main
 
 ## To Dos
 - PWA
-  - Service Worker
-    - Cache all generated file files
-    - Cache all non-gen'ed files
-  - iOS
-    - Icons
+  - [Vite PWA Module](https://vite-pwa-org.netlify.app/)
+  - Icons
+    - Use Start Icon, common to all races
+    - Rounded Rect Corners - 
+    - 152, 180, 167, 192, 512
+    - [FavIcon Generator?](https://realfavicongenerator.net/)
+  - [iOS](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
+    - [Great Reference](https://medium.com/appscope/designing-native-like-progressive-web-apps-for-ios-1b3cdda1d0e8)
+    - Icons go in index.html
+    - [Sizes](https://developer.apple.com/design/human-interface-guidelines/foundations/app-icons/)
+      - 152, 180, 167
+    - [Splash Screen](https://appsco.pe/developer/splash-screens)
+    Status Bar
   - Android
-    - Icons
+    - Icons go in Manifest.json
+    - 192 and 512 icons
 
-## Mobile App
-Goal here is for a universal app for iOS and Android racers can put on their 
-phones and use at the race to verify score cards.
 
 ### Progressive Web App
 This seems like the easiest option as it lets us re-use the existing web site
