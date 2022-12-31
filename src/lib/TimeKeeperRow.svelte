@@ -53,10 +53,10 @@
 
     function flagSource(checkDatum) {
         const FLAGS = {
-            [CheckpointTypes.Start]: './images/start.gif',
-            [CheckpointTypes.Known]: './images/known.gif',
-            [CheckpointTypes.Secret]: './images/secret.gif',
-            [CheckpointTypes.Emergency]: './images/emergency.gif'
+            [CheckpointTypes.Start]: './images/start.png',
+            [CheckpointTypes.Known]: './images/known.png',
+            [CheckpointTypes.Secret]: './images/secret.png',
+            [CheckpointTypes.Emergency]: './images/emergency.png'
         }
         return FLAGS[checkDatum.type]
     }
