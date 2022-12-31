@@ -6,7 +6,7 @@
   "license": "Creative Commons Attribution-ShareAlike 4.0 International License.",
   "scripts": {
     "dev": "vite --host --https",
-    "build": "vite build --base=/timecard",
+    "build": "vite build --base=/timecard/",
     "preview": "vite preview --host --https",
     "test": "mocha",
     "test:debug": "mocha --inspect"
