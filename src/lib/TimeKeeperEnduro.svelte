@@ -21,7 +21,6 @@
     }
 
     function addCheck() {
-        console.log(riderMinute)
         checkData[checkData.length] = {
             type: CheckpointTypes.Secret,
             minute: riderMinute,

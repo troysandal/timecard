@@ -71,7 +71,6 @@
     $: droppedRow = check.drop ? 'dropped' : ''
 
     function validMinute(value) {
-        console.log(`${value}`)
         if (value === undefined || value === null || value === '') {
             return false
         }

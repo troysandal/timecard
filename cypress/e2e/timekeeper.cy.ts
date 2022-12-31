@@ -4,9 +4,8 @@ describe('empty spec', () => {
     let count = 0
 
     it('passes', () => {
-      cy.visit('http://127.0.0.1:5173')
+      cy.visit('https://127.0.0.1:5173')
       cy.on('window:confirm', (text) => {
-        console.log(text);
         return true
       });
       cy.get('button').contains('Time Keeper').first().click()      
