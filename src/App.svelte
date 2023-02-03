@@ -26,9 +26,10 @@
 <main>
   <center>
     <h1>Enduro Time Card</h1>
-    <p>You can verify your Enduro score cards using this tool. Why would
-      you do that?  Because races are busy places and with hundreds of riders,
-      those hard working club members sometimes enter something incorrectly.
+    <p>Verify Enduro score cards using this tool. Races are busy places and with
+      hundreds of riders, hard working club members sometimes make mistakes.
+      <a href="https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/">
+      <b>Install</b></a> onto your phone before the race!
     </p>
     <button class:selected={current === "sprint"} on:click={() => switchTimeCard("sprint")}>Sprint</button>
     <button class:selected={current === "timeKeeper"} on:click={() => switchTimeCard("timeKeeper")}>Time Keeper</button>
