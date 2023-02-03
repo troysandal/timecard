@@ -125,7 +125,7 @@ export class Emergency extends Secret {
     }
 
     emergencyPoints(riderMinute: number): number {
-        if (this.minute === riderMinute) {
+        if (this.minute == riderMinute) {
             return Math.abs(this.seconds - 30)
         } else if (this.minute > riderMinute) {
             return 30 + this.seconds + 60 * (this.minute - riderMinute - 1)

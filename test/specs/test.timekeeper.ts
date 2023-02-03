@@ -204,4 +204,17 @@ describe('Time Keeper Enduro', () => {
             expect(enduro.emergencyPoints).to.equal(5)
         })
     })
+
+    describe('has bugs', () => {
+        it('returned negative emergency points', () => {
+            let enduro: TimeKeeperEnduro = new TimeKeeperEnduro(10)
+            const minute: any = '10'
+            enduro.checkpoints = [
+                new Emergency(10, 31)
+            ]
+            expect(enduro.points).to.equal(0)
+            const checkpoint = (enduro.checkpoints[0] as Emergency)
+            expect(checkpoint.emergencyPoints(minute)).to.equal(1)
+        })
+    })
 })
