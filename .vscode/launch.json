@@ -22,7 +22,7 @@
             "request": "launch",
             "name": "Brave",
             "runtimeExecutable": "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
-            "url": "http://localhost:5173",
+            "url": "https://localhost:5173",
             "webRoot": "${workspaceFolder}/src",
             "sourceMapPathOverrides": {
                 "/__parcel_source_root/*": "${webRoot}/*"
@@ -32,7 +32,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:5173",
+            "url": "https://localhost:5173",
             "webRoot": "${workspaceFolder}/src",
             // "breakOnLoad": true,
             "sourceMapPathOverrides": {
