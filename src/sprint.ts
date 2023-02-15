@@ -57,14 +57,19 @@ export class SprintEnduro {
 export class SprintTest {
     static fromTimes(enterTime: TimeData, exitTime: TimeData): SprintTest | undefined {
         const enterDate = timeDataToDate(enterTime)
-        const exitDate = timeDataToDate(exitTime)
+        let exitDate = timeDataToDate(exitTime)
 
         if (!enterDate || !exitDate) {
             return undefined
         }
 
         if (exitDate < enterDate) {
-            return undefined
+            const newExitTime = Object.assign({}, exitTime)
+            newExitTime.hour += 12
+            exitDate = timeDataToDate(newExitTime)
+            if (!exitDate || (exitDate < enterDate)) {
+                return undefined
+            }
         }
 
         const result = new SprintTest()

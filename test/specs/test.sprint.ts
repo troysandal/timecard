@@ -47,8 +47,10 @@ describe('Sprint Enduro', () => {
     })
 
     it('ensures exit time is after enter', () => {
-        expect(createTest(0,20,0,0,0,0)).to.not.exist
         expect(createTest(0,0,0,0,0,1)).to.exist
+        // am/pm support, e.g. 12pm, 1pm is ok
+        expect(createTest(12, 0, 0, 1, 30, 0)).to.exist
+        expect(createTest(22, 0, 0, 21, 30, 0)).to.not.exist
     })
 
     it('computes a score in seconds', () => {
@@ -69,7 +71,7 @@ describe('Sprint Enduro', () => {
         expect(enduro.scoreString).to.equal('00:05:01')
     })
 
-    it('can handle the steam donkey', () => {
+    it('can handle the steam donkey 24 hour time', () => {
         const enduro: SprintEnduro = new SprintEnduro()
 
         enduro.tests.push(createTest( 9, 18,  0,  9, 47, 19))
@@ -79,6 +81,20 @@ describe('Sprint Enduro', () => {
         enduro.tests.push(createTest(12, 59, 40, 13,  6, 10))
         enduro.tests.push(createTest(13, 22,  0, 14,  9,  4))
         enduro.tests.push(createTest(14, 21, 40, 14, 24, 28))
+
+        expect(enduro.scoreString).to.equal('02:45:03')
+    })
+
+    it('can handle the steam donkey am/pm time', () => {
+        const enduro: SprintEnduro = new SprintEnduro()
+
+        enduro.tests.push(createTest( 9, 18,  0,  9, 47, 19))
+        enduro.tests.push(createTest( 9, 56, 20, 10,  3, 32))
+        enduro.tests.push(createTest(10, 32, 40, 11, 20,  1))
+        enduro.tests.push(createTest(12, 28, 20, 12, 53,  9))
+        enduro.tests.push(createTest(12, 59, 40, 1,  6, 10))
+        enduro.tests.push(createTest(1, 22,  0, 2,  9,  4))
+        enduro.tests.push(createTest(2, 21, 40, 2, 24, 28))
 
         expect(enduro.scoreString).to.equal('02:45:03')
     })

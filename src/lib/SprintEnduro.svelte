@@ -1,7 +1,8 @@
 <script>
     import SprintTestRow from "./SprintTestRow.svelte"
     import { SprintTest, SprintEnduro, isValidTime } from "../sprint"
-    
+    import { datumToTimeData } from "./SprintUtil"
+
     function initialTests() {
         const tests = []
         const MAX = 1
@@ -28,8 +29,11 @@
     function computeScore() {
         let enduro = new SprintEnduro()
         for (let testDatum of testData) {
-            if (isValidTime(testDatum.enter) && isValidTime(testDatum.exit)) {
-                const test = SprintTest.fromTimes(testDatum.enter, testDatum.exit)
+            const testEnter = datumToTimeData(testDatum.enter)
+            const testExit = datumToTimeData(testDatum.exit)
+
+            if (isValidTime(testEnter) && isValidTime(testExit)) {
+                const test = SprintTest.fromTimes(testEnter, testExit)
                 if (test) {
                     enduro.tests.push(test)
                 }

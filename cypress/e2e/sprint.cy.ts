@@ -15,8 +15,8 @@ describe('empty spec', () => {
     })
   }
 
-  it('passes', () => {
-    cy.visit('https://127.0.0.1:5173')
+  it('supports 24 hour time', () => {
+    cy.visit('https://localhost:5173')
     cy.on('window:confirm', (text) => {
       return true
     });
@@ -31,6 +31,26 @@ describe('empty spec', () => {
     createTest('12:59:40', '13:06:10')
     createTest('13:22:00', '14:09:04')
     createTest('14:21:40', '14:24:28')
+
+    cy.get('span.score').should('have.text', '02:45:03')
+  })
+
+  it('supports am/pm', () => {
+    cy.visit('https://localhost:5173')
+    cy.on('window:confirm', (text) => {
+      return true
+    });
+    cy.get('button').contains('Sprint').first().click()
+    
+    cy.get('tbody tr:last-child button').first().click()
+
+    createTest('09:18:00', '09:47:19')
+    createTest('09:56:20', '10:03:32')
+    createTest('10:32:40', '11:20:01')
+    createTest('12:28:20', '12:53:09')
+    createTest('12:59:40', '1:06:10')
+    createTest('1:22:00', '2:09:04')
+    createTest('2:21:40', '2:24:28')
 
     cy.get('span.score').should('have.text', '02:45:03')
   })

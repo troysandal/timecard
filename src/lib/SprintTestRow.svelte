@@ -4,7 +4,8 @@
     import NumberInput from "./NumberInput.svelte"
     import SprintNumberInput from "./SprintNumberInput.svelte"
     import SprintTime from './SprintTime.svelte'
-
+    import { datumToTimeData } from "./SprintUtil"
+    
     const dispatch = createEventDispatcher();
 
     function onDelete() {
@@ -20,8 +21,11 @@
     $: score = computeScore(testDatumEnter, testDatumExit);
 
     function computeScore(testDatumEnter, testDatumExit) {
-        if (isValidTime(testDatumEnter) && isValidTime(testDatumExit)) {
-            const test = SprintTest.fromTimes(testDatumEnter, testDatumExit);
+        const testEnter = datumToTimeData(testDatumEnter)
+        const testExit = datumToTimeData(testDatumExit)
+
+        if (isValidTime(testEnter) && isValidTime(testExit)) {
+            const test = SprintTest.fromTimes(testEnter, testExit);
             if (test) {
                 return test.scoreString;
             }
