@@ -1,7 +1,6 @@
 <script>
   import svelteLogo from './assets/svelte.svg'
   import logo from './assets/icon.png';
-  import TimeCard from './lib/SprintEnduro.svelte'
   import SprintEnduro from './lib/SprintEnduro.svelte';
   import TimeKeeperEnduro from './lib/TimeKeeperEnduro.svelte';
 
@@ -36,10 +35,7 @@
     {#if current === "sprint"}
       <div id="sprint">
         <h2>Sprint Enduro</h2>
-        <p>
-            Enter <b>Hours</b> in 24 Hour Time, e.g. 2PM == 14
-        </p>
-        <TimeCard />
+        <SprintEnduro />
       </div>
     {:else}
         <div id="timeKeeper">
