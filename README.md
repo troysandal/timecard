@@ -13,7 +13,7 @@ npm run test
 
 # Integration Tests
 npm run dev
-npm cypress open
+npx cypress open
 
 # Deploy
 npm run test
