@@ -19,6 +19,4 @@ npx cypress open
 npm run test
 npx cyrpress run
 git push origin main
-
 ```
-

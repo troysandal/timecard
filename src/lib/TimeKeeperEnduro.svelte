@@ -1,21 +1,23 @@
-<script>
+<script lang="ts">
     import TimeKeeperRow from "./TimeKeeperRow.svelte";
     import { CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../timekeeper";
+    import type { CheckDatum } from "./TimeKeeperUtil";
     import TimeKeeperScore from "./TimeKeeperScore.svelte";
     import NumberInput from "./NumberInput.svelte";
 
-    let riderMinute = 1
-    let checkData = initialChecks(1)
+    const DEFAULT_RIDER_MINUTE = 1;
+    let riderMinute = $state(DEFAULT_RIDER_MINUTE)
+    let checkData = $state(initialChecks(1))
     
-    function initialChecks(MAX) {
-        const checks = []
+    function initialChecks(MAX: number): CheckDatum[] {
+        const checks: CheckDatum[] = []
         for (let i = 0 ; i < MAX ; i++) {
             checks.push({
                 type: CheckpointTypes.Secret,
                 minute: riderMinute,
                 seconds: 30,
                 drop: false
-            })
+            } as CheckDatum)
         }
         return checks
     }
@@ -36,38 +38,31 @@
         }
     }
 
-    $: points = computePoints(riderMinute, checkData)
-    $: emergencyPoints = computeEmergencyPoints(riderMinute, checkData)
-    $: totalChecks = computeTotalChecks(checkData)
-    $: disqualified = computeDisqualified(riderMinute, checkData)
 
-    function createCheckpoint(checkDatum) {
-        const minute = parseInt(checkDatum.minute)
-
-        if (isNaN(minute)) {
+    function createCheckpoint(checkDatum: CheckDatum) {
+        if (isNaN(checkDatum.minute)) {
             return null
         }
 
         switch (checkDatum.type) {
             case CheckpointTypes.Emergency:
-                const seconds = parseInt(checkDatum.seconds)
-                if (!isNaN(seconds)) {
-                    return new Emergency(minute, seconds)
+                if (!isNaN(checkDatum.seconds)) {
+                    return new Emergency(checkDatum.minute, checkDatum.seconds)
                 }
                 break;
             case CheckpointTypes.Known:
-                return new Known(minute)
+                return new Known(checkDatum.minute)
             case CheckpointTypes.Secret:
-                return new Secret(minute)
+                return new Secret(checkDatum.minute)
             case CheckpointTypes.Start:
-                return new Start(minute)
+                return new Start(checkDatum.minute)
         }
 
         return null
     }
 
-    function buildEnduro(riderMinute, checkData) {
-        if (riderMinute < 1) {
+    function buildEnduro(riderMinute: number, checkData: CheckDatum[]) {
+        if (isNaN(riderMinute)) {
             return null
         }
 
@@ -81,43 +76,50 @@
         return enduro
     }
 
-    function computePoints(riderMinute, checkData) {
+    function computePoints(riderMinute: number, checkData: CheckDatum[]) {
         const enduro = buildEnduro(riderMinute, checkData)
         if (enduro) {
             return enduro.points
         }
-        return '0'
+        return ''
     }
 
-    function computeEmergencyPoints(riderMinute, checkData) {
+    function computeEmergencyPoints(riderMinute: number, checkData: CheckDatum[]) {
         const enduro = buildEnduro(riderMinute, checkData)
         if (enduro) {
             return enduro.emergencyPoints
         }
-        return '0'
+        return ''
     }
 
-    function computeTotalChecks(checkData) {
+    function computeTotalChecks(checkData: CheckDatum[]) {
         return checkData.length - checkData.filter((v) => v.drop).length
     }
 
-    function computeDisqualified(riderMinute, checkData) {
+    function computeDisqualified(riderMinute: number, checkData: CheckDatum[]) {
         const enduro = buildEnduro(riderMinute, checkData)
         if (enduro) {
             return enduro.disqualified ? 'YES' : 'NO'
         }
-        return 'NO'
+        return ''
     }
-    function validMinute(value) {
+
+    function validMinute(value: string) {
         if (value === undefined || value === '') {
             return false
         }
-        return !isNaN(parseInt(value)) && (value >= 1)
+        const ivalue = parseInt(value)
+        return !isNaN(ivalue) && (ivalue >= 1)
     }
+
+    let points = $derived(computePoints(riderMinute, checkData))
+    let emergencyPoints = $derived(computeEmergencyPoints(riderMinute, checkData))
+    let totalChecks = $derived(computeTotalChecks(checkData))
+    let disqualified = $derived(computeDisqualified(riderMinute, checkData))
 </script>
 
 <div id="riderMinute">
-Rider Minute: <NumberInput bind:value={riderMinute} validator={validMinute} size="3" min="1" style="width:3em" />
+Rider Minute: <NumberInput bind:value={riderMinute} strValue={DEFAULT_RIDER_MINUTE.toString()} validator={validMinute} size="3" min="1" style="width:3em" />
 </div>
 
 <table>
@@ -133,8 +135,8 @@ Rider Minute: <NumberInput bind:value={riderMinute} validator={validMinute} size
         </tr>
     </thead>
     <tbody>
-        {#each checkData as checkDatum, index}
-            <TimeKeeperRow bind:check={checkDatum} riderMinute={riderMinute} index={index} />
+        {#each checkData, index}
+            <TimeKeeperRow bind:check={checkData[index]as CheckDatum} riderMinute={riderMinute} index={index} />
         {/each} 
     </tbody>
     <tfoot>
@@ -145,8 +147,8 @@ Rider Minute: <NumberInput bind:value={riderMinute} validator={validMinute} size
         </tr>
         <tr>
             <th colspan="7">
-                <button id="addCheck" on:click={addCheck}>Add a Check</button>
-                <button id="reset" on:click={resetCard}>Reset</button>
+                <button id="addCheck" onclick={addCheck}>Add a Check</button>
+                <button id="reset" onclick={resetCard}>Reset</button>
             </th>            
         </tr>
     </tfoot>

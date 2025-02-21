@@ -1,60 +1,67 @@
-<script>
+<script lang="ts">
     import SprintNumberInput from './SprintNumberInput.svelte'
 
-    export let hour
-    export let minute
-    export let second
-    export let onSeconds = () => {}
-
-    export let refHour
-    let refMinute, refSecond
+    let { 
+        timeData = $bindable(),
+        onSeconds = () => {}, 
+        refHour = $bindable(), 
+        initRow = null,
+        className,
+    } = $props();
+    let refMinute: HTMLInputElement = $state() as HTMLInputElement;
+    let refSecond: HTMLInputElement = $state() as HTMLInputElement;
   
-    function valid(min, max) {
-    return (value) => {
-        if (value === undefined || value === '') {
-            return true
-        }
-        return !isNaN(parseInt(value)) && (value >= min) && (value <= max)
-        }
-    }
-    
-    const validHour = valid(0, 23)
-    const validMinute = valid(0, 59)
-    const validSecond = valid(0, 59)
-    
-    function nextInput(field, input, validator = () => true) {
-        if (field && field.length == 2 && validator(field)) {
-            input.focus()
-        }
-    }
-    function onSecond() {
-        if (second && second.length == 2 && validSecond(second)) {
-            onSeconds()
+    type Validator = (value: string | undefined) => boolean;
+
+    function valid(min: number, max: number): Validator {
+        return (value: string | undefined) => {
+            // Don't show errors for empty inputs, only invalid #s.
+            if (value === undefined || value === '') {
+                return true;
+            }
+            const numValue: number = parseInt(value);
+            return !isNaN(numValue) && (numValue >= min) && (numValue <= max);
         }
     }
     
-    $: hour, nextInput(hour, refMinute, validHour)
-    $: minute, nextInput(minute, refSecond, validMinute)
-    $: second, onSecond()
-    $: score = `${hour}:${minute}:${second}`
+    const validHour = valid(0, 23);
+    const validMinute = valid(0, 59);
+    const validSecond = valid(0, 59);
+    
+    function nextInput(field: number, strValue: string, onNext: () => void) {
+        if (!isNaN(field) && (strValue.length == 2)) {
+            onNext();
+        }
+    }
+
+    let strHour: string = $state('');
+    let strMinute: string = $state('');
+    let strSecond: string = $state('');
+    
+    $effect(() => { nextInput(timeData.hour,   strHour,   () => { refMinute.focus() }) });
+    $effect(() => { nextInput(timeData.minute, strMinute, () => { refSecond.focus() }) });
+    $effect(() => { nextInput(timeData.second, strSecond, () => { onSeconds() }) });
 </script>
 
 <SprintNumberInput 
     placeholder="hh" 
-    class={$$props.initRow ? "enterTime" : 'exitTime' }
+    class={className}
     validator={validHour}
-    initRow={$$props.initRow}
+    initRow={initRow}
     bind:ref={refHour}
-    bind:value={hour} />
+    bind:value={timeData.hour}
+    bind:strValue={strHour} />
 <SprintNumberInput 
     placeholder="mm" 
-    class={$$props.initRow ? "enterTime" : 'exitTime' }
+    class={className}
     validator={validMinute}
     bind:ref={refMinute}
-    bind:value={minute} />
+    bind:value={timeData.minute}
+    bind:strValue={strMinute} />
 <SprintNumberInput 
     placeholder="ss"
-    class={$$props.initRow ? "enterTime" : 'exitTime' }
+    class={className}
     validator={validSecond}
     bind:ref={refSecond}
-    bind:value={second} />
+    bind:value={timeData.second}
+    bind:strValue={strSecond} />

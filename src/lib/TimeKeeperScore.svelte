@@ -1,8 +1,10 @@
-<script>
-    export let totalChecks
-    export let points
-    export let emergencyPoints
-    export let disqualified
+<script lang="ts">
+    let {
+        totalChecks,
+        points,
+        emergencyPoints,
+        disqualified
+    } = $props();
 </script>
 
 <table style="margin:auto">

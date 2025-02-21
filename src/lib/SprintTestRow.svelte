@@ -1,58 +1,46 @@
-<script>
-    import { SprintTest, isValidTime } from "../sprint"
-    import { createEventDispatcher } from "svelte"
-    import NumberInput from "./NumberInput.svelte"
-    import SprintNumberInput from "./SprintNumberInput.svelte"
+<script lang="ts">
+    import { SprintTest } from "../sprint"
     import SprintTime from './SprintTime.svelte'
-    import { datumToTimeData } from "./SprintUtil"
+    import type { TimeData } from "../sprint"
     
-    const dispatch = createEventDispatcher();
+    let { 
+        index, 
+        testDatum = $bindable(),
+        deleteTest
+    } = $props();
 
-    function onDelete() {
-        dispatch("delete", {
-            index,
-        });
-    }
 
-    export let index;
-    export let testDatumEnter;
-    export let testDatumExit;
-
-    $: score = computeScore(testDatumEnter, testDatumExit);
-
-    function computeScore(testDatumEnter, testDatumExit) {
-        const testEnter = datumToTimeData(testDatumEnter)
-        const testExit = datumToTimeData(testDatumExit)
-
-        if (isValidTime(testEnter) && isValidTime(testExit)) {
-            const test = SprintTest.fromTimes(testEnter, testExit);
-            if (test) {
-                return test.scoreString;
-            }
+    function computeScore(testDatumEnter: TimeData, testDatumExit: TimeData) {
+        let result = "";
+        const test = SprintTest.fromTimes(testDatumEnter, testDatumExit);
+        if (test) {
+            result = test.scoreString;
         }
-        return "";
+        return result;
     }
-    function initRow(row) {
+    function initRow(row: HTMLElement) {
         row.focus() 
     }
-    let refHour
+    let refHour = $state();
+    let score = $derived(computeScore(testDatum.enter, testDatum.exit));
 </script>
 
 <tr>
-    <td>{index + 1} <button on:click={onDelete}>&#x274C;</button></td>
+    <td>{index + 1} <button onclick={() => {deleteTest(index)}}>&#x274C;</button></td>
     <td>
-        <SprintTime initRow={initRow}
-            onSeconds={() => {refHour.focus()}}
-            bind:hour={testDatumEnter.hour}
-            bind:minute={testDatumEnter.minute}
-            bind:second={testDatumEnter.second} />
+        <SprintTime 
+            initRow={initRow}
+            className="enterTime"
+            onSeconds={() => {(refHour as HTMLInputElement).focus()}}
+            bind:timeData={testDatum.enter}
+            />
     </td>
     <td>
         <SprintTime
+            className="exitTime"
             bind:refHour
-            bind:hour={testDatumExit.hour}
-            bind:minute={testDatumExit.minute}
-            bind:second={testDatumExit.second} />
+            bind:timeData={testDatum.exit}
+            />
     </td>
     <td>
         <input disabled value={score} class="score"/>
@@ -66,7 +54,7 @@
         padding: 2px;
     }
     .score {
-        width: 7ch;
+        width: 8ch;
         text-align: center;
     }
 </style>

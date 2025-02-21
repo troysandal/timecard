@@ -1,7 +1,6 @@
-<script>
+<script lang="ts">
     import NumberInput from "./NumberInput.svelte";
-    export let value
-    export let ref = null
+    let { value = $bindable(), ref = $bindable(), strValue = $bindable(), ...rest } = $props();
 </script>
 
-<NumberInput {...$$props} pad="2" maxlength="2" style="width:1.75em" bind:value bind:ref/>
+<NumberInput {...rest} pad="2" maxlength="2" style="width:1.75em" bind:value bind:ref bind:strValue/>

@@ -1,10 +1,10 @@
 /// <reference types="cypress" />
 
-describe('empty spec', () => {
+describe('Time Keeper Enduros', () => {
     let count = 0
 
     it('passes', () => {
-      cy.visit('https://127.0.0.1:5173')
+      cy.visit('/')
       cy.on('window:confirm', (text) => {
         return true
       });
@@ -24,12 +24,37 @@ describe('empty spec', () => {
       addSecret(17, true)
       addEmergency(21, 40)
       addKnown(17)
+      checkScore(12, 16, 816, false)
 
-      cy.get('input#checks').should('have.value', '12')
-      cy.get('input#points').should('have.value', '16')
-      cy.get('input#emergencyPoints').should('have.value', '816')
-      cy.get('input#disqualified').should('have.value', 'NO')
+      // Check the dropped emergencies drop epoints
+      setDropped(11, true)
+      checkScore(11, 12, 566, false)
+
+      // Check that < 15 DQs on knowns
+      addKnown(1)
+      checkScore(12, 12, 566, true)
+
+      // Check that dropped DQ checks don't DQ you
+      setDropped(13, true)
+      checkScore(11, 12, 566, false)
     })
+
+    function checkScore(checks: number, points: number, epoints: number, dq: boolean) {
+      cy.get('input#checks').should('have.value', checks)
+      cy.get('input#points').should('have.value', points)
+      cy.get('input#emergencyPoints').should('have.value', epoints)
+      cy.get('input#disqualified').should('have.value', dq ? "YES" : "NO")
+    }
+
+    function setDropped(check: number, dropCheck: boolean) {
+      const element = cy.get('input[type="checkbox"]').eq(check)
+
+      if (dropCheck) {
+        element.check()
+      } else {
+        element.uncheck()
+      }
+    }
 
     function addCheck(type: number, minute: number, seconds: number | undefined, drop?: boolean) {
       if (count !== 0) {

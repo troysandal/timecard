@@ -5,17 +5,21 @@ function scoreString(delta: Date): string {
     return `${hours}:${minutes}:${seconds}`
 }
 
-type TimeData = {
+export type TimeData = {
     hour: number
     minute: number
     second: number
 }
 
-export function isValidTime(time: any) {
-    return !isNaN(parseInt(time.hour) + parseInt(time.minute) + parseInt(time.second))
+export function isValidTime(time: TimeData) {
+    return !isNaN(time.hour + time.minute + time.second)
 }
 
 function timeDataToDate(timeData: TimeData): Date | undefined {
+    if (!isValidTime(timeData)) {
+        return undefined;
+    }
+
     if (timeData.hour < 0 || timeData.hour > 23) {
         return undefined
     }
@@ -55,6 +59,9 @@ export class SprintEnduro {
 }
 
 export class SprintTest {
+    private enter: Date
+    private exit: Date
+
     static fromTimes(enterTime: TimeData, exitTime: TimeData): SprintTest | undefined {
         const enterDate = timeDataToDate(enterTime)
         let exitDate = timeDataToDate(exitTime)
@@ -86,7 +93,4 @@ export class SprintTest {
     get scoreString(): string {
         return scoreString(new Date(this.exit.valueOf() - this.enter.valueOf()))
     }
-
-    private enter: Date
-    private exit: Date
 };

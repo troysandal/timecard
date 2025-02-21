@@ -1,21 +1,29 @@
-<script>
+<script lang="ts">
     import SprintTestRow from "./SprintTestRow.svelte"
-    import { SprintTest, SprintEnduro, isValidTime } from "../sprint"
-    import { datumToTimeData } from "./SprintUtil"
+    import { SprintTest, SprintEnduro } from "../sprint"
+    import type { SprintCheckDatum } from "./SprintUtil"
 
-    function initialTests() {
-        const tests = []
+    function initialTests(): SprintCheckDatum[] {
+        const tests: SprintCheckDatum[] = []
         const MAX = 1
         for (let i = 0 ; i < MAX ; i++) {
-            tests.push({ enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} })
+            tests.push({ 
+                id: Math.random().toString(),
+                enter: {hour: NaN, minute: NaN, second: NaN}, 
+                exit: {hour: NaN, minute: NaN, second: NaN}
+            })
         }
         return tests
     }
 
-    let testData = initialTests()
+    let testData = $state(initialTests())
 
     function addTestData() {
-        testData[testData.length] = { enter: {hour: '', minute: '', second: ''}, exit: {hour: '', minute: '', second: ''} }
+        testData[testData.length] = { 
+            id: Math.random().toString(),
+            enter: {hour: NaN, minute: NaN, second: NaN}, 
+            exit: {hour: NaN, minute: NaN, second: NaN}
+        };
     }
 
     function resetCard() {
@@ -24,30 +32,28 @@
         }
     }
 
-    $: score = computeScore(testData)
-
     function computeScore() {
         let enduro = new SprintEnduro()
         for (let testDatum of testData) {
-            const testEnter = datumToTimeData(testDatum.enter)
-            const testExit = datumToTimeData(testDatum.exit)
-
-            if (isValidTime(testEnter) && isValidTime(testExit)) {
-                const test = SprintTest.fromTimes(testEnter, testExit)
-                if (test) {
-                    enduro.tests.push(test)
-                }
+            const test = SprintTest.fromTimes(testDatum.enter, testDatum.exit)
+            if (test) {
+                enduro.tests.push(test)
             }
         }
         return enduro.scoreString
     }
-    function deleteTest(event) {
-        if (window.confirm(`You sure you want to delete test ${event.detail.index + 1}?`)) {
+
+    function deleteTest(index: number) {
+        if (window.confirm(`You sure you want to delete test ${index + 1}?`)) {
+            console.log($state.snapshot(testData))
             testData = testData.filter(
-                (v, index) => index !== event.detail.index
-            )
+                (_v, ix) => index !== ix
+            );
+            console.log($state.snapshot(testData))
         }
     }
+
+    let score = $derived(computeScore())
 </script>
 
 <table>
@@ -60,8 +66,8 @@
         </tr>
     </thead>
     <tbody>
-        {#each testData as testDatum, index}
-            <SprintTestRow bind:testDatumEnter={testDatum.enter} bind:testDatumExit={testDatum.exit} {index} on:delete={deleteTest} />
+        {#each testData as _testDatum, index (_testDatum.id)}
+            <SprintTestRow bind:testDatum={testData[index]} {index} {deleteTest} />
         {/each}
     </tbody>
     <tfoot>
@@ -70,8 +76,8 @@
                 <div id="overallScore">
                     Total Score: <span class="score">{score}</span>
                 </div>
-                <button id="addTest" on:click={addTestData}>Add a Test</button>
-                <button id="reset" on:click={resetCard}>Reset</button>
+                <button id="addTest" onclick={addTestData}>Add a Test</button>
+                <button id="reset" onclick={resetCard}>Reset</button>
             </th>
         </tr>
     </tfoot>

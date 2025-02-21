@@ -1,10 +1,10 @@
 /// <reference types="cypress" />
 
-describe('empty spec', () => {
+describe('Time Keeper Bugs', () => {
     let count = 0
 
-    it('passes', () => {
-      cy.visit('https://127.0.0.1:5173')
+    it('negative emergency points', () => {
+      cy.visit('/')
       cy.on('window:confirm', (text) => {
         return true
       });

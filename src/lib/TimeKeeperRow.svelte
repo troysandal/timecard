@@ -1,62 +1,72 @@
-<script>
+<script lang="ts">
     import { CheckpointTypes, Emergency, Secret, Start, Known } from '../timekeeper'
+    import type { CheckDatum } from './TimeKeeperUtil';
     import NumberInput from './NumberInput.svelte';
+    import start from '/src/assets/start.png'
+    import known from '/src/assets/known.png'
+    import secret from '/src/assets/secret.png'
+    import emergency from '/src/assets/emergency.png'
 
-    export let check
-    export let index
-    export let riderMinute
+    interface Props {
+        check: CheckDatum,
+        index: number,
+        riderMinute: number 
+    }
+    let { check = $bindable(), index, riderMinute }: Props = $props();
 
-    function createCheckpoint(checkDatum) {
-        const minute = parseInt(checkDatum.minute)
-
-        if (isNaN(minute)) {
+    function createCheckpoint(checkDatum: CheckDatum) {
+        if (isNaN(checkDatum.minute)) {
             return null
         }
 
         switch (checkDatum.type) {
             case CheckpointTypes.Emergency:
-                const seconds = parseInt(checkDatum.seconds)
-                if (!isNaN(seconds)) {
-                    return new Emergency(minute, seconds)
+                if (!isNaN(checkDatum.seconds)) {
+                    return new Emergency(checkDatum.minute, checkDatum.seconds)
                 }
                 break;
             case CheckpointTypes.Known:
-                return new Known(minute)
+                return new Known(checkDatum.minute)
             case CheckpointTypes.Secret:
-                return new Secret(minute)
+                return new Secret(checkDatum.minute)
             case CheckpointTypes.Start:
-                return new Start(minute)
+                return new Start(checkDatum.minute)
         }
 
         return null
     }
 
-    $: points = computePoints(check, riderMinute);
-    $: emergencyPoints = computeEmergencyPoints(check, riderMinute)
-    $: flagSrc = flagSource(check)
 
-    function computePoints(checkDatum, riderMinute) {
+    function computePoints(checkDatum: CheckDatum, riderMinute: number) {
+        if (isNaN(riderMinute)) {
+            return ''
+        }
+
         const check = createCheckpoint(checkDatum)
         if (check) {
             return check.points(riderMinute)
         }
-        return 0
+        return ''
     }
 
-    function computeEmergencyPoints(checkDatum, riderMinute) {
+    function computeEmergencyPoints(checkDatum: CheckDatum, riderMinute: number) {
+        if (isNaN(riderMinute)) {
+            return ''
+        }
+
         const check = createCheckpoint(checkDatum)
         if (check && check.type === CheckpointTypes.Emergency) {
-            return check.emergencyPoints(riderMinute)
+            return (check as Emergency).emergencyPoints(riderMinute)
         }
-        return 0
+        return ''
     }
 
-    function flagSource(checkDatum) {
+    function flagSource(checkDatum: CheckDatum) {
         const FLAGS = {
-            [CheckpointTypes.Start]: './images/start.png',
-            [CheckpointTypes.Known]: './images/known.png',
-            [CheckpointTypes.Secret]: './images/secret.png',
-            [CheckpointTypes.Emergency]: './images/emergency.png'
+            [CheckpointTypes.Start]: start,
+            [CheckpointTypes.Known]: known,
+            [CheckpointTypes.Secret]: secret,
+            [CheckpointTypes.Emergency]: emergency,
         }
         return FLAGS[checkDatum.type]
     }
@@ -65,35 +75,41 @@
         check.type = (check.type + 1) % 4
     }
 
-    function initRow(row) {
+    function initRow(row: HTMLElement) {
         row.focus()
     }
-    $: droppedRow = check.drop ? 'dropped' : ''
 
-    function validMinute(value) {
+    function validMinute(value: any) {
         if (value === undefined || value === null || value === '') {
             return false
         }
         return true
     }
-    function validSeconds(value) {
+    function validSeconds(value: any) {
         if (value === undefined || value === '') {
             return false
         }
         return !isNaN(parseInt(value)) && (value >= 0) && (value <= 59)
     }
 
+    let points = $derived(computePoints(check, riderMinute));
+    let emergencyPoints = $derived(computeEmergencyPoints(check, riderMinute))
+    let flagSrc = $derived(flagSource(check))
+    let droppedRow = $derived(check.drop ? 'dropped' : '')
 </script>
 
 <tr class={droppedRow}>
-    <td><img src={flagSrc} alt="Flag" on:click={toggleType} on:keydown={() => {}}/></td>
+    <td>
+        <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+        <img src={flagSrc} alt="Flag" onclick={toggleType}/>
+    </td>
     <td>{index + 1}</td>
     <td>
-        <NumberInput bind:value={check.minute} pattern={null} validator={validMinute} initRow={initRow} class="{droppedRow}" size="3" style="width:2em" />
+        <NumberInput bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} class={droppedRow} size="3" style="width:2em" />
     </td>
     <td>
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput bind:value={check.seconds} validator={validSeconds} class="{droppedRow}" size="2" style="width:2em" />
+            <NumberInput bind:value={check.seconds} validator={validSeconds} class={droppedRow} size="2" style="width:2em" />
         {/if}
     </td>
     <td><input class="{droppedRow}" disabled value={points} size="3" style="width:2em" /></td>

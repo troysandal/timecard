@@ -1,43 +1,58 @@
-<script>
-    export let placeholder = "";
-    export let value = "";
-    export let ref = null;
-    export let pad = null;
-    export let maxlength = null;
-    export let pattern = "[0-9]*"
-    export let validator = () => true;
-    export let style;
-    export let initRow = () => {};
-    export let inputmode = defaultInputMode()
+<script lang="ts">
+    let {
+        placeholder = "",
+        value = $bindable(),
+        strValue = $bindable(),
+        ref = $bindable(),
+        pad = null,
+        maxlength = null,
+        pattern = "[0-9]*",
+        validator = () => true,
+        style,
+        initRow = () => {},
+        size = undefined,
+        min = undefined,
+        class: className = "",
+    } = $props();
 
-    function isValid(value) {
-        return validator(value);
+    function isValid() {
+        return validator(strValue);
     }
+
     function padValue() {
-        if (pad > 0 && value && isValid(value) && value.length === 1) {
-            value = value.padStart(pad, "0");
+        if (pad > 0 && strValue && isValid() && strValue.length === 1) {
+            strValue = strValue.padStart(pad, "0");
         }
     }
-    function defaultInputMode() {
-        let isChrome = !!window.chrome
-        isChrome = isChrome && /Android|iPhone/i.test(navigator.userAgent)
-        return isChrome ? 'numeric' : undefined
-    }
-    
 
+    function defaultInputMode() {
+        let isChrome = !!("chrome" in window);
+        isChrome = isChrome && /Android|iPhone/i.test(navigator.userAgent);
+        return isChrome ? "numeric" : undefined;
+    }
+
+    $effect(() => {
+        if (isValid()) {
+            value = parseInt(strValue);
+        } else {
+            value = NaN;
+        }
+    });
 </script>
 
 <input
-    class:error={!isValid(value)}
-    class={$$props.class}
+    class:error={!isValid()}
+    class={className}
     {style}
     {placeholder}
     {maxlength}
     {pattern}
-    {inputmode}
-    bind:value
+    inputmode={defaultInputMode()}
+    {size}
+    {min}
+    bind:value={strValue}
     bind:this={ref}
-    on:blur={padValue}
+    onblur={padValue}
     use:initRow
 />
 

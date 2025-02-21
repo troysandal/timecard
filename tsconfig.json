@@ -1,5 +1,4 @@
 // This is only here for Mocha
-// TODO: get ts-node to use jsconfig.json ?
 {
     "compilerOptions": {
       "lib": [
@@ -9,7 +8,7 @@
       "outDir": "build",
       "removeComments": true,
       "target": "ESNext",
-      "module": "CommonJS",
+      "module": "ESNext",
 
       // Module resolution
       "baseUrl": "./", // Lets you set a base directory to resolve non-absolute module names.
@@ -33,7 +32,7 @@
       "noUnusedLocals": true,
       "noUnusedParameters": false
     },
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "./test/**/*.ts"],
     "exclude": [
       "node_modules/**/*",
       "mobile/**/*"

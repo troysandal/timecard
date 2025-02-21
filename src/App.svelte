@@ -1,11 +1,10 @@
-<script>
-  import svelteLogo from './assets/svelte.svg'
+<script lang="ts">
   import logo from './assets/icon.png';
   import SprintEnduro from './lib/SprintEnduro.svelte';
   import TimeKeeperEnduro from './lib/TimeKeeperEnduro.svelte';
 
-  let current = "sprint"
-  function switchTimeCard(nextCard) {
+  let current = $state("sprint")
+  function switchTimeCard(nextCard: string) {
     if (current === nextCard) {
       return
     }
@@ -20,7 +19,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <link rel="apple-touch-icon" href={logo} />
   <meta name="apple-mobile-web-app-title" content="Enduro Time Card" />
-  <link red="manifest" crossorigin="use-credentials" href="manifest.json" />
 </svelte:head>
 <main>
   <center>
@@ -30,8 +28,8 @@
       <a href="https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/">
       <b>Install</b></a> onto your phone before the race!
     </p>
-    <button class:selected={current === "sprint"} on:click={() => switchTimeCard("sprint")}>Sprint</button>
-    <button class:selected={current === "timeKeeper"} on:click={() => switchTimeCard("timeKeeper")}>Time Keeper</button>
+    <button class:selected={current === "sprint"} onclick={() => switchTimeCard("sprint")}>Sprint</button>
+    <button class:selected={current === "timeKeeper"} onclick={() => switchTimeCard("timeKeeper")}>Time Keeper</button>
     {#if current === "sprint"}
       <div id="sprint">
         <h2>Sprint Enduro</h2>
