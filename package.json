@@ -8,12 +8,17 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build --base=/timecard/",
-    "preview:build": "vite build",
+    "build:cap": "vite build",
+    "build:preview": "vite build",
     "preview": "vite preview --host",
     "test": "mocha",
     "test:debug": "mocha --inspect"
   },
   "devDependencies": {
+    "@capacitor/android": "^7.0.1",
+    "@capacitor/cli": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
+    "@capacitor/ios": "^7.0.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@types/chai": "^5.0.1",
     "@types/mocha": "^10.0.10",
