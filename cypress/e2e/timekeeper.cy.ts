@@ -1,9 +1,16 @@
 /// <reference types="cypress" />
 
+import { 
+  setSecret,
+  addSecret,
+  addKnown,
+  addEmergency,
+  addStart,
+  setDropped
+} from './timekeeper_util';
+
 describe('Time Keeper Enduro', () => {
   describe('AMA Format', () => {
-      let count = 0
-
       it('scores correctly', () => {
         cy.visit('/')
         cy.on('window:confirm', (text) => {
@@ -12,7 +19,7 @@ describe('Time Keeper Enduro', () => {
         cy.get('button').contains('Time Keeper').first().click()      
         cy.get('div#riderMinute input').first().clear().type('17')
 
-        addSecret(16);         // #1
+        setSecret(16);         // #1
         addSecret(17);         // #2
         addEmergency(17, 30);  // #3
         addSecret(17);         // #4
@@ -46,49 +53,6 @@ describe('Time Keeper Enduro', () => {
         cy.get('input#points').should('have.value', points)
         cy.get('input#emergencyPoints').should('have.value', epoints)
         cy.get('input#disqualified').should('have.value', dq ? "YES" : "NO")
-      }
-
-      function setDropped(check: number, dropCheck: boolean) {
-        const element = cy.get('input[type="checkbox"]').eq(check - 1)
-
-        if (dropCheck) {
-          element.check()
-        } else {
-          element.uncheck()
-        }
-      }
-
-      function addCheck(type: number, minute: number, seconds: number | undefined, drop?: boolean) {
-        if (count !== 0) {
-          cy.get('button#addCheck').first().click()
-        }
-        cy.get('tbody tr:last-child').first().within(() => {
-          while (type > 0) {
-            cy.get('img').first().click()
-            type--
-          }
-          cy.get('input').first().clear().type(minute.toString())
-          if (seconds !== undefined) {
-            cy.get('input').eq(1).clear().type(seconds.toString())
-          }
-          if (drop) {
-            cy.get('input[type="checkbox"]').check()
-          }
-        })
-        count++
-      }
-
-      function addStart(minute: number, drop?: boolean) {
-        addCheck(2, minute, undefined, drop)
-      }
-      function addKnown(minute: number, drop?: boolean) {
-        addCheck(3, minute, undefined, drop)
-      }
-      function addSecret(minute: number, drop?: boolean) {
-        addCheck(0, minute, undefined, drop)
-      }
-      function addEmergency(minute: number, seconds: number, drop?: boolean) {
-        addCheck(1, minute, seconds, drop)
       }
   })
 
