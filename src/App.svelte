@@ -46,7 +46,7 @@
 </main>
 
 <style>
-  :root(body) {
+  :global(body) {
     -webkit-user-select: none;
     user-select: none;
   }
