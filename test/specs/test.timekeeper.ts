@@ -1,3 +1,5 @@
+/// <reference types="mocha" />
+
 import { expect } from "chai"
 import { TimeKeeperEnduro, Secret, Start, Known, Emergency, CheckpointTypes } from '../../src/timekeeper'
 
