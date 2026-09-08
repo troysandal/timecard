@@ -11,31 +11,32 @@ describe('Time Keeper Enduros', () => {
       cy.get('button').contains('Time Keeper').first().click()      
       cy.get('div#riderMinute input').first().clear().type('17')
 
-      addSecret(16)
-      addSecret(17)
-      addEmergency(17, 30)
-      addSecret(17)
-      addSecret(17)
-      addSecret(17)
-      addEmergency(18, 23)
-      addSecret(17)
-      addStart(17)
-      addEmergency(26, 3)
-      addSecret(17, true)
-      addEmergency(21, 40)
-      addKnown(17)
+      addSecret(16);         // #1
+      addSecret(17);         // #2
+      addEmergency(17, 30);  // #3
+      addSecret(17);         // #4
+      addSecret(17);         // #5
+      addSecret(17);         // #6
+      addEmergency(18, 23);  // #7
+      addSecret(17);         // #8
+      addStart(17);          // #9
+      addEmergency(26, 3);   // #10
+      addSecret(17, true);   // #11
+      addEmergency(21, 40);  // #12
+      addKnown(17);          // #13
+      
       checkScore(12, 16, 816, false)
 
-      // Check the dropped emergencies drop epoints
-      setDropped(11, true)
+      // Check that dropped emergencies drop epoints
+      setDropped(12, true)
       checkScore(11, 12, 566, false)
 
-      // Check that < 15 DQs on knowns
-      addKnown(1)
+      // Check that < 15s early to known DQs
+      addKnown(1)            // #14
       checkScore(12, 12, 566, true)
 
       // Check that dropped DQ checks don't DQ you
-      setDropped(13, true)
+      setDropped(14, true)
       checkScore(11, 12, 566, false)
     })
 
@@ -47,7 +48,7 @@ describe('Time Keeper Enduros', () => {
     }
 
     function setDropped(check: number, dropCheck: boolean) {
-      const element = cy.get('input[type="checkbox"]').eq(check)
+      const element = cy.get('input[type="checkbox"]').eq(check - 1)
 
       if (dropCheck) {
         element.check()
