@@ -7,6 +7,7 @@
         refHour = $bindable(), 
         initRow = null,
         className,
+        onEnter = () => {}
     } = $props();
     let refMinute: HTMLInputElement = $state() as HTMLInputElement;
     let refSecond: HTMLInputElement = $state() as HTMLInputElement;
@@ -50,18 +51,21 @@
     initRow={initRow}
     bind:ref={refHour}
     bind:value={timeData.hour}
-    bind:strValue={strHour} />
+    bind:strValue={strHour}
+    onEnter={onEnter} />
 <SprintNumberInput 
     placeholder="mm" 
     class={className}
     validator={validMinute}
     bind:ref={refMinute}
     bind:value={timeData.minute}
-    bind:strValue={strMinute} />
+    bind:strValue={strMinute} 
+    onEnter={onEnter}/>
 <SprintNumberInput 
     placeholder="ss"
     class={className}
     validator={validSecond}
     bind:ref={refSecond}
     bind:value={timeData.second}
-    bind:strValue={strSecond} />
+    bind:strValue={strSecond}
+    onEnter={onEnter} />

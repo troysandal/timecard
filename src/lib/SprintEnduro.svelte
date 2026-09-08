@@ -53,6 +53,12 @@
         }
     }
 
+    function onEnter(index: number) {
+        if (index === testData.length - 1) {
+            addTestData()
+        }
+    }
+
     let score = $derived(computeScore())
 </script>
 
@@ -67,7 +73,7 @@
     </thead>
     <tbody>
         {#each testData as _testDatum, index (_testDatum.id)}
-            <SprintTestRow bind:testDatum={testData[index]} {index} {deleteTest} />
+            <SprintTestRow bind:testDatum={testData[index]} {index} {deleteTest} onEnter={onEnter} />
         {/each}
     </tbody>
     <tfoot>

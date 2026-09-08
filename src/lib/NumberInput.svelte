@@ -10,6 +10,7 @@
         validator = () => true,
         style,
         initRow = () => {},
+        onEnter = () => {},
         size = undefined,
         min = undefined,
         class: className = "",
@@ -54,6 +55,11 @@
     bind:this={ref}
     onblur={padValue}
     use:initRow
+    onkeydown={(e) => {
+        if (e.key === "Enter") {
+            onEnter();
+        }
+    }}
 />
 
 <style>

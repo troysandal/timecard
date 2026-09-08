@@ -112,6 +112,12 @@
         return !isNaN(ivalue) && (ivalue >= 1)
     }
 
+    function onEnter(index: number) {
+        if (index === checkData.length - 1) {
+            addCheck();
+        }
+    }
+
     let points = $derived(computePoints(riderMinute, checkData))
     let emergencyPoints = $derived(computeEmergencyPoints(riderMinute, checkData))
     let totalChecks = $derived(computeTotalChecks(checkData))
@@ -136,7 +142,7 @@ Rider Minute: <NumberInput bind:value={riderMinute} strValue={DEFAULT_RIDER_MINU
     </thead>
     <tbody>
         {#each checkData, index}
-            <TimeKeeperRow bind:check={checkData[index]as CheckDatum} riderMinute={riderMinute} index={index} />
+            <TimeKeeperRow bind:check={checkData[index]as CheckDatum} riderMinute={riderMinute} index={index} onEnter={onEnter} />
         {/each} 
     </tbody>
     <tfoot>

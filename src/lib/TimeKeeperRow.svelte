@@ -10,10 +10,17 @@
     interface Props {
         check: CheckDatum,
         index: number,
-        riderMinute: number 
+        riderMinute: number,
+        onEnter: (index: number) => void
     }
-    let { check = $bindable(), index, riderMinute }: Props = $props();
-
+    let { check = $bindable(), index, riderMinute, onEnter }: Props = $props();
+    
+    function onEnterMinOrSec() {
+        if (createCheckpoint(check) !== null) {
+            onEnter(index);
+        }
+    }
+    
     function createCheckpoint(checkDatum: CheckDatum) {
         if (isNaN(checkDatum.minute)) {
             return null
@@ -105,11 +112,11 @@
     </td>
     <td>{index + 1}</td>
     <td>
-        <NumberInput bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} class={droppedRow} size="3" style="width:2em" />
+        <NumberInput bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class={droppedRow} size="3" style="width:2em" />
     </td>
     <td>
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput bind:value={check.seconds} validator={validSeconds} class={droppedRow} size="2" style="width:2em" />
+            <NumberInput bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class={droppedRow} size="2" style="width:2em" />
         {/if}
     </td>
     <td><input class="{droppedRow}" disabled value={points} size="3" style="width:2em" /></td>

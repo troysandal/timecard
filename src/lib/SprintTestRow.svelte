@@ -6,7 +6,8 @@
     let { 
         index, 
         testDatum = $bindable(),
-        deleteTest
+        deleteTest,
+        onEnter = (index: number) => {}
     } = $props();
 
 
@@ -18,9 +19,17 @@
         }
         return result;
     }
+
     function initRow(row: HTMLElement) {
         row.focus() 
     }
+
+    function onEnterAny() {
+        if (score !== "") {
+            onEnter(index);
+        }
+    }
+
     let refHour = $state();
     let score = $derived(computeScore(testDatum.enter, testDatum.exit));
 </script>
@@ -33,14 +42,14 @@
             className="enterTime"
             onSeconds={() => {(refHour as HTMLInputElement).focus()}}
             bind:timeData={testDatum.enter}
-            />
+            onEnter={onEnterAny} />
     </td>
     <td>
         <SprintTime
             className="exitTime"
             bind:refHour
             bind:timeData={testDatum.exit}
-            />
+            onEnter={onEnterAny} />
     </td>
     <td>
         <input disabled value={score} class="score"/>
