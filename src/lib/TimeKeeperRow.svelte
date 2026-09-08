@@ -13,7 +13,7 @@
         riderMinute: number,
         onEnter: (index: number) => void
     }
-    let { check = $bindable(), index, riderMinute, onEnter }: Props = $props();
+    let { check = $bindable(), index, riderMinute, onEnter = () => {} }: Props = $props();
     
     function onEnterMinOrSec() {
         if (createCheckpoint(check) !== null) {
