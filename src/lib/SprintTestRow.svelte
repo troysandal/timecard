@@ -2,13 +2,20 @@
     import { SprintTest } from "../sprint"
     import SprintTime from './SprintTime.svelte'
     import type { TimeData } from "../sprint"
+
+    interface Props {
+        index: number,
+        testDatum: any,
+        deleteTest: (index: number) => void,
+        onEnter: (index: number) => void
+    }
     
     let { 
         index, 
         testDatum = $bindable(),
         deleteTest,
         onEnter = (index: number) => {}
-    } = $props();
+    }: Props = $props();
 
 
     function computeScore(testDatumEnter: TimeData, testDatumExit: TimeData) {
