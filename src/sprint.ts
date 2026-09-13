@@ -59,8 +59,8 @@ export class SprintEnduro {
 }
 
 export class SprintTest {
-    private enter: Date
-    private exit: Date
+    private enter: Date = new Date()
+    private exit: Date = new Date()
 
     static fromTimes(enterTime: TimeData, exitTime: TimeData): SprintTest | undefined {
         const enterDate = timeDataToDate(enterTime)
