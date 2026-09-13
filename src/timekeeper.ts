@@ -181,7 +181,6 @@ interface ScoreKeeper {
 
 class AMAScoreKeeper implements ScoreKeeper {
     scoreEnduro(enduro: TimeKeeperEnduro): ScoreCard {
-
         const checkScores = 
             enduro.checkpoints.map((check) => ({
                 points: check.points(enduro.riderMinute), 
@@ -192,14 +191,12 @@ class AMAScoreKeeper implements ScoreKeeper {
         const points = enduro.checkpoints
             .map((checkpoint) => checkpoint.points(enduro.riderMinute))
             .reduce((prev, points) => (prev + points), 0)
-        
+        const points2 = checkScores
+            .map((check) => check.points)
+            .reduce((prev, points) => (prev + points), 0)
+        console.assert(points === points2)
         const emergencyPoints = enduro.checkpoints
-            .map((checkpoint) => {
-                if (checkpoint instanceof Emergency) {
-                    return (checkpoint as Emergency).emergencyPoints(enduro.riderMinute)
-                }
-                return 0
-            })
+            .map((checkpoint) => checkpoint.emergencyPoints(enduro.riderMinute))
             .reduce((prev, cur) => (prev + cur), 0)
         const disqualified = enduro.checkpoints.some((checkpoint => checkpoint.disqualified(enduro.riderMinute)))
         const nonDroppedChecks = enduro.checkpoints.length - enduro.checkpoints.filter((v) => v.drop).length
@@ -216,6 +213,19 @@ class AMAScoreKeeper implements ScoreKeeper {
 
 /******************************** EnduroRace *******************************/
 
+// export class Race {
+//     name: string = "Time Keeper"
+//     date: Date = new Date()
+//     team: string = ""
+//     class: string = ""
+//     number: string = ""
+// }
+
+enum ScoreFormat {
+    AMANational,
+    NETRA_BrandX
+}
+
 /**
  * Encapsulates an time keeper enduro score card, computing the total
  * points as well as emergency points.
@@ -224,29 +234,23 @@ export class TimeKeeperEnduro {
     riderMinute: number = 1
     checkpoints: Array<Checkpoint> = []
 
+    format: ScoreFormat = ScoreFormat.AMANational
+    scoreKeeper = new AMAScoreKeeper()
+
     constructor(riderMinute: number) {
         console.assert(riderMinute >= 1)
         this.riderMinute = riderMinute
     }
     
     get points(): number {
-        return this.checkpoints
-            .map((checkpoint) => checkpoint.points(this.riderMinute))
-            .reduce((prev, points) => (prev + points), 0)
+        return this.scoreKeeper.scoreEnduro(this).points
     }
 
     get emergencyPoints(): number {
-        return this.checkpoints
-            .map((checkpoint) => {
-                if (checkpoint instanceof Emergency) {
-                    return (checkpoint as Emergency).emergencyPoints(this.riderMinute)
-                }
-                return 0
-            })
-            .reduce((prev, cur) => (prev + cur), 0)
+        return this.scoreKeeper.scoreEnduro(this).emergencyPoints
     }
 
     get disqualified(): boolean {
-        return this.checkpoints.some((checkpoint => checkpoint.disqualified(this.riderMinute)))
+        return this.scoreKeeper.scoreEnduro(this).disqualified
     }
 }
