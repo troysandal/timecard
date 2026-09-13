@@ -1,4 +1,16 @@
-// From https://ecea.org/ecea/enduro-time-keeping/
+/**
+ * timekeeper.ts - Time Keeping Enduro Data Model
+ * 
+ * Contains the data structures to represent a time keeping enduro race.  Races
+ * contain a collection of checkpoint times from which a score is computed.
+ * 
+ * Scoring Formats Supported
+ * - [AMA National Format](https://ecea.org/ecea/enduro-time-keeping/)
+ * - (@todo) [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf)
+ */
+
+
+/******************************* Checkpoints *******************************/
 
 export enum CheckpointTypes {
     Start,
@@ -11,8 +23,10 @@ export interface Checkpoint {
     type: CheckpointTypes
     minute: number
     seconds: number
+    drop: boolean
 
     points(riderMinute: number) : number
+    emergencyPoints(riderMinute: number) : number
     disqualified(riderMinute: number): boolean
 }
 
@@ -29,6 +43,7 @@ export class Start implements Checkpoint {
     type = CheckpointTypes.Start
     minute = 0
     seconds = 0
+    drop = false
 
     constructor(minute: number) {
         this.minute = minute
@@ -42,6 +57,10 @@ export class Start implements Checkpoint {
             score = this.minute - riderMinute
         } 
         return score
+    }
+
+    emergencyPoints(riderMinute: number) : number {
+        return 0
     }
 
     disqualified(riderMinute: number): boolean {
@@ -80,6 +99,7 @@ export class Secret implements Checkpoint {
     type = CheckpointTypes.Secret
     minute = 0
     seconds = 0
+    drop = false
 
     constructor(minute: number) {
         this.minute = minute
@@ -94,6 +114,10 @@ export class Secret implements Checkpoint {
             score = 5 * (riderMinute - this.minute) - 3
         }
         return score
+    }
+
+    emergencyPoints(riderMinute: number) : number {
+        return 0
     }
 
     disqualified(riderMinute: number): boolean {
@@ -134,6 +158,63 @@ export class Emergency extends Secret {
         }
     }
 }
+
+/********************************* Scoring *********************************/
+
+type Score = {
+    points: number
+    emergencyPoints: number
+    disqualified: boolean
+}
+
+type ScoreCard = {
+    points: number
+    emergencyPoints: number
+    disqualified: boolean
+    checkScores: Score[]
+    nonDroppedChecks: number
+}
+
+interface ScoreKeeper {
+    scoreEnduro(enduro: TimeKeeperEnduro): ScoreCard
+}
+
+class AMAScoreKeeper implements ScoreKeeper {
+    scoreEnduro(enduro: TimeKeeperEnduro): ScoreCard {
+
+        const checkScores = 
+            enduro.checkpoints.map((check) => ({
+                points: check.points(enduro.riderMinute), 
+                emergencyPoints: check.emergencyPoints(enduro.riderMinute), 
+                disqualified: check.disqualified(enduro.riderMinute)
+            }))
+
+        const points = enduro.checkpoints
+            .map((checkpoint) => checkpoint.points(enduro.riderMinute))
+            .reduce((prev, points) => (prev + points), 0)
+        
+        const emergencyPoints = enduro.checkpoints
+            .map((checkpoint) => {
+                if (checkpoint instanceof Emergency) {
+                    return (checkpoint as Emergency).emergencyPoints(enduro.riderMinute)
+                }
+                return 0
+            })
+            .reduce((prev, cur) => (prev + cur), 0)
+        const disqualified = enduro.checkpoints.some((checkpoint => checkpoint.disqualified(enduro.riderMinute)))
+        const nonDroppedChecks = enduro.checkpoints.length - enduro.checkpoints.filter((v) => v.drop).length
+        
+        return {
+            points,
+            emergencyPoints,
+            disqualified,
+            checkScores,
+            nonDroppedChecks
+        }
+    }
+}
+
+/******************************** EnduroRace *******************************/
 
 /**
  * Encapsulates an time keeper enduro score card, computing the total
