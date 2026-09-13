@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "author": "Troy Sandal",
   "license": "Creative Commons Attribution-ShareAlike 4.0 International License.",
+  "repository": "github:troysandal/timecard",
+  "homepage": "https://github.com/troysandal/timecard#readme",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
