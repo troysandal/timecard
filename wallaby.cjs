@@ -1,15 +1,19 @@
 module.exports = function (wallaby) {
     return {
       files: [
-        'src/**/*.ts',
-        { pattern: 'test/files/*', binary: true, instrument: false }
+        'src/**/*.ts'
       ],
+
+      compilers: {
+        '**/*.ts': wallaby.compilers.typeScript({ module: 'commonjs' })
+      },
 
       tests: [
         'test/specs/**/test.*.ts'
       ],
       env: {
-        type: 'node'
+        type: 'node',
+        runner: 'node'
       },
       testFramework: 'mocha'
     };
