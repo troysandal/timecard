@@ -1,71 +1,33 @@
 <script lang="ts">
-    import { CheckpointTypes, Emergency, Secret, Start, Known } from '../timekeeper'
+    import { CheckpointTypes } from '../timekeeper'
     import type { CheckDatum } from './TimeKeeperUtil';
     import NumberInput from './NumberInput.svelte';
     import start from '/src/assets/start.png'
     import known from '/src/assets/known.png'
     import secret from '/src/assets/secret.png'
     import emergency from '/src/assets/emergency.png'
+    import type { Score } from '../timekeeper.scoring';
 
     interface Props {
         check: CheckDatum,
         index: number,
-        riderMinute: number,
+        score: Score | undefined,
         onEnter: (index: number) => void
     }
-    let { check = $bindable(), index, riderMinute, onEnter = () => {} }: Props = $props();
+    let { check = $bindable(), index, score, onEnter = () => {} }: Props = $props();
     
     function onEnterMinOrSec() {
-        if (createCheckpoint(check) !== null) {
+        if (score && !score.invalid) {
             onEnter(index);
         }
     }
     
-    function createCheckpoint(checkDatum: CheckDatum) {
-        if (isNaN(checkDatum.minute)) {
-            return null
-        }
-
-        switch (checkDatum.type) {
-            case CheckpointTypes.Emergency:
-                if (!isNaN(checkDatum.seconds)) {
-                    return new Emergency(checkDatum.minute, checkDatum.seconds)
-                }
-                break;
-            case CheckpointTypes.Known:
-                return new Known(checkDatum.minute)
-            case CheckpointTypes.Secret:
-                return new Secret(checkDatum.minute)
-            case CheckpointTypes.Start:
-                return new Start(checkDatum.minute)
-        }
-
-        return null
+    function computePoints(score: Score | undefined) {
+        return score && !score.invalid ? score.points : ''
     }
 
-
-    function computePoints(checkDatum: CheckDatum, riderMinute: number) {
-        if (isNaN(riderMinute)) {
-            return ''
-        }
-
-        const check = createCheckpoint(checkDatum)
-        if (check) {
-            return check.points(riderMinute)
-        }
-        return ''
-    }
-
-    function computeEmergencyPoints(checkDatum: CheckDatum, riderMinute: number) {
-        if (isNaN(riderMinute)) {
-            return ''
-        }
-
-        const check = createCheckpoint(checkDatum)
-        if (check && check.type === CheckpointTypes.Emergency) {
-            return (check as Emergency).emergencyPoints(riderMinute)
-        }
-        return ''
+    function computeEmergencyPoints(score: Score | undefined) {
+        return score && !score.invalid ? score.emergencyPoints : ''
     }
 
     function flagSource(checkDatum: CheckDatum) {
@@ -99,13 +61,13 @@
         return !isNaN(parseInt(value)) && (value >= 0) && (value <= 59)
     }
 
-    let points = $derived(computePoints(check, riderMinute));
-    let emergencyPoints = $derived(computeEmergencyPoints(check, riderMinute))
+    let points = $derived(computePoints(score));
+    let emergencyPoints = $derived(computeEmergencyPoints(score))
     let flagSrc = $derived(flagSource(check))
     let droppedRow = $derived(check.drop ? 'dropped' : '')
 </script>
 
-<tr class={droppedRow}>
+<tr class={droppedRow} data-cy="tkr">
     <td>
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
         <img src={flagSrc} alt="Flag" onclick={toggleType}/>

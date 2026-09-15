@@ -4,11 +4,18 @@
     import type { CheckDatum } from "./TimeKeeperUtil";
     import TimeKeeperScore from "./TimeKeeperScore.svelte";
     import NumberInput from "./NumberInput.svelte";
+    import { ScoreFormat, type Score } from "../timekeeper.scoring"
 
     const DEFAULT_RIDER_MINUTE = 1;
     let riderMinute = $state(DEFAULT_RIDER_MINUTE)
     let checkData = $state(initialChecks(1))
-    
+    let format = $state<ScoreFormat>(ScoreFormat.AMANational)
+
+    const formatOptions: { label: string; value: ScoreFormat }[] = [
+        { label: 'AMA National', value: ScoreFormat.AMANational },
+        { label: 'Brand X', value: ScoreFormat.NETRA_BrandX }
+    ]
+
     function initialChecks(MAX: number): CheckDatum[] {
         const checks: CheckDatum[] = []
         for (let i = 0 ; i < MAX ; i++) {
@@ -38,27 +45,22 @@
         }
     }
 
-
     function createCheckpoint(checkDatum: CheckDatum) {
-        if (isNaN(checkDatum.minute)) {
-            return null
-        }
-
         switch (checkDatum.type) {
             case CheckpointTypes.Emergency:
                 if (!isNaN(checkDatum.seconds)) {
-                    return new Emergency(checkDatum.minute, checkDatum.seconds)
+                    return new Emergency(checkDatum.minute, checkDatum.seconds, checkDatum.drop)
                 }
                 break;
             case CheckpointTypes.Known:
-                return new Known(checkDatum.minute)
+                return new Known(checkDatum.minute, checkDatum.drop)
             case CheckpointTypes.Secret:
-                return new Secret(checkDatum.minute)
+                return new Secret(checkDatum.minute, checkDatum.drop)
             case CheckpointTypes.Start:
-                return new Start(checkDatum.minute)
+                return new Start(checkDatum.minute, checkDatum.drop)
         }
-
-        return null
+        // Will score as invalid
+        return new Secret(NaN)
     }
 
     function buildEnduro(riderMinute: number, checkData: CheckDatum[]) {
@@ -66,44 +68,44 @@
             return null
         }
 
-        const enduro = new Enduro(riderMinute)
+        const enduro = new Enduro(riderMinute, format)
         for (let checkDatum of checkData) {
             const check = createCheckpoint(checkDatum)
-            if (!checkDatum.drop && check) {
+            if (check) {
                 enduro.checkpoints.push(check)
             }
         }
         return enduro
     }
 
-    function computePoints(riderMinute: number, checkData: CheckDatum[]) {
+    type UIScoreCard = {
+        points: number | string
+        emergencyPoints: number | string
+        disqualified: string
+        checkScores: Score[]
+        nonDroppedChecks: number
+    }
+
+    function computeScoreCard(riderMinute: number, checkData: CheckDatum[]): UIScoreCard {
         const enduro = buildEnduro(riderMinute, checkData)
         if (enduro) {
-            return enduro.points
+            const score = enduro.score
+            return {
+                points: score.points,
+                emergencyPoints: score.emergencyPoints,
+                disqualified: score.disqualified ? 'YES':'NO',
+                checkScores: score.checkScores,
+                nonDroppedChecks: score.nonDroppedChecks,
+            }
         }
-        return ''
-    }
-
-    function computeEmergencyPoints(riderMinute: number, checkData: CheckDatum[]) {
-        const enduro = buildEnduro(riderMinute, checkData)
-        if (enduro) {
-            return enduro.emergencyPoints
+        return {
+            points: '',
+            emergencyPoints: '',
+            disqualified: 'NO',
+            checkScores: Array(checkData.length).fill(null),
+            nonDroppedChecks: checkData.length - checkData.filter((v) => v.drop).length,
         }
-        return ''
     }
-
-    function computeTotalChecks(checkData: CheckDatum[]) {
-        return checkData.length - checkData.filter((v) => v.drop).length
-    }
-
-    function computeDisqualified(riderMinute: number, checkData: CheckDatum[]) {
-        const enduro = buildEnduro(riderMinute, checkData)
-        if (enduro) {
-            return enduro.disqualified ? 'YES' : 'NO'
-        }
-        return ''
-    }
-
     function validMinute(value: string) {
         if (value === undefined || value === '') {
             return false
@@ -117,15 +119,20 @@
             addCheck();
         }
     }
-
-    let points = $derived(computePoints(riderMinute, checkData))
-    let emergencyPoints = $derived(computeEmergencyPoints(riderMinute, checkData))
-    let totalChecks = $derived(computeTotalChecks(checkData))
-    let disqualified = $derived(computeDisqualified(riderMinute, checkData))
+    let scoreCard = $derived(computeScoreCard(riderMinute, checkData))
 </script>
 
 <div id="riderMinute">
 Rider Minute: <NumberInput bind:value={riderMinute} strValue={DEFAULT_RIDER_MINUTE.toString()} validator={validMinute} size="3" min="1" style="width:3em" />
+<br />
+<label for="score-format">Scoring Format:</label>
+<select id="score-format" data-cy="format-select" bind:value={format}>
+    {#each formatOptions as opt}
+    <option data-cy="format-option-{opt.value}" value={opt.value}>
+      {opt.label}
+    </option>
+  {/each}
+</select>
 </div>
 
 <table>
@@ -142,13 +149,13 @@ Rider Minute: <NumberInput bind:value={riderMinute} strValue={DEFAULT_RIDER_MINU
     </thead>
     <tbody>
         {#each checkData, index}
-            <TimeKeeperRow bind:check={checkData[index]as CheckDatum} riderMinute={riderMinute} index={index} onEnter={onEnter} />
+            <TimeKeeperRow bind:check={checkData[index]as CheckDatum} score={scoreCard.checkScores[index]} index={index} onEnter={onEnter} />
         {/each} 
     </tbody>
     <tfoot>
         <tr>
             <td colspan="7">
-                <TimeKeeperScore totalChecks={totalChecks} points={points} emergencyPoints={emergencyPoints} disqualified={disqualified} />
+                <TimeKeeperScore totalChecks={scoreCard.nonDroppedChecks} points={scoreCard.points} emergencyPoints={scoreCard.emergencyPoints} disqualified={scoreCard.disqualified} />
             </td>
         </tr>
         <tr>

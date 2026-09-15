@@ -15,7 +15,11 @@ export function setCheck(type: number, minute: number, seconds: number | undefin
       cy.get('img').first().click()
       type--
     }
-    cy.get('input').first().clear().type(minute.toString())
+    if (isNaN(minute)) {
+      cy.get('input').first().clear()  
+    } else {
+      cy.get('input').first().clear().type(minute.toString())  
+    }
     if (seconds !== undefined) {
       cy.get('input').eq(1).clear().type(seconds.toString())
     }

@@ -24,13 +24,15 @@ describe('Sprint Enduro', () => {
       cy.get('span.score').should('have.text', expected)
     }
 
-    it('supports 24 hour time', () => {
+    beforeEach(() => {
       cy.visit('/')
       cy.on('window:confirm', (text) => {
         return true
       });
       cy.get('button').contains('Sprint').first().click()
-      
+    })
+
+    it('supports 24 hour time', () => {  
       deleteTest(0)
 
       createTest('09:18:00', '09:47:19')
@@ -45,12 +47,6 @@ describe('Sprint Enduro', () => {
     })
 
     it('supports am/pm', () => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
-      });
-      cy.get('button').contains('Sprint').first().click()
-      
       deleteTest(0)
 
       createTest('09:18:00', '09:47:19')
@@ -65,12 +61,6 @@ describe('Sprint Enduro', () => {
     })
 
     it('advances on 00', () => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
-      });
-      cy.get('button').contains('Sprint').first().click()
-      
       cy.get('tbody tr:last-child').within(() => {
         cy.get('input.enterTime').eq(0).clear().type('00')
         cy.get('input.enterTime').eq(1).should('have.focus')
@@ -78,12 +68,6 @@ describe('Sprint Enduro', () => {
     })
 
     it('can delete single sprint', () => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
-      });
-      cy.get('button').contains('Sprint').first().click()
-      
       cy.get('tbody tr:last-child button').first().click()
 
       createTest('01:00:00', '01:20:00')
