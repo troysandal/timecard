@@ -9,10 +9,10 @@
     const DEFAULT_RIDER_MINUTE = 1;
     let riderMinute = $state(DEFAULT_RIDER_MINUTE)
     let checkData = $state(initialChecks(1))
-    let format = $state<ScoreFormat>(ScoreFormat.AMANational)
+    let format = $state<ScoreFormat>(ScoreFormat.AMA_National)
 
     const formatOptions: { label: string; value: ScoreFormat }[] = [
-        { label: 'AMA National', value: ScoreFormat.AMANational },
+        { label: 'AMA National', value: ScoreFormat.AMA_National },
         { label: 'Brand X', value: ScoreFormat.NETRA_BrandX }
     ]
 

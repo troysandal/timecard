@@ -63,7 +63,8 @@ export class Emergency extends CheckpointBase {
 
 /******************************** EnduroRace *******************************/
 
-import { ScoreFormat, ScoreKeeper, type ScoreCard } from "./timekeeper.scoring"
+import { ScoreFormat, type ScoreCard } from "./timekeeper.scoring.base"
+import { ScoreKeeper } from "./timekeeper.scoring"
 
 /**
  * Encapsulates an time keeper enduro score card, computing the points
@@ -72,9 +73,9 @@ import { ScoreFormat, ScoreKeeper, type ScoreCard } from "./timekeeper.scoring"
 export class TimeKeeperEnduro {
     riderMinute: number = 1
     checkpoints: Array<Checkpoint> = []
-    format: ScoreFormat = ScoreFormat.AMANational
+    format: ScoreFormat = ScoreFormat.AMA_National
 
-    constructor(riderMinute: number, format: ScoreFormat = ScoreFormat.AMANational) {
+    constructor(riderMinute: number, format: ScoreFormat = ScoreFormat.AMA_National) {
         console.assert(riderMinute >= 1)
         this.riderMinute = riderMinute
         this.format = format
