@@ -3,7 +3,7 @@
   import SprintEnduro from './lib/SprintEnduro.svelte';
   import TimeKeeperEnduro from './lib/TimeKeeperEnduro.svelte';
 
-  let current = $state("sprint")
+  let current = $state("timeKeeper")
   function switchTimeCard(nextCard: string) {
     if (current === nextCard) {
       return
@@ -28,8 +28,8 @@
       <a href="https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/">
       <b>Install</b></a> onto your phone before the race!
     </p>
-    <button class:selected={current === "sprint"} onclick={() => switchTimeCard("sprint")}>Sprint</button>
     <button class:selected={current === "timeKeeper"} onclick={() => switchTimeCard("timeKeeper")}>Time Keeper</button>
+    <button class:selected={current === "sprint"} onclick={() => switchTimeCard("sprint")}>Sprint</button>
     {#if current === "sprint"}
       <div id="sprint">
         <h2>Sprint Enduro</h2>
