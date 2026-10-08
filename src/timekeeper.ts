@@ -15,7 +15,7 @@ export enum CheckpointTypes {
     Emergency
 }
 
-export type Checkpoint = {
+export interface Checkpoint {
     type: CheckpointTypes
     minute: number
     seconds: number
@@ -63,8 +63,10 @@ export class Emergency extends CheckpointBase {
 
 /******************************** EnduroRace *******************************/
 
-import { ScoreFormat, type ScoreCard } from "./timekeeper.scoring.base"
-import { ScoreKeeper } from "./timekeeper.scoring"
+export enum ScoreFormat {
+    AMA_National = "AMA",
+    NETRA_BrandX = "BrandX"
+}
 
 /**
  * Encapsulates an time keeper enduro score card, computing the points
@@ -79,22 +81,5 @@ export class TimeKeeperEnduro {
         console.assert(riderMinute >= 1)
         this.riderMinute = riderMinute
         this.format = format
-    }
-
-    get score(): ScoreCard {
-        const scoreKeeper: ScoreKeeper = new ScoreKeeper(this.format)
-        return scoreKeeper.scoreEnduro(this)
-    }
-    
-    get points(): number {
-        return this.score.points
-    }
-
-    get emergencyPoints(): number {
-        return this.score.emergencyPoints
-    }
-
-    get disqualified(): boolean {
-        return this.score.disqualified
     }
 }

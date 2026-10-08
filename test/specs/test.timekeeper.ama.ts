@@ -1,17 +1,40 @@
 /// <reference types="mocha" />
 
 import { expect } from "chai"
-import { TimeKeeperEnduro, Secret, Start, Known, Emergency, CheckpointTypes } from '../../src/timekeeper'
+import { TimeKeeperEnduro, Secret, Start, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/timekeeper'
+import { ScoreKeeper } from "../../src/timekeeper.scoring"
+
+class TimeKeeperEnduroTest extends TimeKeeperEnduro {
+    constructor(riderMinute: number) {
+        super(riderMinute, ScoreFormat.AMA_National)
+    }
+
+    get score() {
+        return ScoreKeeper.scoreEnduro(this)
+    }
+    
+    get points(): number {
+        return this.score.points
+    }
+
+    get emergencyPoints(): number {
+        return this.score.emergencyPoints
+    }
+
+    get disqualified(): boolean {
+        return this.score.disqualified
+    }    
+}
 
 describe('AMA Time Keeper Enduro', () => {
     it('Handles Empty Enduros', () => {
-        const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+        const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
         expect(enduro.points).to.equal(0)
         expect(enduro.emergencyPoints).to.equal(0)
     })
 
     it('Detects invalid scores', () => {
-        const enduro = new TimeKeeperEnduro(17)
+        const enduro = new TimeKeeperEnduroTest(17)
         enduro.checkpoints.push(new Secret(NaN))
         const score = enduro.score
         expect(score.points).to.equal(0)
@@ -19,7 +42,7 @@ describe('AMA Time Keeper Enduro', () => {
     })
 
     it('Does not include dropped or invalid checks', () => {
-        const enduro = new TimeKeeperEnduro(17)
+        const enduro = new TimeKeeperEnduroTest(17)
         enduro.checkpoints.push(new Secret(NaN))
         enduro.checkpoints.push(new Secret(18, true))
         enduro.checkpoints.push(new Secret(7))
@@ -31,7 +54,7 @@ describe('AMA Time Keeper Enduro', () => {
     })
 
     it('Handles Full Enduros', () => {
-        const enduro = new TimeKeeperEnduro(17)
+        const enduro = new TimeKeeperEnduroTest(17)
         enduro.checkpoints = [
             new Secret(16),
             new Secret(17),
@@ -54,7 +77,7 @@ describe('AMA Time Keeper Enduro', () => {
     })
 
     it("can drop a checkpoint", () => {
-        const enduro = new TimeKeeperEnduro(17)
+        const enduro = new TimeKeeperEnduroTest(17)
         enduro.checkpoints = [
             new Secret(16),
             new Secret(17)
@@ -77,7 +100,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it("Zero'ing", () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Start(17),
                 new Start(17)
@@ -87,7 +110,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Computes Late Points @ 1pt/min', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Start(20),
                 new Start(18)
@@ -97,7 +120,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
     
         it('Computes Early Points', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Start(16),
                 new Start(15)
@@ -107,7 +130,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Does not count when dropped', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Start(18),  // 2 points
             ]
@@ -125,7 +148,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it("Zero'ing", () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Known(17),
                 new Known(17)
@@ -135,7 +158,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Computes Late Points @ 1pt/min', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Known(20),
                 new Known(18)
@@ -145,7 +168,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
     
         it('Computes Early Points', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Known(16),
                 new Known(15)
@@ -155,7 +178,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it ('Can disqualify if > 15 minutes early', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(30)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(30)
             enduro.checkpoints = [ new Known(15) ]
             expect(enduro.points).to.equal(0)
             expect(enduro.disqualified).to.be.false
@@ -168,7 +191,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Does not count when dropped', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Known(18)
             ]
@@ -186,7 +209,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it("Zero'ing", () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Secret(17),
                 new Secret(17)
@@ -196,7 +219,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Computes Late Points @ 1pt/min', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Secret(20),
                 new Secret(18)
@@ -206,7 +229,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
     
         it('Computes Early Points', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Secret(16),  // 2 points
                 new Secret(15)   // 2 + 5 == 7 points
@@ -216,7 +239,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Does not count when dropped', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Secret(18)
             ]
@@ -234,14 +257,14 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Supports Rider Minutes > 59', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(60)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(60)
             const check = new Emergency(60, 30)
             enduro.checkpoints.push(check)
             expect(enduro.emergencyPoints).to.equal(0)
         })
 
         it("Zero'ing", () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Emergency(17, 30),
                 new Emergency(17, 30)
@@ -251,14 +274,14 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Computes Late Points @ 1pt/min', () => {
-            let enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            let enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Emergency(18, 23)
             ]
             expect(enduro.points).to.equal(1)
             expect(enduro.emergencyPoints).to.equal(53)
 
-            enduro = new TimeKeeperEnduro(5)
+            enduro = new TimeKeeperEnduroTest(5)
             enduro.checkpoints = [
                 new Emergency(7, 9)
             ]
@@ -267,14 +290,14 @@ describe('AMA Time Keeper Enduro', () => {
         })
     
         it('Computes Early Points', () => {
-            let enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            let enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Emergency(16, 30)
             ]
             expect(enduro.points).to.equal(2)
             expect(enduro.emergencyPoints).to.equal(60)
 
-            enduro = new TimeKeeperEnduro(5)
+            enduro = new TimeKeeperEnduroTest(5)
             enduro.checkpoints = [
                 new Emergency(5, 25)
             ]
@@ -283,7 +306,7 @@ describe('AMA Time Keeper Enduro', () => {
         })
 
         it('Does not count when dropped', () => {
-            const enduro: TimeKeeperEnduro = new TimeKeeperEnduro(17)
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
             enduro.checkpoints = [
                 new Emergency(16, 30)
             ]
@@ -298,7 +321,7 @@ describe('AMA Time Keeper Enduro', () => {
 
     describe('bug regressions', () => {
         it('returned negative emergency points', () => {
-            let enduro: TimeKeeperEnduro = new TimeKeeperEnduro(10)
+            let enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(10)
             enduro.checkpoints.push(new Emergency(10, 31))
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(1)

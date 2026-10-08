@@ -22,11 +22,6 @@ export type ScoreCard = {
     nonDroppedChecks: number
 }
 
-export enum ScoreFormat {
-    AMA_National = "AMA",
-    NETRA_BrandX = "BrandX"
-}
-
 export interface ScoreContext {
     // Rider start row - stays fixed when scoring
     startingMinute: number

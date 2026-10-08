@@ -10,12 +10,12 @@
  */
 
 import type { Checkpoint } from "./timekeeper"
-import { CheckpointTypes, TimeKeeperEnduro } from "./timekeeper"
+import { CheckpointTypes, TimeKeeperEnduro, ScoreFormat } from "./timekeeper"
 import * as AMA from "./timekeeper.scoring.ama"
 import * as BrandX from "./timekeeper.scoring.brandx"
-import { type ScoreContext, ScoreFormat, CheckScoring, type ScoreCard } from "./timekeeper.scoring.base"
+import { type ScoreContext, CheckScoring, type ScoreCard } from "./timekeeper.scoring.base"
 
-export { ScoreFormat, type Score } from "./timekeeper.scoring.base"
+export { type Score } from "./timekeeper.scoring.base"
 
 /**
  * Scores a time keeping enduro of a given format.  Every checkpoint is scored 
@@ -25,13 +25,7 @@ export { ScoreFormat, type Score } from "./timekeeper.scoring.base"
  * this can produce wonky numbers so display as you see fit.
  */
 export class ScoreKeeper {
-    format:ScoreFormat = ScoreFormat.AMA_National
-    
-    constructor(format:ScoreFormat) {
-        this.format = format
-    }
-
-    static checkToScoring(format: ScoreFormat, check: Checkpoint): CheckScoring {
+    private static checkToScoring(format: ScoreFormat, check: Checkpoint): CheckScoring {
         const modules: Record<ScoreFormat, typeof AMA | typeof BrandX>  = {
             [ScoreFormat.AMA_National]: AMA,
             [ScoreFormat.NETRA_BrandX]: BrandX
@@ -55,7 +49,7 @@ export class ScoreKeeper {
         }
     }
     
-    scoreEnduro(enduro: TimeKeeperEnduro): ScoreCard {
+    static scoreEnduro(enduro: TimeKeeperEnduro): ScoreCard {
         const scoringChecks = enduro.checkpoints
             .map((check) => {
                 return ScoreKeeper.checkToScoring(enduro.format, check)

@@ -1,17 +1,33 @@
 import { expect } from "chai"
-import { TimeKeeperEnduro, Start, Secret, Known, Emergency, CheckpointTypes } from '../../src/timekeeper'
-import { ScoreFormat } from '../../src/timekeeper.scoring.base'
+import { TimeKeeperEnduro, Start, Secret, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/timekeeper'
+import { ScoreKeeper } from "../../src/timekeeper.scoring"
 
 class BrandXEnduro extends TimeKeeperEnduro {
     constructor(riderMinute: number) {
         super(riderMinute, ScoreFormat.NETRA_BrandX)
     }
+
+    get score() {
+        return ScoreKeeper.scoreEnduro(this)
+    }
+    
+    get points(): number {
+        return this.score.points
+    }
+
+    get emergencyPoints(): number {
+        return this.score.emergencyPoints
+    }
+
+    get disqualified(): boolean {
+        return this.score.disqualified
+    }    
 }
 
 describe('BrandX Time Keeper Enduros', async () => {
     it('supports changing rider minute', () => {
         const enduro: BrandXEnduro = new BrandXEnduro(3)
-        
+
         enduro.checkpoints.push(new Secret(10))
         expect(enduro.points).to.equal(7)
         
