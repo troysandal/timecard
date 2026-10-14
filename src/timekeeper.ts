@@ -83,3 +83,16 @@ export class TimeKeeperEnduro {
         this.format = format
     }
 }
+
+export function areEqual(l: TimeKeeperEnduro, r: TimeKeeperEnduro): boolean {
+    function checkEqual(c1: Checkpoint, c2: Checkpoint): boolean {
+        return c1.type === c2.type &&
+               c1.minute === c2.minute &&
+               c1.seconds === c2.seconds &&
+               c1.drop === c2.drop
+    }
+    return l.riderMinute === r.riderMinute &&
+           l.format === r.format &&
+           l.checkpoints.length === r.checkpoints.length &&
+           l.checkpoints.every((c, i) => checkEqual(c, r.checkpoints[i]!))
+}
