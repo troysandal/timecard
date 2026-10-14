@@ -1,51 +1,42 @@
 <script lang="ts">
     import TimeKeeperRow from "./TimeKeeperRow.svelte";
-    import { CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../timekeeper";
-    import type { CheckDatum } from "./TimeKeeperUtil";
-    import TimeKeeperScore from "./TimeKeeperScore.svelte";
-    import NumberInput from "./NumberInput.svelte";
-    import { ScoreFormat, type Score } from "../timekeeper.scoring"
+    import { type Checkpoint, CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../timekeeper";
+    import type { ScoreCard } from "./../timekeeper.scoring.base";
+    import { ScoreKeeper } from "../timekeeper.scoring"
+    import { type TimeKeeperRace } from "../common"
 
-    const DEFAULT_RIDER_MINUTE = 1;
-    let riderMinute = $state(DEFAULT_RIDER_MINUTE)
-    let checkData = $state(initialChecks(1))
-    let format = $state<ScoreFormat>(ScoreFormat.AMA_National)
+    let {race = $bindable(), scoreCard: scoreCardProp = $bindable()} = $props<{ race: TimeKeeperRace; scoreCard: ScoreCard }>()
 
-    const formatOptions: { label: string; value: ScoreFormat }[] = [
-        { label: 'AMA National', value: ScoreFormat.AMA_National },
-        { label: 'Brand X', value: ScoreFormat.NETRA_BrandX }
-    ]
-
-    function initialChecks(MAX: number): CheckDatum[] {
-        const checks: CheckDatum[] = []
+    function initialChecks(MAX: number): Checkpoint[] {
+        const checks: Checkpoint[] = []
         for (let i = 0 ; i < MAX ; i++) {
             checks.push({
                 type: CheckpointTypes.Secret,
-                minute: riderMinute,
+                minute: race.timeCard.riderMinute,
                 seconds: 30,
                 drop: false
-            } as CheckDatum)
+            } as Checkpoint)
         }
         return checks
     }
 
     function addCheck() {
-        checkData[checkData.length] = {
+        race.timeCard.checkpoints[race.timeCard.checkpoints.length] = {
             type: CheckpointTypes.Secret,
-            minute: riderMinute,
+            minute: race.timeCard.riderMinute,
             seconds: 30,
             drop: false
         }
     }
 
     function resetCard() {
-        if (window.confirm('Are you sure you want to reset the score card?')) {
-            riderMinute = 1
-            checkData = initialChecks(1)
+        if (window.confirm('Are you sure you want to reset the time card?')) {
+            race.timeCard.riderMinute = 1
+            race.timeCard.checkpoints = initialChecks(1)
         }
     }
 
-    function createCheckpoint(checkDatum: CheckDatum) {
+    function createCheckpoint(checkDatum: Checkpoint) {
         switch (checkDatum.type) {
             case CheckpointTypes.Emergency:
                 if (!isNaN(checkDatum.seconds)) {
@@ -63,12 +54,12 @@
         return new Secret(NaN)
     }
 
-    function buildEnduro(riderMinute: number, checkData: CheckDatum[]) {
+    function buildEnduro(riderMinute: number, checkData: Checkpoint[]) {
         if (isNaN(riderMinute)) {
             return null
         }
 
-        const enduro = new Enduro(riderMinute, format)
+        const enduro = new Enduro(riderMinute, race.timeCard.format)
         for (let checkDatum of checkData) {
             const check = createCheckpoint(checkDatum)
             if (check) {
@@ -78,108 +69,86 @@
         return enduro
     }
 
-    type UIScoreCard = {
-        points: number | string
-        emergencyPoints: number | string
-        disqualified: string
-        checkScores: Score[]
-        nonDroppedChecks: number
-    }
+    $effect(() => {
+        scoreCardProp = scoreCard
+    })
 
-    function computeScoreCard(riderMinute: number, checkData: CheckDatum[]): UIScoreCard {
+    function computeScoreCard(riderMinute: number, checkData: Checkpoint[]): ScoreCard {
         const enduro = buildEnduro(riderMinute, checkData)
         if (enduro) {
-            const score = enduro.score
-            return {
-                points: score.points,
-                emergencyPoints: score.emergencyPoints,
-                disqualified: score.disqualified ? 'YES':'NO',
-                checkScores: score.checkScores,
-                nonDroppedChecks: score.nonDroppedChecks,
-            }
+            return ScoreKeeper.scoreEnduro(enduro)
         }
         return {
-            points: '',
-            emergencyPoints: '',
-            disqualified: 'NO',
+            points: 0,
+            emergencyPoints: 0,
+            disqualified: false,
             checkScores: Array(checkData.length).fill(null),
             nonDroppedChecks: checkData.length - checkData.filter((v) => v.drop).length,
         }
     }
-    function validMinute(value: string) {
-        if (value === undefined || value === '') {
-            return false
-        }
-        const ivalue = parseInt(value)
-        return !isNaN(ivalue) && (ivalue >= 1)
-    }
+
+    // function validMinute(value: string) {
+    //     if (value === undefined || value === '') {
+    //         return false
+    //     }
+    //     const ivalue = parseInt(value)
+    //     return !isNaN(ivalue) && (ivalue >= 1)
+    // }
 
     function onEnter(index: number) {
-        if (index === checkData.length - 1) {
+        if (index === race.timeCard.checkpoints.length - 1) {
             addCheck();
         }
     }
-    let scoreCard = $derived(computeScoreCard(riderMinute, checkData))
+    
+    let scoreCard = $derived(computeScoreCard(race.timeCard.riderMinute, race.timeCard.checkpoints))
 </script>
 
-<div id="riderMinute">
-Rider Minute: <NumberInput bind:value={riderMinute} strValue={DEFAULT_RIDER_MINUTE.toString()} validator={validMinute} size="3" min="1" style="width:3em" />
-<br />
-<label for="score-format">Scoring Format:</label>
-<select id="score-format" data-cy="format-select" bind:value={format}>
-    {#each formatOptions as opt}
-    <option data-cy="format-option-{opt.value}" value={opt.value}>
-      {opt.label}
-    </option>
-  {/each}
-</select>
+<div class="flex flex-col h-full">
+  <div class="overflow-x-auto flex-1 overflow-y-auto">
+    <table class="w-full text-sm min-w-[320px]">
+        <colgroup>
+        <col class="w-8 md:w-16"> <!-- Flag/Image -->
+        <col class="w-8 md:w-12"> <!-- Chk. # -->
+        <col class="w-12 md:w-20"> <!-- Minute Input -->
+        <col class="w-12 md:w-20"> <!-- Second Input -->
+        <col class="w-12 md:w-20"> <!-- Points Input -->
+        <col class="w-12 md:w-24"> <!-- Emergency Points -->
+        <col class="w-12 md:w-16"> <!-- Drop Checkbox -->
+        </colgroup>
+
+        <thead>
+            <tr>
+                <th></th>
+                <th class="p-1 text-center align-bottom"><span class="md:hidden">#</span><span class="hidden md:inline">Chk. #</span></th>
+                <th class="p-1 text-center align-bottom"><span class="md:hidden">Min</span><span class="hidden md:inline">Minute</span></th>
+                <th class="p-1 text-center align-bottom"><span class="md:hidden">Sec</span><span class="hidden md:inline">Second</span></th>
+                <th class="p-1 text-center align-bottom"><span class="md:hidden">Pts</span><span class="hidden md:inline">Points</span></th>
+                <th class="p-1 text-center align-bottom"><span class="md:hidden">Emrg<br />Pts</span><span class="hidden md:inline">Emergency<br />Points</span></th>
+                <th class="p-1 text-center align-bottom">Drop</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each race.timeCard.checkpoints, index}
+                <TimeKeeperRow bind:check={race.timeCard.checkpoints[index]as Checkpoint} score={scoreCard.checkScores[index]} index={index} onEnter={onEnter} />
+            {/each} 
+        </tbody>
+    </table>  
+  </div>
+  <div class="border-t border-border px-3 py-3 flex gap-2">
+    <button
+      onclick={addCheck}
+      class="flex-1 min-h-11 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium
+             hover:opacity-90 active:scale-95 transition"
+    >
+      Add Check
+    </button>
+    <button
+      onclick={resetCard}
+      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+             text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
+    >
+      Reset
+    </button>
+  </div>
 </div>
-
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>#</th>
-            <th>Minute</th>
-            <th>Second</th>
-            <th>Points</th>
-            <th>Emergency<br />Points</th>
-            <th>Drop</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each checkData, index}
-            <TimeKeeperRow bind:check={checkData[index]as CheckDatum} score={scoreCard.checkScores[index]} index={index} onEnter={onEnter} />
-        {/each} 
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="7">
-                <TimeKeeperScore totalChecks={scoreCard.nonDroppedChecks} points={scoreCard.points} emergencyPoints={scoreCard.emergencyPoints} disqualified={scoreCard.disqualified} />
-            </td>
-        </tr>
-        <tr>
-            <th colspan="7">
-                <button id="addCheck" onclick={addCheck}>Add a Check</button>
-                <button id="reset" onclick={resetCard}>Reset</button>
-            </th>            
-        </tr>
-    </tfoot>
-</table>  
-
-<style>
-    table,
-    th {
-        border: 1px solid grey;
-        border-collapse: collapse;
-        vertical-align: bottom;
-    }
-
-    tfoot {
-        padding: 10px;
-    }
-
-    #riderMinute {
-        margin-bottom: 5px;
-    }
-</style>

@@ -8,7 +8,7 @@
         maxlength = null,
         pattern = "[0-9]*",
         validator = () => true,
-        style,
+        style = "",
         initRow = () => {},
         onEnter = () => {},
         size = undefined,
@@ -43,7 +43,7 @@
 
 <input
     class:error={!isValid()}
-    class={className}
+    class="{className} input input-bordered input-xs md:input-md px-1!"
     {style}
     {placeholder}
     {maxlength}

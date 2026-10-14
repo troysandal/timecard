@@ -1,16 +1,78 @@
 <script lang="ts">
   import logo from './assets/icon.png';
-  import SprintEnduro from './lib/SprintEnduro.svelte';
-  import TimeKeeperEnduro from './lib/TimeKeeperEnduro.svelte';
+  import HomePage from "./pages/HomePage.svelte"
+  import SprintPage from './pages/SprintPage.svelte';
+  import TimeKeeperPage from './pages/TimeKeeperPage.svelte'
+  import RacePickerModal from './lib/RacePickerModal.svelte'
+  import type { Race, RaceType } from './common'
+  import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './common'
+  import { onMount } from 'svelte'
+  import { store } from './db/store'
+  
+  type Page = "home" | "sprint" | "timekeeper"
 
-  let current = $state("timeKeeper")
-  function switchTimeCard(nextCard: string) {
-    if (current === nextCard) {
-      return
+  let items = $state<Race[]>([])
+  let editingId = $state<string | null>(null)
+  let page = $state<Page>("home")
+  let showTypePicker = $state(false)
+  let editingItem = $derived(items.find((i) => i.id === editingId))
+	let isLoading = $state(true);
+
+	onMount(async () => {
+		const dbRaces = await store.load()
+		if (dbRaces) {
+      items = dbRaces;
+		}
+		isLoading = false;
+	});
+
+  const handleAdd = () => {
+    showTypePicker = true
+  }
+
+  const handleSelectType = (type: RaceType) => {
+    const id = Math.random().toString(36).slice(2)
+    const name = `Untitled ${type}`
+    const createdAt = new Date()
+
+    const newItem: Race =
+      type === 'Time Keeper'
+        ? { id, raceType: type, name, createdAt, timeCard: new EnduroTK(1) }
+        : { id, raceType: type, name, createdAt, timeCard: new EnduroSP() }
+
+    items.push(newItem)
+    editingId = newItem.id
+    page = pageForType(newItem.raceType)
+    showTypePicker = false
+  }
+
+  const pageForType = (type: RaceType) => {
+    if (type === "Sprint") {
+      return "sprint"
     }
-    if (window.confirm('Switching time cards will lose all data. Are you sure?')) {
-      current = nextCard
+    return "timekeeper"
+  }
+
+  const handleEdit = (id: string) => {
+    editingId = id
+    page = pageForType(editingItem!.raceType)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this race?')) {
+      items = items.filter((i) => i.id !== id)
+      await store.save(items)
     }
+  }
+
+  const handleSave = async (updated: Race) => {
+    items = items.map((i) => (i.id === updated.id ? updated : i))
+    await store.save(items)
+  }
+
+  const handleBack = () => {
+    page = 'home'
+    editingId = null
   }
 </script>
 
@@ -20,37 +82,31 @@
   <link rel="apple-touch-icon" href={logo} />
   <meta name="apple-mobile-web-app-title" content="Enduro Time Card" />
 </svelte:head>
-<main>
-  <center>
-    <h1>Enduro Time Card</h1>
-    <p>Verify Enduro score cards using this tool. Races are busy places and with
-      hundreds of riders, hard working club members sometimes make mistakes.
-      <a href="https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/">
-      <b>Install</b></a> onto your phone before the race!
-    </p>
-    <button class:selected={current === "timeKeeper"} onclick={() => switchTimeCard("timeKeeper")}>Time Keeper</button>
-    <button class:selected={current === "sprint"} onclick={() => switchTimeCard("sprint")}>Sprint</button>
-    {#if current === "sprint"}
-      <div id="sprint">
-        <h2>Sprint Enduro</h2>
-        <SprintEnduro />
-      </div>
-    {:else}
-        <div id="timeKeeper">
-          <h2>Time Keeper Enduro</h2>
-          <p>Tap Flags to change check type.</p>
-          <TimeKeeperEnduro />
-      </div>
-    {/if}
-  </center>
-</main>
+
+{#if !isLoading}
+  {#if page === "home"}
+    <HomePage
+      items={items}
+      onAdd={handleAdd}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+    />
+  {:else if page === "sprint" && editingItem?.raceType === "Sprint"}
+      <SprintPage item={editingItem} onSave={handleSave} onBack={handleBack} />
+  {:else if page === "timekeeper" && editingItem?.raceType === "Time Keeper"}
+      <TimeKeeperPage bind:race={editingItem} onSave={handleSave} onBack={handleBack} />
+  {/if}
+
+  {#if showTypePicker}
+    <RacePickerModal onSelect={handleSelectType} onClose={() => { showTypePicker = false }} />
+  {/if}
+{:else}
+  <p>Loading database...</p>
+{/if}
 
 <style>
   :global(body) {
     -webkit-user-select: none;
     user-select: none;
-  }
-  .selected {
-		font-weight: bold;
   }
 </style>

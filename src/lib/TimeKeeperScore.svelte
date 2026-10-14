@@ -1,38 +1,24 @@
 <script lang="ts">
+    import { type ScoreCard } from "../timekeeper.scoring.base"
+
     let {
-        totalChecks,
-        points,
-        emergencyPoints,
-        disqualified
-    } = $props();
+        scoreCard
+    }: { scoreCard: ScoreCard } = $props();
 </script>
 
-<table style="margin:auto">
+<table class="table [&_tr>*]:border-none table-xs md:table-md" style="margin:auto">
     <tbody>
         <tr>
-            <th>Checks</th>
-            <th>Points</th>
-            <th>Emergency<br />Points</th>
-            <th>Disqualified</th>
+            <th class="text-center">Checks</th>
+            <th class="text-center">Points</th>
+            <th class="text-center">Emergency<br />Points</th>
+            <th class="text-center">Disqualified</th>
         </tr>
         <tr>
-            <td><input id="checks" disabled value={totalChecks} size="2" style="width:2em"/></td>
-            <td><input id="points" disabled value={points} size="4" style="width:3em"/></td>
-            <td><input id="emergencyPoints" disabled value={emergencyPoints} size="4" style="width:3em"/></td>
-            <td><input id="disqualified" disabled value={disqualified} size="4" style="width:3em"/></td>
+            <td><input class="input input-bordered input-xs md:input-md text-center" id="checks" disabled value={scoreCard.nonDroppedChecks} size="2" /></td>
+            <td><input class="input input-bordered input-xs md:input-md text-center" id="points" disabled value={scoreCard.points} size="4" /></td>
+            <td><input class="input input-bordered input-xs md:input-md text-center" id="emergencyPoints" disabled value={scoreCard.emergencyPoints} size="4" /></td>
+            <td><input class="input input-bordered input-xs md:input-md text-center" id="disqualified" disabled value={scoreCard.disqualified ? "YES" : "NO"} size="4" /></td>
         </tr>
     </tbody>
 </table>
-
-<style>
-    th {
-        vertical-align: bottom;
-        font-size: 12px;
-    }
-    input {
-        text-align: center;
-    }
-    td {
-        text-align: center;
-    }
-</style>

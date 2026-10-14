@@ -67,39 +67,28 @@
     let droppedRow = $derived(check.drop ? 'dropped' : '')
 </script>
 
-<tr class={droppedRow} data-cy="tkr">
-    <td>
-        <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-        <img src={flagSrc} alt="Flag" onclick={toggleType}/>
+<tr class={droppedRow} data-cy="tkr">   
+    <td class="p-1 align-middle">
+        <div class="h-7 w-7 md:h-12 md:w-12 flex items-center justify-center mx-auto">
+        <!-- h-12 matches standard DaisyUI input height, h-full scales it -->
+            <img src={flagSrc} alt="Flag" onclick={toggleType} class="h-full w-full object-contain block"/>
+        </div>
     </td>
-    <td>{index + 1}</td>
-    <td>
-        <NumberInput bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class={droppedRow} size="3" style="width:2em" />
+    <td class="p-1 text-center">{index + 1}</td>
+    <td class="p-1">
+        <NumberInput strValue={check.minute.toString()} bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="3" />
     </td>
-    <td>
+    <td class="p-1">
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class={droppedRow} size="2" style="width:2em" />
+            <NumberInput strValue={check.seconds.toString()} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="2" />
         {/if}
     </td>
-    <td><input class="{droppedRow}" disabled value={points} size="3" style="width:2em" /></td>
-    <td><input class="{droppedRow}" disabled value={emergencyPoints} size="4" style="width:3em" /></td>
-    <td><input type="checkbox" bind:checked={check.drop}></td>
+    <td class="p-1"><input class="{droppedRow} input w-full min-w-0 px-1!" disabled value={points} size="3" /></td>
+    <td class="p-1"><input class="{droppedRow} input w-full min-w-0 px-1!" disabled value={emergencyPoints} size="4" /></td>
+    <td class="p-1"><input class="checkbox" type="checkbox" bind:checked={check.drop}></td>
 </tr>
 
 <style>
-    img {
-        vertical-align: middle;
-    }
-    td {
-        border: 1px solid grey;
-        border-collapse: collapse;
-        text-align: center;
-    }
-
-    img {
-        width: 30px;
-        height: 30px;
-    }
     input {
         text-align: center;
     }
