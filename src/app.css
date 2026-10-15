@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
-@plugin "daisyui";            
 
 
 @theme inline {
@@ -60,6 +59,17 @@ body {
 
 h1, h2, h3, .font-display {
   font-family: 'Nunito', sans-serif;
+}
+
+.field {
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  border-radius: var(--radius);
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+}
+.field:focus {
+  outline: 1px solid var(--ring);
 }
 
 .mono {

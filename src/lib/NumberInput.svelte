@@ -43,7 +43,7 @@
 
 <input
     class:error={!isValid()}
-    class="{className} input input-bordered input-xs md:input-md px-1!"
+    class="{className} field h-10"
     {style}
     {placeholder}
     {maxlength}

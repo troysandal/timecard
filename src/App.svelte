@@ -30,7 +30,7 @@
     showTypePicker = true
   }
 
-  const handleSelectType = (type: RaceType) => {
+  const handleSelectType = async (type: RaceType) => {
     const id = Math.random().toString(36).slice(2)
     const name = `Untitled ${type}`
     const createdAt = new Date()
@@ -41,6 +41,7 @@
         : { id, raceType: type, name, createdAt, timeCard: new EnduroSP() }
 
     items.push(newItem)
+    await store.save(items)
     editingId = newItem.id
     page = pageForType(newItem.raceType)
     showTypePicker = false
@@ -77,10 +78,7 @@
 </script>
 
 <svelte:head>
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <link rel="apple-touch-icon" href={logo} />
-  <meta name="apple-mobile-web-app-title" content="Enduro Time Card" />
 </svelte:head>
 
 {#if !isLoading}

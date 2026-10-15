@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
   const isCapacitor = mode === 'capacitor'
 
   return { 
+    build: {
+      sourcemap: true,
+    },
     plugins: [
       tailwindcss(),
       svelte(),

@@ -69,8 +69,8 @@
 
 <tr class={droppedRow} data-cy="tkr">   
     <td class="p-1 align-middle">
-        <div class="h-7 w-7 md:h-12 md:w-12 flex items-center justify-center mx-auto">
-        <!-- h-12 matches standard DaisyUI input height, h-full scales it -->
+        <div class="h-12 w-12 flex items-center justify-center mx-auto">
+        <!-- h-full scales the flag to fill this box -->
             <img src={flagSrc} alt="Flag" onclick={toggleType} class="h-full w-full object-contain block"/>
         </div>
     </td>
@@ -83,9 +83,13 @@
             <NumberInput strValue={check.seconds.toString()} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="2" />
         {/if}
     </td>
-    <td class="p-1"><input class="{droppedRow} input w-full min-w-0 px-1!" disabled value={points} size="3" /></td>
-    <td class="p-1"><input class="{droppedRow} input w-full min-w-0 px-1!" disabled value={emergencyPoints} size="4" /></td>
-    <td class="p-1"><input class="checkbox" type="checkbox" bind:checked={check.drop}></td>
+    <td class="p-1"><input class="{droppedRow} field h-8 w-full min-w-0" disabled value={points} size="3" /></td>
+    <td class="p-1"><input class="{droppedRow} field h-8 w-full min-w-0" disabled value={emergencyPoints} size="4" /></td>
+    <td class="p-1">
+        <div class="flex items-center justify-center">
+        <input class="size-5 accent-primary" type="checkbox" bind:checked={check.drop}>
+        </div>
+    </td>
 </tr>
 
 <style>

@@ -28,8 +28,7 @@
       Enduro Time Cards
     </h2>
     <p class="mb-8">
-      Verify your Enduro score cards using this tool. Races are busy places and with
-      hundreds of riders and sometimes a mistake is made.
+      Verify your Enduro score cards using this tool. Races are busy places and sometimes a mistake is made.
     </p>
     <button
       onclick={onAdd}

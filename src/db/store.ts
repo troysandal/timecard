@@ -17,13 +17,12 @@ class FileStore implements ScoreCardStore {
         directory: Directory.Data,
         encoding: Encoding.UTF8,
       });
-      if (typeof result.data === 'string') {
-        return JSON.parse(result.data as string);
-      }
+      const data = JSON.parse(result.data as string);
+      return data.races;
     } catch (error) {
       console.error('Error reading or parsing JSON file:', error);
     }
-    return null;
+    return [];
   }
 
   async save(db: ScoreCardDb): Promise<void> {
@@ -49,7 +48,7 @@ class LocalStorageStore implements ScoreCardStore {
         console.error('Failed to parse localStorage data:', e);
       }
     }
-    return null;
+    return [];
   }
 
   async save(db: ScoreCardDb): Promise<void> {

@@ -64,29 +64,27 @@
           Name
           <input
           class="w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
-          style="borderRadius: 'var(--radius)'"
           placeholder="Race Name"
           bind:value={race.name}
           />
         </label>
       </div>
-      <div class="flex items-end gap-4">
+      <div class="flex items-start gap-4">
         <div class="w-24">
           <label class="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
             Rider Minute
             <input
             maxlength="3"
             inputmode="numeric"
-            class="w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
-            style="borderRadius: 'var(--radius)'"
+            class="field block h-10 w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
             bind:value={race.timeCard.riderMinute}
             />
           </label>
         </div>
         <div class="flex-1">
-          <label class="select w-full">
-            <span class="label">Format</span>
-            <select id="score-format" data-cy="format-select" bind:value={race.timeCard.format}>
+          <label class="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
+            Format
+            <select class="field block h-10 w-full normal-case tracking-normal text-foreground" id="score-format" data-cy="format-select" bind:value={race.timeCard.format}>
                 {#each formatOptions as opt}
                 <option data-cy="format-option-{opt.value}" value={opt.value}>
                 {opt.label}
@@ -103,9 +101,9 @@
     <TimeKeeperEnduro bind:race={race} bind:scoreCard={scoreCard} />
   </section>
 
-  <section class="shrink-0 bg-card border-t-2 border-foreground/10 px-4 pt-4">
-    <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3 font-600">Summary</p>
+  <section class="safe-bottom shrink-0 bg-card border-t-2 border-foreground/10 px-4 pt-4">
+    <p class="hidden md:block text-xs text-muted-foreground uppercase tracking-wider mb-3 font-600">Summary</p>
     <TimeKeeperFooter scoreCard={scoreCard} />
-    <div style="height: 'env(safe-area-inset-bottom)', minHeight: '0.5rem'"></div>
+
   </section>
 </div>

@@ -38,7 +38,6 @@
     "@capacitor/filesystem": "^8.1.4",
     "@capacitor/ios": "^8.5.3",
     "@tailwindcss/vite": "^4.3.3",
-    "daisyui": "^5.7.39",
     "playwright": "^1.63.0",
     "tailwindcss": "^4.3.3"
   }
