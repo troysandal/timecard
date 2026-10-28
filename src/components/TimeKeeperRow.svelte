@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { CheckpointTypes } from '../timekeeper'
-    import type { CheckDatum } from './TimeKeeperUtil';
+    import { CheckpointTypes } from '../models/timekeeper'
+    import type { CheckDatum } from '../lib/TimeKeeperUtil';
     import NumberInput from './NumberInput.svelte';
     import start from '/src/assets/start.png'
     import known from '/src/assets/known.png'
     import secret from '/src/assets/secret.png'
     import emergency from '/src/assets/emergency.png'
-    import type { Score } from '../timekeeper.scoring';
+    import type { Score } from '../lib/scoring/timekeeper.scoring';
 
     interface Props {
         check: CheckDatum,

@@ -1,6 +1,6 @@
 import { expect } from "chai"
-import { TimeKeeperEnduro, Start, Secret, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/timekeeper'
-import { ScoreKeeper } from "../../src/timekeeper.scoring"
+import { TimeKeeperEnduro, Start, Secret, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/models/timekeeper'
+import { ScoreKeeper } from "../../src/lib/scoring/timekeeper.scoring"
 
 class BrandXEnduro extends TimeKeeperEnduro {
     constructor(riderMinute: number) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type RaceType } from '../common'
+    import { type RaceType } from '../models/common'
 
     interface Props {
       raceType: RaceType

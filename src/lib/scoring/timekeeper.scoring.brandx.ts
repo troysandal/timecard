@@ -8,7 +8,7 @@
  */
 
 
-import type { Checkpoint } from "./timekeeper"
+import type { Checkpoint } from "../../models/timekeeper"
 import { type ScoreContext, type Score, CheckScoring } from "./timekeeper.scoring.base"
 
 /**

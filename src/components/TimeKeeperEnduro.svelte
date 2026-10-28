@@ -1,11 +1,16 @@
 <script lang="ts">
-    import TimeKeeperRow from "./TimeKeeperRow.svelte";
-    import { type Checkpoint, CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../timekeeper";
-    import type { ScoreCard } from "./../timekeeper.scoring.base";
-    import { ScoreKeeper } from "../timekeeper.scoring"
-    import { type TimeKeeperRace } from "../common"
+    import TimeKeeperRow from "../components/TimeKeeperRow.svelte";
+    import { type Checkpoint, CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../models/timekeeper";
+    import type { ScoreCard } from "../lib/scoring/timekeeper.scoring.base";
+    import { ScoreKeeper } from "../lib/scoring/timekeeper.scoring"
+    import { type TimeKeeperRace } from "../models/common"
 
-    let {race = $bindable(), scoreCard: scoreCardProp = $bindable()} = $props<{ race: TimeKeeperRace; scoreCard: ScoreCard }>()
+    interface Props { 
+        race: TimeKeeperRace; 
+        scoreCard: ScoreCard;
+    }
+
+    let {race = $bindable(), scoreCard: scoreCardProp = $bindable()}: Props = $props()
 
     function initialChecks(MAX: number): Checkpoint[] {
         const checks: Checkpoint[] = []
@@ -39,6 +44,7 @@
     function createCheckpoint(checkDatum: Checkpoint) {
         switch (checkDatum.type) {
             case CheckpointTypes.Emergency:
+                // @todo - remove 
                 if (!isNaN(checkDatum.seconds)) {
                     return new Emergency(checkDatum.minute, checkDatum.seconds, checkDatum.drop)
                 }

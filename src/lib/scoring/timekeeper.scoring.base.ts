@@ -4,7 +4,7 @@
  * All common types, interfaces and classes for scoring time keepers.
  */
 
-import type { Checkpoint } from "./timekeeper"
+import type { Checkpoint } from "../../models/timekeeper"
 
 export type Score = {
     points: number

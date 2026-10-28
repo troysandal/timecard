@@ -9,8 +9,8 @@
  * - [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf)
  */
 
-import type { Checkpoint } from "./timekeeper"
-import { CheckpointTypes, TimeKeeperEnduro, ScoreFormat } from "./timekeeper"
+import type { Checkpoint } from "../../models/timekeeper"
+import { CheckpointTypes, TimeKeeperEnduro, ScoreFormat } from "../../models/timekeeper"
 import * as AMA from "./timekeeper.scoring.ama"
 import * as BrandX from "./timekeeper.scoring.brandx"
 import { type ScoreContext, CheckScoring, type ScoreCard } from "./timekeeper.scoring.base"

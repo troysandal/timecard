@@ -3,9 +3,9 @@
   import HomePage from "./pages/HomePage.svelte"
   import SprintPage from './pages/SprintPage.svelte';
   import TimeKeeperPage from './pages/TimeKeeperPage.svelte'
-  import RacePickerModal from './lib/RacePickerModal.svelte'
-  import type { Race, RaceType } from './common'
-  import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './common'
+  import RacePickerModal from './components/RacePickerModal.svelte'
+  import type { Race, RaceType } from './models/common'
+  import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/common'
   import { onMount } from 'svelte'
   import { store } from './db/store'
   
@@ -92,7 +92,7 @@
   {:else if page === "sprint" && editingItem?.raceType === "Sprint"}
       <SprintPage item={editingItem} onSave={handleSave} onBack={handleBack} />
   {:else if page === "timekeeper" && editingItem?.raceType === "Time Keeper"}
-      <TimeKeeperPage bind:race={editingItem} onSave={handleSave} onBack={handleBack} />
+      <TimeKeeperPage race={editingItem} onSave={handleSave} onBack={handleBack} />
   {/if}
 
   {#if showTypePicker}

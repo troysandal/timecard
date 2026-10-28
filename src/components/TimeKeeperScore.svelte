@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type ScoreCard } from "../timekeeper.scoring.base"
+    import { type ScoreCard } from "../lib/scoring/timekeeper.scoring.base"
 
     let {
         scoreCard

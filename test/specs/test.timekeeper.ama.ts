@@ -1,8 +1,8 @@
 /// <reference types="mocha" />
 
 import { expect } from "chai"
-import { TimeKeeperEnduro, Secret, Start, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/timekeeper'
-import { ScoreKeeper } from "../../src/timekeeper.scoring"
+import { TimeKeeperEnduro, Secret, Start, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/models/timekeeper'
+import { ScoreKeeper } from "../../src/lib/scoring/timekeeper.scoring"
 
 class TimeKeeperEnduroTest extends TimeKeeperEnduro {
     constructor(riderMinute: number) {

@@ -7,7 +7,7 @@
  * [AMA National Format](https://ecea.org/ecea/enduro-time-keeping/)
  */
 
-import type { Checkpoint } from "./timekeeper"
+import type { Checkpoint } from "../../models/timekeeper"
 import { CheckScoring, type ScoreContext, type Score } from "./timekeeper.scoring.base"
 
 /**

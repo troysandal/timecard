@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { SprintEnduro, SprintTest } from '../../src/sprint'
+import { SprintEnduro, SprintTest } from '../../src/models/sprint'
 
 describe('Sprint Enduro', () => {
     function createTest(ih: number, im: number, is: number, oh: number, om: number, os: number): SprintTest {

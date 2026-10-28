@@ -1,7 +1,7 @@
 <script lang="ts">
-  import SafeAreaTop from "../lib/SafeAreaTop.svelte";
-  import TypeBadge from "../lib/TypeBadge.svelte";
-  import { type Race } from "../common";
+  import SafeAreaTop from "../components/SafeAreaTop.svelte";
+  import TypeBadge from "../components/TypeBadge.svelte";
+  import { type Race } from "../models/common";
 
   interface Props {
     items: Race[];

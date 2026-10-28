@@ -17,19 +17,20 @@
   let dirtyClass = $derived(computeDirtyClass(isDirty))
 </script>
 
-<header class="flex-shrink-0 border-b border-border bg-card px-4 py-3 flex items-center justify-between gap-3">
+<header class="shrink-0 border-b border-border bg-card px-4 py-3 flex items-center justify-between gap-3">
   <button
     onclick={onBack}
-    class="flex-shrink-0 p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+    class="shrink-0 flex items-center gap-1.5 p-1.5 font-medium hover:text-foreground transition-colors bg-gray-200"
     aria-label="Go back"
   >
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
     </svg>
+    Back
   </button>
   <button
     onclick={onSave}
-    class="flex-shrink-0 flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 transition-all {dirtyClass}"
+    class="shrink-0 flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 transition-all {dirtyClass}"
     style="borderRadius: 'var(--radius)'"
   >
   {#if !isDirty}

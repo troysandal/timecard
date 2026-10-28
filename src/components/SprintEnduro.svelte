@@ -1,7 +1,7 @@
 <script lang="ts">
     import SprintTestRow from "./SprintTestRow.svelte"
-    import { SprintTest, SprintEnduro } from "../sprint"
-    import type { SprintCheckDatum } from "./SprintUtil"
+    import { SprintTest, SprintEnduro } from "../models/sprint"
+    import type { SprintCheckDatum } from "../lib/SprintUtil"
 
     function initialTests(): SprintCheckDatum[] {
         const tests: SprintCheckDatum[] = []

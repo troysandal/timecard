@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { SprintTest } from "../sprint"
+    import { SprintTest } from "../models/sprint"
     import SprintTime from './SprintTime.svelte'
-    import type { TimeData } from "../sprint"
+    import type { TimeData } from "../models/sprint"
 
     interface Props {
         index: number,

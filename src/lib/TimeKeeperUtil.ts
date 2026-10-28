@@ -1,4 +1,4 @@
-import { CheckpointTypes } from "../timekeeper";
+import { CheckpointTypes } from "../models/timekeeper";
 
 export interface CheckDatum {
   type: CheckpointTypes,

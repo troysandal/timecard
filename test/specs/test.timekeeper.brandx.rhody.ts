@@ -1,7 +1,7 @@
 import raceData from '../fixtures/2026-little-rhody-brandx.json' with { type: 'json' };
 import { expect } from "chai"
-import { TimeKeeperEnduro, Secret, Known, Emergency, ScoreFormat } from '../../src/timekeeper'
-import { ScoreKeeper } from '../../src/timekeeper.scoring';
+import { TimeKeeperEnduro, Secret, Known, Emergency, ScoreFormat } from '../../src/models/timekeeper'
+import { ScoreKeeper } from '../../src/lib/scoring/timekeeper.scoring';
 
 class BrandXEnduro extends TimeKeeperEnduro {
     constructor(riderMinute: number) {

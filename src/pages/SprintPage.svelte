@@ -1,8 +1,8 @@
 <script lang="ts">
-  import SafeAreaTop from "../lib/SafeAreaTop.svelte";
-  import EditHeader from "../lib/EditHeader.svelte";
-  import { type Race } from "../common"
-  import SprintEnduro from "../lib/SprintEnduro.svelte";
+  import SafeAreaTop from "../components/SafeAreaTop.svelte";
+  import EditHeader from "../components/EditHeader.svelte";
+  import SprintEnduro from "../components/SprintEnduro.svelte";
+  import { type Race } from "../models/common"
 
   type SprintRace = Extract<Race, { raceType: "Sprint" }>;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type ScoreCard } from "../timekeeper.scoring.base"
+  import { type ScoreCard } from "../lib/scoring/timekeeper.scoring.base"
     
   let { scoreCard } = $props<{ scoreCard: ScoreCard }>()
   const dq = $derived(scoreCard.disqualified ? "text-red-600" : "text-green-600")

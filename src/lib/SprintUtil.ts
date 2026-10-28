@@ -1,4 +1,4 @@
-import type {TimeData} from "../sprint"
+import type {TimeData} from "../models/sprint"
 
 export type SprintCheckDatum = {
     // Used as key to fix Svelte 5 issue where UI would not update when check deleted.
