@@ -9,6 +9,10 @@ export interface ScoreCardStore {
   save(db: ScoreCardDb): Promise<void>;
 }
 
+function restoreDates(races: ScoreCardDb): ScoreCardDb {
+  return races.map((race) => { race.createdAt = new Date(race.createdAt); return race; });
+}
+
 class FileStore implements ScoreCardStore {
   async load(): Promise<ScoreCardDb | null> {
     try {
@@ -18,7 +22,7 @@ class FileStore implements ScoreCardStore {
         encoding: Encoding.UTF8,
       });
       const data = JSON.parse(result.data as string);
-      return data.races;
+      return restoreDates(data.races);
     } catch (error) {
       console.error('Error reading or parsing JSON file:', error);
     }
@@ -43,7 +47,7 @@ class LocalStorageStore implements ScoreCardStore {
     if (savedData) {
       try {
         const dbData = JSON.parse(savedData);
-        return dbData.races;
+        return restoreDates(dbData.races);
       } catch (e) {
         console.error('Failed to parse localStorage data:', e);
       }
