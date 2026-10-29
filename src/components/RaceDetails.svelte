@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Race } from "../models/common";
+    import type { Race } from "../models/race";
     import { ScoreFormat } from "../models/timekeeper";
 
   interface Props {
@@ -26,7 +26,7 @@
           />
         </label>
       </div>
-      {#if race.raceType === "Time Keeper"}
+      {#if race.raceType === "time_keeper"}
       <div class="flex items-start gap-4">
         <div class="w-24">
           <label class="text-xs text-muted-foreground uppercase tracking-wider block mb-1">

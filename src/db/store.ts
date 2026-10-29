@@ -1,6 +1,6 @@
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
-import type { Race } from '../models/common';
+import type { Race } from '../models/race';
 
 type ScoreCardDb = Race[]
 

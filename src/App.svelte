@@ -4,8 +4,8 @@
   import SprintPage from './pages/SprintPage.svelte';
   import TimeKeeperPage from './pages/TimeKeeperPage.svelte'
   import RacePickerModal from './components/RacePickerModal.svelte'
-  import type { Race, RaceType } from './models/common'
-  import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/common'
+  import type { Race, RaceType } from './models/race'
+  import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/race'
   import { onMount } from 'svelte'
   import { store } from './db/store'
   

@@ -3,7 +3,7 @@
     import { type Checkpoint, CheckpointTypes, Emergency, Known, Secret, Start, TimeKeeperEnduro as Enduro } from "../models/timekeeper";
     import type { ScoreCard } from "../lib/scoring/timekeeper.scoring.base";
     import { ScoreKeeper } from "../lib/scoring/timekeeper.scoring"
-    import { type TimeKeeperRace } from "../models/common"
+    import { type TimeKeeperRace } from "../models/race"
 
     interface Props { 
         race: TimeKeeperRace; 

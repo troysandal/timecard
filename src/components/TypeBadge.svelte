@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type RaceType } from '../models/common'
+    import { type RaceType } from '../models/race'
 
     interface Props {
       raceType: RaceType
@@ -10,7 +10,7 @@
     }: Props = $props();
 
     function computeClass(raceType: RaceType): string {
-      if (raceType === "Sprint") {
+      if (raceType === "sprint") {
         return 'border-[#D4420A] text-[#D4420A] bg-[#D4420A]/5'
       }
       return 'border-[#0A6ED4] text-[#0A6ED4] bg-[#0A6ED4]/5'

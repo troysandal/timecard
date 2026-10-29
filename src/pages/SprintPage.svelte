@@ -2,7 +2,7 @@
   import SafeAreaTop from "../components/SafeAreaTop.svelte";
   import EditHeader from "../components/EditHeader.svelte";
   import SprintEnduro from "../components/SprintEnduro.svelte";
-  import type { Race, SprintRace } from "../models/common"
+  import type { Race, SprintRace } from "../models/race"
 
   interface Props {
     race: SprintRace;

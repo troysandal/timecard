@@ -2,7 +2,7 @@
   import SafeAreaTop from "../components/SafeAreaTop.svelte"
   import TimeKeeperFooter from "../components/TimeKeeperFooter.svelte"
   import EditHeader from "../components/EditHeader.svelte"
-  import { type Race, type TimeKeeperRace } from "../models/common"
+  import { type Race, type TimeKeeperRace } from "../models/race"
   import TimeKeeperEnduro from "../components/TimeKeeperEnduro.svelte"
   import { areEqual } from "../models/timekeeper"
   import { type ScoreCard } from "../lib/scoring/timekeeper.scoring.base"

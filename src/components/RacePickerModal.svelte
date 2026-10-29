@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type RaceType } from '../models/common'
+    import { type RaceType } from '../models/race'
 
     interface Props {
       onSelect: (t: RaceType) => void;
