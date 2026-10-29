@@ -17,7 +17,7 @@
     <p class="text-sm text-muted-foreground mb-5">Choose the item type to add.</p>
     <div class="flex flex-col gap-3">
       <button
-        onclick={() => onSelect('Time Keeper')}
+        onclick={() => onSelect('time_keeper')}
         class="w-full border border-border hover:border-[#D4420A] hover:bg-[#D4420A]/5 text-left px-4 py-3 transition-colors group"
         style="borderRadius: 'var(--radius)'"
       >
@@ -25,7 +25,7 @@
         <div class="text-xs text-muted-foreground mt-0.5">Track tasks and hours</div>
       </button>
       <button
-        onclick={() => onSelect('Sprint')}
+        onclick={() => onSelect('sprint')}
         class="w-full border border-border hover:border-[#0A6ED4] hover:bg-[#0A6ED4]/5 text-left px-4 py-3 transition-colors group"
         style="borderRadius: 'var(--radius)'"
       >

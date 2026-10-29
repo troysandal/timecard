@@ -36,7 +36,7 @@
     const createdAt = new Date()
 
     const newItem: Race =
-      type === 'Time Keeper'
+      type === 'time_keeper'
         ? { id, raceType: type, name, createdAt, timeCard: new EnduroTK(1) }
         : { id, raceType: type, name, createdAt, timeCard: new EnduroSP() }
 
@@ -48,7 +48,7 @@
   }
 
   const pageForType = (type: RaceType) => {
-    if (type === "Sprint") {
+    if (type === "sprint") {
       return "sprint"
     }
     return "timekeeper"
@@ -67,7 +67,7 @@
   }
 
   const handleSave = async (updated: Race) => {
-    items = items.map((i) => (i.id === updated.id ? updated : i))
+    items = items.map((item) => (item.id === updated.id ? updated : item))
     await store.save(items)
   }
 
@@ -89,9 +89,9 @@
       onEdit={handleEdit}
       onDelete={handleDelete}
     />
-  {:else if page === "sprint" && editingItem?.raceType === "Sprint"}
-      <SprintPage item={editingItem} onSave={handleSave} onBack={handleBack} />
-  {:else if page === "timekeeper" && editingItem?.raceType === "Time Keeper"}
+  {:else if page === "sprint" && editingItem?.raceType === "sprint"}
+      <SprintPage race={editingItem} onSave={handleSave} onBack={handleBack} />
+  {:else if page === "timekeeper" && editingItem?.raceType === "time_keeper"}
       <TimeKeeperPage race={editingItem} onSave={handleSave} onBack={handleBack} />
   {/if}
 

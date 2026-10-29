@@ -2,21 +2,19 @@
   import SafeAreaTop from "../components/SafeAreaTop.svelte";
   import EditHeader from "../components/EditHeader.svelte";
   import SprintEnduro from "../components/SprintEnduro.svelte";
-  import { type Race } from "../models/common"
-
-  type SprintRace = Extract<Race, { raceType: "Sprint" }>;
+  import type { Race, SprintRace } from "../models/common"
 
   interface Props {
-    item: SprintRace;
+    race: SprintRace;
     onSave: (updated: Race) => void;
     onBack: () => void;
   }
 
-  let { item, onSave, onBack }: Props = $props();
+  let { race, onSave, onBack }: Props = $props();
 
   // @todo - fix
   // svelte-ignore state_referenced_locally
-  let draft = $state(structuredClone(item))
+  let draft = $state(structuredClone(race))
 
   function handleSave() {
     onSave(draft)
