@@ -12,6 +12,16 @@
     { label: 'AMA National', value: ScoreFormat.AMA_National },
     { label: 'Brand X', value: ScoreFormat.NETRA_BrandX }
   ]
+
+  // @todo - this used to be passed as validator={validMinute} to a 
+  // NumberInput for race.timeCard.riderMinute - consider adding back?
+  // function validMinute(value: string) {
+  //     if (value === undefined || value === '') {
+  //         return false
+  //     }
+  //     const ivalue = parseInt(value)
+  //     return !isNaN(ivalue) && (ivalue >= 1)
+  // }
 </script>
 
 <section class="shrink-0 border-b border-border bg-card px-4 py-4">
