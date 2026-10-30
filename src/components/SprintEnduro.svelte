@@ -2,6 +2,13 @@
     import SprintTestRow from "./SprintTestRow.svelte"
     import { SprintTest, SprintEnduro } from "../models/sprint"
     import type { SprintCheckDatum } from "../lib/SprintUtil"
+    import type { SprintRace } from "../models/race"
+    
+    interface Props { 
+        race: SprintRace; 
+    }
+
+    let {race = $bindable()}: Props = $props()
 
     function initialTests(): SprintCheckDatum[] {
         const tests: SprintCheckDatum[] = []
@@ -16,6 +23,7 @@
         return tests
     }
 
+    // @todo - load from race.timeCard.tests
     let testData = $state(initialTests())
 
     function addTestData() {
@@ -60,6 +68,12 @@
     }
 
     let score = $derived(computeScore())
+
+    $effect(() => {
+        race.timeCard.tests = testData.map((testDatum) => {
+            return SprintTest.fromTimes(testDatum.enter, testDatum.exit)
+        }).filter((test): test is SprintTest => test !== null)
+    })
 </script>
 
 <table>

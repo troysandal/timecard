@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { type ScoreCard } from "../lib/scoring/timekeeper.scoring.base"
+  import { TimeKeeperViewModel } from "../viewModels/viewModels.svelte"
     
-  let { scoreCard }: { scoreCard: ScoreCard } = $props()
+  let { viewModel }: { viewModel: TimeKeeperViewModel } = $props()
+  let scoreCard = $derived(viewModel.score.scoreCard)
   const dq = $derived(scoreCard.disqualified ? "text-red-600" : "text-green-600")
 </script>
 

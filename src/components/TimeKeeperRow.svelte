@@ -71,6 +71,9 @@
     <td class="p-1 align-middle">
         <div class="h-12 w-12 flex items-center justify-center mx-auto">
         <!-- h-full scales the flag to fill this box -->
+            <!-- @todo - switch to a button -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <img src={flagSrc} alt="Flag" onclick={toggleType} class="h-full w-full object-contain block"/>
         </div>
     </td>

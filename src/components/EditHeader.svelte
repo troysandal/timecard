@@ -1,11 +1,13 @@
 <script lang="ts">
+  import { type AnyRaceViewModel } from "../viewModels/viewModels.svelte"
+
   interface Props {
     onSave: () => void;
     onBack: () => void;
-    isDirty: boolean;
+    viewModel: AnyRaceViewModel;
   }
 
-  let { onSave, onBack, isDirty }: Props = $props();
+  let { onSave, onBack, viewModel }: Props = $props();
 
   function computeDirtyClass(isDirty: boolean) {
     if (isDirty) {
@@ -13,7 +15,7 @@
     }
     return 'bg-green-600 text-white'
   }
-
+  const isDirty: boolean = $derived(viewModel.isDirty)
   let dirtyClass = $derived(computeDirtyClass(isDirty))
 </script>
 
