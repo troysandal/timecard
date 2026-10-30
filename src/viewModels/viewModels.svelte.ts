@@ -4,7 +4,7 @@
 import type { TimeKeeperRace, Race, RaceType, SprintRace } from '../models/race';
 import { type ScoreCard } from "../lib/scoring/timekeeper.scoring.base"
 import { ScoreKeeper } from '../lib/scoring/timekeeper.scoring';
-import { areEqual, CheckpointTypes, Secret, type Checkpoint } from "../models/timekeeper"
+import { areEqual, CheckpointTypes, type Checkpoint } from "../models/timekeeper"
 
 // Each score carries a `kind`, so the Score component can narrow it without casts.
 export type SprintScore = { kind: 'sprint'; points: number };
