@@ -33,6 +33,19 @@ describe('AMA Time Keeper Enduro', () => {
         expect(enduro.emergencyPoints).to.equal(0)
     })
 
+    it('Handles No Rider #', () => {
+        const enduro = new TimeKeeperEnduroTest(NaN)
+        enduro.checkpoints.push(new Secret(NaN))
+        enduro.checkpoints.push(new Secret(1))
+        const score = enduro.score
+        expect(score.points).to.equal(0)
+        expect(score.emergencyPoints).to.equal(0)
+        expect(score.disqualified).to.be.false
+        expect(score.nonDroppedChecks).to.equal(0)
+        expect(score.checkScores[0]?.invalid).to.be.true
+        expect(score.checkScores[1]?.invalid).to.be.true
+    })
+
     it('Detects invalid scores', () => {
         const enduro = new TimeKeeperEnduroTest(17)
         enduro.checkpoints.push(new Secret(NaN))

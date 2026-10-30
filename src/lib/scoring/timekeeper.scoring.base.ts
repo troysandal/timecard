@@ -51,7 +51,8 @@ export abstract class CheckScoring {
             invalid: false
         }
 
-        if (isNaN(this.check.minute) || isNaN(this.check.seconds)) {
+        if (isNaN(this.check.minute) || isNaN(this.check.seconds) ||
+            isNaN(context.currentMinute) || isNaN(context.startingMinute)) {
             score.invalid = true
         }
         else {
