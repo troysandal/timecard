@@ -10,7 +10,18 @@ export interface ScoreCardStore {
 }
 
 function restoreDates(races: ScoreCardDb): ScoreCardDb {
-  return races.map((race) => { race.createdAt = new Date(race.createdAt); return race; });
+  races.forEach((race) => { 
+    race.createdAt = new Date(race.createdAt); 
+
+    if (race.raceType === "sprint") {
+      race.timeCard.tests.forEach((test) => {
+        test.enter = new Date(test.enter);
+        test.exit = new Date(test.exit);
+      });
+    }
+  });
+
+  return races;
 }
 
 class FileStore implements ScoreCardStore {
