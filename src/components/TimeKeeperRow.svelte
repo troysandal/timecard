@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { CheckpointTypes } from '../models/timekeeper'
-    import type { CheckDatum } from '../lib/TimeKeeperUtil';
+    import { CheckpointTypes, type Checkpoint } from '../models/timekeeper'
     import NumberInput from './NumberInput.svelte';
     import start from '/src/assets/start.png'
     import known from '/src/assets/known.png'
@@ -9,7 +8,7 @@
     import type { Score } from '../lib/scoring/timekeeper.scoring';
 
     interface Props {
-        check: CheckDatum,
+        check: Checkpoint,
         index: number,
         score: Score | undefined,
         onEnter: (index: number) => void
@@ -30,7 +29,7 @@
         return score && !score.invalid ? score.emergencyPoints : ''
     }
 
-    function flagSource(checkDatum: CheckDatum) {
+    function flagSource(checkDatum: Checkpoint) {
         const FLAGS = {
             [CheckpointTypes.Start]: start,
             [CheckpointTypes.Known]: known,
