@@ -41,7 +41,7 @@
     {#if viewModel.kind === "time_keeper"}
       <TimeKeeperEnduro bind:viewModel={viewModel} />
     {:else if viewModel.kind === "sprint"}
-      <SprintEnduro bind:race={viewModel.race} />
+      <SprintEnduro bind:viewModel={viewModel} />
     {/if}
   </section>
 
