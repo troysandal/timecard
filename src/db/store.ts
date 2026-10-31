@@ -12,13 +12,6 @@ export interface ScoreCardStore {
 function restoreDates(races: ScoreCardDb): ScoreCardDb {
   races.forEach((race) => { 
     race.createdAt = new Date(race.createdAt); 
-
-    if (race.raceType === "sprint") {
-      race.timeCard.tests.forEach((test) => {
-        test.enter = new Date(test.enter);
-        test.exit = new Date(test.exit);
-      });
-    }
   });
 
   return races;

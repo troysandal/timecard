@@ -1,8 +1,8 @@
-function scoreString(delta: Date): string {
-    const hours = delta.getUTCHours().toString().padStart(2, '0')
-    const minutes = delta.getUTCMinutes().toString().padStart(2, '0')
-    const seconds = delta.getUTCSeconds().toString().padStart(2, '0')
-    return `${hours}:${minutes}:${seconds}`
+function scoreString(seconds: number): string {
+    const hours = Math.floor(seconds / 3600).toString().padStart(2, '0')
+    const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0')
+    const secs = (seconds % 60).toString().padStart(2, '0')
+    return `${hours}:${minutes}:${secs}`
 }
 
 export type TimeData = {
@@ -11,12 +11,16 @@ export type TimeData = {
     second: number
 }
 
-export function isValidTime(time: TimeData) {
-    return !isNaN(time.hour + time.minute + time.second)
+function timeDataToSeconds(timeData: TimeData): number {
+    return timeData.hour * 3600 + timeData.minute * 60 + timeData.second
 }
 
-function timeDataToDate(timeData: TimeData): Date | undefined {
-    if (!isValidTime(timeData)) {
+export function timeDelta(enterTime: TimeData, exitTime: TimeData): number {
+    return timeDataToSeconds(exitTime) - timeDataToSeconds(enterTime)
+}
+
+function validateTimeData(timeData: TimeData): TimeData | undefined {
+    if (isNaN(timeData.hour + timeData.minute + timeData.second)) {
         return undefined;
     }
 
@@ -30,16 +34,7 @@ function timeDataToDate(timeData: TimeData): Date | undefined {
         return undefined
     }
 
-    const date = new Date(`1970-01-01`)
-    date.setUTCHours(timeData.hour)
-    date.setUTCMinutes(timeData.minute)
-    date.setUTCSeconds(timeData.second)
-
-    if (isNaN(date.valueOf())) {
-        return undefined
-    }
-
-    return date
+    return Object.assign({}, timeData)
 }
 
 export class SprintEnduro {
@@ -54,43 +49,49 @@ export class SprintEnduro {
     }
 
     get scoreString(): string {
-        return scoreString(new Date(this.score * 1000))
+        return scoreString(this.score);
     }
 }
 
 export class SprintTest {
-    enter: Date = new Date()
-    exit: Date = new Date()
+    enter: TimeData = { hour: 0, minute: 0, second: 0 }
+    exit: TimeData = { hour: 0, minute: 0, second: 0 }
 
-    static fromTimes(enterTime: TimeData, exitTime: TimeData): SprintTest | undefined {
-        const enterDate = timeDataToDate(enterTime)
-        let exitDate = timeDataToDate(exitTime)
+    static fromTimes(enter: TimeData, exit: TimeData): SprintTest | undefined {
+        const enterTime = validateTimeData(enter)
+        const exitTime = validateTimeData(exit)
 
-        if (!enterDate || !exitDate) {
+        if (!enterTime || !exitTime) {
             return undefined
         }
 
-        if (exitDate < enterDate) {
-            const newExitTime = Object.assign({}, exitTime)
+        const result = new SprintTest()
+        result.enter = enterTime
+        result.exit = exitTime
+
+        // Noon Hour Adjust - if exit is earlier, assume exit is after 12pm,
+        // e.g. enter=12:30, exit=1:05 => adjust exit=13:05
+        // This could create a bad time (hour > 23)
+        if (timeDelta(enterTime, exitTime) < 0) {
+            let newExitTime: TimeData | undefined = Object.assign({}, exitTime)
             newExitTime.hour += 12
-            exitDate = timeDataToDate(newExitTime)
-            if (!exitDate || (exitDate < enterDate)) {
+            newExitTime = validateTimeData(newExitTime)
+            if (!newExitTime || (timeDelta(enterTime, newExitTime) < 0)) {
                 return undefined
             }
+            result.exit = newExitTime
         }
 
-        const result = new SprintTest()
-        result.enter = enterDate
-        result.exit = exitDate
         return result
     }
 
     get score(): number {
-        const delta = this.exit.valueOf() - this.enter.valueOf()
-        return delta / 1000
+        return timeDelta(this.enter, this.exit)
     }
 
+    // @todo - for now, convert to Dates, then add unit tests verifying time string
+    // @todo - then switch scoreString() to TimeData, make sure unit tests still work
     get scoreString(): string {
-        return scoreString(new Date(this.exit.valueOf() - this.enter.valueOf()))
+        return scoreString(this.score);
     }
 };
