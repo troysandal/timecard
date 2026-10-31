@@ -1,6 +1,6 @@
 {
   "name": "enduro_timecard",
-  "private": true,
+  "private": false,
   "version": "1.0.0",
   "author": "Troy Sandal",
   "license": "MIT License",
