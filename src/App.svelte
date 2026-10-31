@@ -1,8 +1,7 @@
 <script lang="ts">
   import logo from './assets/icon.png';
   import HomePage from "./pages/HomePage.svelte"
-  import SprintPage from './pages/SprintPage.svelte';
-  import TimeKeeperPage from './pages/TimeKeeperPage.svelte'
+  import EditPage from './pages/EditPage.svelte'
   import RacePickerModal from './components/RacePickerModal.svelte'
   import type { Race, RaceType } from './models/race'
   import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/race'
@@ -89,10 +88,8 @@
       onEdit={handleEdit}
       onDelete={handleDelete}
     />
-  {:else if page === "sprint" && editingItem?.raceType === "sprint"}
-      <SprintPage race={editingItem} onSave={handleSave} onBack={handleBack} />
-  {:else if page === "timekeeper" && editingItem?.raceType === "time_keeper"}
-      <TimeKeeperPage race={editingItem} onSave={handleSave} onBack={handleBack} />
+  {:else if (page === "sprint" || page === "timekeeper") && editingItem?.raceType }
+      <EditPage race={editingItem} onSave={handleSave} onBack={handleBack} />
   {/if}
 
   {#if showTypePicker}
