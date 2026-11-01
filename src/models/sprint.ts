@@ -89,8 +89,6 @@ export class SprintTest {
         return timeDelta(this.enter, this.exit)
     }
 
-    // @todo - for now, convert to Dates, then add unit tests verifying time string
-    // @todo - then switch scoreString() to TimeData, make sure unit tests still work
     get scoreString(): string {
         return scoreString(this.score);
     }
