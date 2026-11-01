@@ -76,9 +76,6 @@
                 </span>
                 <div class="flex items-center gap-2 mt-1">
                   <TypeBadge raceType={item.raceType} />
-                  <span class="text-xs text-muted-foreground truncate"
-                    >{item.raceType}</span
-                  >
                 </div>
               </div>
               <svg

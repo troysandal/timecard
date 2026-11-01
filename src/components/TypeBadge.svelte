@@ -17,11 +17,12 @@
     }
 
     let raceTypeClass = $derived(computeClass(raceType))
+    let raceTypeName = $derived(raceType === "sprint" ? 'Sprint' : 'Time Keeper')
 </script>
 
 <span
   class="mono text-[10px] font-medium px-1.5 py-0.5 uppercase tracking-widest border {raceTypeClass}"
   style="borderRadius: 'var(--radius)'"
 >
-  {raceType}
+  {raceTypeName}
 </span>
