@@ -43,6 +43,7 @@
             </tr>
         </thead>
         <tbody>
+        <!-- @todo dump index for item -->
             {#each viewModel.race.timeCard.checkpoints, index}
                 <TimeKeeperRow bind:check={viewModel.race.timeCard.checkpoints[index] as Checkpoint} score={scoreCard.checkScores[index]} index={index} onEnter={onEnter} />
             {/each} 
