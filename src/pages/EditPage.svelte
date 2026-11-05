@@ -5,6 +5,7 @@
   import TimeKeeperEnduro from "../components/TimeKeeperEnduro.svelte"
   import SprintEnduro from "../components/SprintEnduro.svelte"
   import TimeKeeperFooter from "../components/TimeKeeperFooter.svelte"
+  import SprintFooter from "../components/SprintFooter.svelte"
   import { type Race } from "../models/race"
   import { createViewModel } from "../viewModels/viewModels.svelte"
 
@@ -49,8 +50,8 @@
     <p class="hidden md:block text-xs text-muted-foreground uppercase tracking-wider mb-3 font-600">Summary</p>
     {#if viewModel.kind === "time_keeper"}
       <TimeKeeperFooter {viewModel} />
-    {:else }
-      <p class="text-sm text-muted-foreground">TBD Sprint Score board.</p>
+    {:else if viewModel.kind === "sprint"}
+      <SprintFooter {viewModel} />
     {/if}
   </section>
 </div>
