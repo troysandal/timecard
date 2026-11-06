@@ -15,18 +15,22 @@
   let page = $state<Page>("home")
   let showTypePicker = $state(false)
   let editingItem = $derived(items.find((i) => i.id === editingId))
-	let isLoading = $state(true);
+  let isLoading = $state(true);
 
 	onMount(async () => {
-		const dbRaces = await store.load()
-		if (dbRaces) {
-      items = dbRaces;
+		const db = await store.load()
+		if (db) {
+      items = (db as any).races as Race[];
 		}
 		isLoading = false;
 	});
 
   const handleAdd = () => {
     showTypePicker = true
+  }
+
+  const saveDB = async () => {
+    await store.save({schemaVersion: 1,races: items})
   }
 
   const handleSelectType = async (type: RaceType) => {
@@ -40,7 +44,7 @@
         : { id, raceType: type, name, createdAt, timeCard: new EnduroSP() }
 
     items.push(newItem)
-    await store.save(items)
+    await saveDB()
     editingId = newItem.id
     page = pageForType(newItem.raceType)
     showTypePicker = false
@@ -61,13 +65,13 @@
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this race?')) {
       items = items.filter((i) => i.id !== id)
-      await store.save(items)
+      await saveDB()
     }
   }
 
   const handleSave = async (updated: Race) => {
     items = items.map((item) => (item.id === updated.id ? updated : item))
-    await store.save(items)
+    await saveDB()
   }
 
   const handleBack = () => {
