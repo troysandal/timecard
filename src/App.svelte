@@ -35,7 +35,7 @@
 
   const handleSelectType = async (type: RaceType) => {
     const id = Math.random().toString(36).slice(2)
-    const name = `Untitled ${type}`
+    const name = `Untitled ${type === 'sprint' ? 'Sprint' : 'Time Keeper'}`
     const createdAt = new Date()
 
     const newItem: Race =
