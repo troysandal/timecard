@@ -15,11 +15,11 @@
   ]
 
   function validMinute(value: string) {
-      if (value.trim() === '') {
-          return false;
+      if (value === undefined || value.trim() === '') {
+          return false
       }
-      const minute = Number(value);
-      return Number.isInteger(minute) && minute >= 1;
+      const ivalue = parseInt(value)
+      return !isNaN(ivalue) && (ivalue >= 1)
   }
 
   function minuteString(minute: number) {
