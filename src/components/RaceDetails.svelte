@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Race } from "../models/race";
     import { ScoreFormat } from "../models/timekeeper";
+    import NumberInput from "./NumberInput.svelte";
 
   interface Props {
     race: Race;
@@ -13,15 +14,21 @@
     { label: 'Brand X', value: ScoreFormat.NETRA_BrandX }
   ]
 
-  // @todo - this used to be passed as validator={validMinute} to a 
-  // NumberInput for race.timeCard.riderMinute - consider adding back?
-  // function validMinute(value: string) {
-  //     if (value === undefined || value === '') {
-  //         return false
-  //     }
-  //     const ivalue = parseInt(value)
-  //     return !isNaN(ivalue) && (ivalue >= 1)
-  // }
+  function validMinute(value: string) {
+      if (value.trim() === '') {
+          return false;
+      }
+      const minute = Number(value);
+      return Number.isInteger(minute) && minute >= 1;
+  }
+
+  function minuteString(minute: number) {
+    return Number.isFinite(minute) ? String(minute) : '';
+  }
+  let riderMinuteText = $state(
+    race.raceType === "time_keeper" ? minuteString(race.timeCard.riderMinute) : ''
+  );
+    
 </script>
 
 <section class="shrink-0 border-b border-border bg-card px-4 py-4">
@@ -41,11 +48,12 @@
         <div class="w-24">
           <label class="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
             Rider Minute
-            <input
+            <NumberInput
             maxlength="3"
-            inputmode="numeric"
-            class="field block h-10 w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
+            class="block w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
+            bind:strValue={riderMinuteText}
             bind:value={race.timeCard.riderMinute}
+            validator={validMinute}
             />
           </label>
         </div>
