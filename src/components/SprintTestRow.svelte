@@ -52,16 +52,12 @@
             onEnter={onEnterAny} />
     </td>
     <td>
-        <input disabled value={score} class="score"/>
+        <input class="score field h-8 w-full min-w-0" disabled value={score} />
     </td>
 </tr>
 
 <style>
-    td {
-        border: 1px solid grey;
-        border-collapse: collapse;
-        padding: 2px;
-    }
+
     .score {
         width: 8ch;
         text-align: center;

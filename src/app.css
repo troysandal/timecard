@@ -65,7 +65,7 @@ h1, h2, h3, .font-display {
   border: 1px solid var(--border);
   background-color: var(--background);
   border-radius: var(--radius);
-  padding-inline: 0.75rem;
+  padding-inline: 0.5rem;
   font-size: 0.875rem;
 }
 .field:focus {
