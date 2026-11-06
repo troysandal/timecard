@@ -35,7 +35,7 @@
     </div>
     <button
       onclick={onClose}
-      class="mt-4 w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+      class="mt-4 w-full text-xs font-extrabold hover:text-foreground transition-colors py-1"
     >
       Cancel
     </button>
