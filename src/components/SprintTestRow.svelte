@@ -1,31 +1,24 @@
 <script lang="ts">
-    import { SprintTest } from "../models/sprint"
+    import type { SprintTestData } from "../models/race";
+    import { SprintTest } from "../models/sprint";
     import SprintTime from './SprintTime.svelte'
-    import type { TimeData } from "../models/sprint"
 
     interface Props {
         index: number,
-        testDatum: any,
-        deleteTest: (index: number) => void,
-        onEnter: (index: number) => void
+        test: SprintTestData,
+        testClass: SprintTest,
+        deleteTest: () => void,
+        onEnter: (test: SprintTestData) => void
     }
     
     let { 
-        index, 
-        testDatum = $bindable(),
+        index,
+        test = $bindable(),
+        testClass,
         deleteTest,
-        onEnter = (index: number) => {}
+        onEnter = (test: SprintTestData) => {}
     }: Props = $props();
 
-
-    function computeScore(testDatumEnter: TimeData, testDatumExit: TimeData) {
-        let result = "";
-        const test = SprintTest.fromTimes(testDatumEnter, testDatumExit);
-        if (test) {
-            result = test.scoreString;
-        }
-        return result;
-    }
 
     function initRow(row: HTMLElement) {
         row.focus() 
@@ -33,29 +26,29 @@
 
     function onEnterAny() {
         if (score !== "") {
-            onEnter(index);
+            onEnter(test);
         }
     }
 
-    let refHour = $state();
-    let score = $derived(computeScore(testDatum.enter, testDatum.exit));
+    let refHour:HTMLInputElement | undefined = $state();
+    let score = $derived(testClass.scoreAsTime);
 </script>
 
 <tr>
-    <td>{index + 1} <button onclick={() => {deleteTest(index)}}>&#x274C;</button></td>
+    <td>{index + 1} <button onclick={deleteTest}>&#x274C;</button></td>
     <td>
         <SprintTime 
             initRow={initRow}
             className="enterTime"
-            onSeconds={() => {(refHour as HTMLInputElement).focus()}}
-            bind:timeData={testDatum.enter}
+            onSeconds={() => {(refHour as HTMLInputElement)?.focus()}}
+            bind:timeData={test.enter}
             onEnter={onEnterAny} />
     </td>
     <td>
         <SprintTime
             className="exitTime"
             bind:refHour
-            bind:timeData={testDatum.exit}
+            bind:timeData={test.exit}
             onEnter={onEnterAny} />
     </td>
     <td>

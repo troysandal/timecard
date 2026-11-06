@@ -1,14 +1,23 @@
 <script lang="ts">
     import SprintNumberInput from './SprintNumberInput.svelte'
+    import type { SprintTestTimeData } from '../models/race';
 
+    interface Props {
+        timeData: SprintTestTimeData,
+        onSeconds?: () => void,
+        refHour?: HTMLInputElement,
+        initRow?: (row: HTMLElement) => void,
+        className?: string,
+        onEnter?: () => void
+    }
     let { 
         timeData = $bindable(),
         onSeconds = () => {}, 
         refHour = $bindable(), 
-        initRow = null,
+        initRow = (row: HTMLElement) => {},
         className,
         onEnter = () => {}
-    } = $props();
+    }: Props = $props();
     let refMinute: HTMLInputElement = $state() as HTMLInputElement;
     let refSecond: HTMLInputElement = $state() as HTMLInputElement;
   
@@ -18,7 +27,7 @@
         return (value: string | undefined) => {
             // Don't show errors for empty inputs, only invalid #s.
             if (value === undefined || value === '') {
-                return true;
+                return false;
             }
             const numValue: number = parseInt(value);
             return !isNaN(numValue) && (numValue >= min) && (numValue <= max);
@@ -34,10 +43,13 @@
             onNext();
         }
     }
-
-    let strHour: string = $state('');
-    let strMinute: string = $state('');
-    let strSecond: string = $state('');
+    function strValue(x: number): string {
+        return isNaN(x) ? '' : x.toString().padStart(2, '0');
+    }
+    // @todo - reason why NumberInput must be redone
+    let strHour: string = $state(strValue(timeData.hour));
+    let strMinute: string = $state(strValue(timeData.minute));
+    let strSecond: string = $state(strValue(timeData.second));
     
     $effect(() => { nextInput(timeData.hour,   strHour,   () => { refMinute.focus() }) });
     $effect(() => { nextInput(timeData.minute, strMinute, () => { refSecond.focus() }) });

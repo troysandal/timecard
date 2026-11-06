@@ -1,13 +1,12 @@
-/**
- * @todo - Implement isDirty
- */
-import type { TimeKeeperRace, Race, RaceType, SprintRace } from '../models/race';
+import { type TimeKeeperRace, type Race, type RaceType, type SprintRace, type SprintEnduroData, type SprintTestData, sprintsAreEqual } from '../models/race';
+import { SprintEnduro } from '../models/sprint';
 import { type ScoreCard } from "../lib/scoring/timekeeper.scoring.base"
 import { ScoreKeeper } from '../lib/scoring/timekeeper.scoring';
 import { areEqual, CheckpointTypes, type Checkpoint } from "../models/timekeeper"
+import { SprintTest, SprintTestTime, type TimeData } from '../models/sprint';
 
 // Each score carries a `kind`, so the Score component can narrow it without casts.
-export type SprintScore = { kind: 'sprint'; points: number };
+export type SprintScore = { kind: 'sprint'; score: TimeData };
 export type TimeKeeperScore = { kind: 'time_keeper'; scoreCard: ScoreCard };
 export type AnyScore = SprintScore | TimeKeeperScore;
 
@@ -22,11 +21,22 @@ export interface RaceViewModel<TRace extends Race, TScore extends AnyScore> {
   save(onSave: (race: TRace) => void): void;
 }
 
+function toSprint(data: SprintEnduroData): SprintEnduro {
+  const enduro = new SprintEnduro();
+  enduro.tests = data.tests.map((test) => {
+    return new SprintTest(
+      new SprintTestTime(test.enter.hour, test.enter.minute, test.enter.second),
+      new SprintTestTime(test.exit.hour, test.exit.minute, test.exit.second)
+    );
+  });
+  return enduro;
+}
 
 export class SprintViewModel implements RaceViewModel<SprintRace, SprintScore> {
   readonly kind = 'sprint'; // literal type: this is what makes AnyRaceViewModel narrowable
   race: SprintRace;
   raceLKG: SprintRace;
+  raceSprint: SprintEnduro = $derived.by(() => toSprint(this.race.timeCard))
 
   constructor(race: SprintRace) {
     this.race = $state($state.snapshot(race));
@@ -34,10 +44,43 @@ export class SprintViewModel implements RaceViewModel<SprintRace, SprintScore> {
   }
 
   get score(): SprintScore {
-    return {
+    const result: SprintScore =  {
       kind: 'sprint',
-      points: this.race.timeCard.score
+      score: this.raceSprint.scoreAsTimeData
     };
+    return result
+  }
+
+  initialTests(): SprintTestData[] {
+      const tests: SprintTestData[] = []
+      const MAX = 1
+      for (let i = 0 ; i < MAX ; i++) {
+          tests.push({
+              enter: {hour: NaN, minute: NaN, second: NaN},
+              exit: {hour: NaN, minute: NaN, second: NaN}
+          })
+      }
+      return tests
+  }
+
+  addTestData() {
+    this.race.timeCard.tests.push({
+        enter: {hour: NaN, minute: NaN, second: NaN},
+        exit: {hour: NaN, minute: NaN, second: NaN}
+    });
+  }
+
+  resetCard() {
+      if (window.confirm('Are you sure you want to reset the Sprint Enduro?')) {
+          this.race.timeCard.tests = this.initialTests()
+      }
+  }
+
+  deleteTest(item: SprintTestData) {
+      const index = this.race.timeCard.tests.findIndex((i) => i === item)
+      if (window.confirm(`You sure you want to delete test ${index + 1}?`)) {
+          this.race.timeCard.tests = this.race.timeCard.tests.filter((i) => i !== item)
+      }
   }
 
   save(onSave: (race: SprintRace) => void) {
@@ -46,11 +89,15 @@ export class SprintViewModel implements RaceViewModel<SprintRace, SprintScore> {
     this.raceLKG = saved
   }
 
-  // @todo - implement isDirty
   get isDirty(): boolean {
-    return true;
+    const l = $state.snapshot(this.race);
+    const r = $state.snapshot(this.raceLKG);
+
+    if (l.name !== r.name) return true;
+    return !sprintsAreEqual(l.timeCard, r.timeCard)
   }
 }
+
 
 export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKeeperScore> {
   readonly kind = 'time_keeper';
@@ -64,7 +111,8 @@ export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKe
 
   get score(): TimeKeeperScore {
     const checks = this.race.timeCard.checkpoints;
-    // @todo - won't scoreEnduro already give us this?
+    // @todo - won't ScoreKeeper.scoreEnduro already give us this? 
+    // almost - nonDropped doesn't include invalids
     let scoreCard = {
         points: 0,
         emergencyPoints: 0,
