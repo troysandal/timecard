@@ -6,7 +6,7 @@
   import type { Race, RaceType } from './models/race'
   import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/race'
   import { onMount } from 'svelte'
-  import { store } from './db/store'
+  import { store, wrapDB } from './db/store'
   
   type Page = "home" | "sprint" | "timekeeper"
 
@@ -30,7 +30,7 @@
   }
 
   const saveDB = async () => {
-    await store.save({schemaVersion: 1,races: items})
+    await store.save(wrapDB(items))
   }
 
   const handleSelectType = async (type: RaceType) => {
