@@ -11,7 +11,6 @@ function scoreString(seconds: number): string {
     return `${hours}:${minutes}:${secs}`
 }
 
-// @todo - hack, move to SprintTestTime, right?
 export interface TimeData {
     hour: number
     minute: number
@@ -33,14 +32,6 @@ export class SprintTestTime implements TimeData {
     get seconds(): number {
         return this.hour * 3600 + this.minute * 60 + this.second
     }
-}
-
-function timeDataToSeconds(timeData: TimeData): number {
-    return timeData.hour * 3600 + timeData.minute * 60 + timeData.second
-}
-
-export function timeDelta(enterTime: TimeData, exitTime: TimeData): number {
-    return timeDataToSeconds(exitTime) - timeDataToSeconds(enterTime)
 }
 
 function validateTimeData(timeData: TimeData): TimeData | undefined {

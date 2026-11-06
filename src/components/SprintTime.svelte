@@ -46,7 +46,6 @@
     function strValue(x: number): string {
         return isNaN(x) ? '' : x.toString().padStart(2, '0');
     }
-    // @todo - reason why NumberInput must be redone
     let strHour: string = $state(strValue(timeData.hour));
     let strMinute: string = $state(strValue(timeData.minute));
     let strSecond: string = $state(strValue(timeData.second));

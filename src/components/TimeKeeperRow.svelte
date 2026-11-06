@@ -75,7 +75,6 @@
     function strValue(x: number): string {
         return isNaN(x) ? '' : x.toString()
     }
-    // @todo - reason why NumberInput must be redone
     let strMinute: string = $state(strValue(check.minute));
     let strSeconds: string = $state(strValue(check.seconds));
 </script>
