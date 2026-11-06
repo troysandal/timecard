@@ -14,7 +14,7 @@
         onEnter: (index: number) => void
     }
     let { check = $bindable(), index, score, onEnter = () => {} }: Props = $props();
-    
+
     function onEnterMinOrSec() {
         if (score && !score.invalid) {
             onEnter(index);
@@ -64,6 +64,12 @@
     let emergencyPoints = $derived(computeEmergencyPoints(score))
     let flagSrc = $derived(flagSource(check))
     let droppedRow = $derived(check.drop ? 'dropped' : '')
+    function strValue(x: number): string {
+        return isNaN(x) ? '' : x.toString()
+    }
+    // @todo - reason why NumberInput must be redone
+    let strMinute: string = $state(strValue(check.minute));
+    let strSeconds: string = $state(strValue(check.seconds));
 </script>
 
 <tr class={droppedRow} data-cy="tkr">   
@@ -78,11 +84,11 @@
     </td>
     <td class="p-1 text-center">{index + 1}</td>
     <td class="p-1">
-        <NumberInput strValue={check.minute.toString()} bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="3" />
+        <NumberInput bind:strValue={strMinute} bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="3" />
     </td>
     <td class="p-1">
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput strValue={check.seconds.toString()} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="2" />
+            <NumberInput bind:strValue={strSeconds} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="2" />
         {/if}
     </td>
     <td class="p-1"><input class="{droppedRow} field h-8 w-full min-w-0" disabled value={points} size="3" /></td>
