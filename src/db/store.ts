@@ -1,6 +1,7 @@
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
 import type { Race, SprintEnduroData, TimeKeeperEnduro } from '../models/race';
+import { CheckpointTypes } from '../models/timekeeper';
 
 type ScoreCardDb = Object
 
@@ -83,14 +84,30 @@ export function reviveTimeKeeperEnduroData(timekeeper: TimeKeeperEnduro) {
   });
 }
 
-const CURRENT_SCHEMA_VERSION = 1;
-type Migration = (data: Object) => Object;
+const CURRENT_SCHEMA_VERSION = 2;
+type Migration = (data: any) => Object;
 
 const migrations: Record<number, Migration> = {
-  1: (d) => {
-    // convert your changed field from its old shape to the new one
-    return d;
-  },
+  // Migrate v1 -> v2
+  1: (db: any) => {
+    // 2026-10-06 - timekeeper.ts:CheckpointTypes number -> string
+    if (db && db.races && Array.isArray(db.races)) {
+      const CHECKPOINT_REMAP = [
+        CheckpointTypes.Start,
+        CheckpointTypes.Known,
+        CheckpointTypes.Secret,
+        CheckpointTypes.Emergency
+      ]
+      db.races.forEach((race: any) => { 
+        if (race.raceType === 'time_keeper' && race.timeCard && Array.isArray(race.timeCard.checkpoints)) {
+          race.timeCard.checkpoints.forEach((checkpoint: any) => {
+            checkpoint.type = CHECKPOINT_REMAP[checkpoint.type];
+          })
+        }
+      });
+    }
+    return db;
+  }
 };
 
 export function reviveDB(db: any): ScoreCardDb {
@@ -104,6 +121,8 @@ export function reviveDB(db: any): ScoreCardDb {
       db = migration(db);
     }
   }
+
+  db.schemaVersion = CURRENT_SCHEMA_VERSION;
 
   // Revive races (Dates, NaN)
   if (db && db.races && Array.isArray(db.races)) {

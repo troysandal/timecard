@@ -3,17 +3,19 @@
  * 
  * Contains the data structures to represent a time keeping enduro race.  Races
  * contain a collection of checkpoint times from which a score is computed.
+ * 
+ * WARNING - These classes are used to store data in the database.  If you change
+ * the structure you need to add migration.
  */
 
 
 /******************************* Checkpoints *******************************/
 
-// @todo - switch to strings
 export enum CheckpointTypes {
-    Start,
-    Known,
-    Secret,
-    Emergency
+    Start = "start",
+    Known = "known",
+    Secret = "secret",
+    Emergency = "emergency"
 }
 
 export interface Checkpoint {
