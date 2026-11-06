@@ -1,6 +1,7 @@
+// Capacitor Utilites - Safe to use in PWA, Native, and Browser contexts
+
 import { Capacitor } from '@capacitor/core';
 
-// Capacitor Utilites - @todo - move to platform.ts
 
 Capacitor.isNativePlatform();   // true inside the iOS/Android app, false in a browser
 Capacitor.getPlatform();        // 'web' | 'ios' | 'android'
