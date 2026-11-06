@@ -6,7 +6,6 @@
     interface Props {
         index: number,
         test: SprintTestData,
-        testClass: SprintTest,
         deleteTest: () => void,
         onEnter: (test: SprintTestData) => void
     }
@@ -14,7 +13,6 @@
     let { 
         index,
         test = $bindable(),
-        testClass,
         deleteTest,
         onEnter = (test: SprintTestData) => {}
     }: Props = $props();
@@ -31,7 +29,8 @@
     }
 
     let refHour:HTMLInputElement | undefined = $state();
-    let score = $derived(testClass.scoreAsTime);
+    let testClass = $derived(SprintTest.fromTimes(test.enter, test.exit));
+    let score = $derived(testClass ? testClass.scoreAsTime : '');
 </script>
 
 <tr>

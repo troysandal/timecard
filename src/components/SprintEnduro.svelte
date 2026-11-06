@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             {#each viewModel.race.timeCard.tests as test, index (test)}
-                <SprintTestRow {index} bind:test={viewModel.race.timeCard.tests[index]!} testClass={viewModel.raceSprint.tests[index]!} deleteTest={() => viewModel.deleteTest(test)} onEnter={onEnter} />
+                <SprintTestRow {index} bind:test={viewModel.race.timeCard.tests[index]!} deleteTest={() => viewModel.deleteTest(test)} onEnter={onEnter} />
             {/each}
         </tbody>
     </table>
