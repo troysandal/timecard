@@ -72,24 +72,13 @@ export class ScoreKeeper {
 
         // Compute Overall Totals
         const validChecks = checkScores.filter((check) => !check.dropped && !check.invalid)
-        const points = validChecks
-            .map((check) => check.points)
-            .reduce((prev, points) => (prev + points), 0)
-        const emergencyPoints = validChecks
-            .map((check) => check.emergencyPoints)
-            .reduce((prev, cur) => (prev + cur), 0)
-        const disqualified = validChecks    
-            .some((check => check.disqualified))
-        const nonDroppedChecks = checkScores
-            .map((check) => (check.invalid || check.dropped) ? 0 : 1)
-            .reduce((prev: number, cur: number) => (prev + cur), 0)
         
         return {
-            points,
-            emergencyPoints,
-            disqualified,
+            points:           validChecks.reduce((p, c) => (p + c.points), 0),
+            emergencyPoints:  validChecks.reduce((p, c) => (p + c.emergencyPoints), 0),
+            disqualified:     validChecks.some((c) => c.disqualified),
             checkScores,
-            nonDroppedChecks
+            nonDroppedChecks: checkScores.reduce((p, c) => (p + ((c.invalid || c.dropped) ? 0 : 1)), 0)
         }
     }
 }
