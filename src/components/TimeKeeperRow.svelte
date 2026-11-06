@@ -40,7 +40,15 @@
     }
 
     function toggleType() {
-        check.type = (check.type + 1) % 4
+        // Order we cycle through check types    
+        const flagOrder = [
+            CheckpointTypes.Start, 
+            CheckpointTypes.Known, 
+            CheckpointTypes.Secret, 
+            CheckpointTypes.Emergency
+        ];
+        let currentIndex = flagOrder.indexOf(check.type);
+        check.type = flagOrder[(currentIndex + 1) % flagOrder.length]!;
     }
 
     function initRow(row: HTMLElement) {
