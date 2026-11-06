@@ -51,7 +51,7 @@
       >
         <p class="text-muted-foreground text-sm">No items yet.</p>
         <p class="text-xs text-muted-foreground mt-1">
-          Click <span class="font-medium">Add Item</span> to get started.
+          Click <span class="font-medium">Add Time Card</span> to get started.
         </p>
       </div>
     {:else}
@@ -61,7 +61,7 @@
             class="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors group"
           >
             <button
-              class="flex-1 text-left flex items-center gap-3"
+              class="flex-1 min-w-0 text-left flex items-center gap-3"
               onclick={() => onEdit(item.id)}
             >
               <div class="min-w-0 flex-1">
