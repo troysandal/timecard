@@ -56,13 +56,13 @@
     }
 
     function validMinute(value: any) {
-        if (value === undefined || value === null || value === '') {
+        if (value === undefined || value === null || value.trim() === '') {
             return false
         }
-        return true
+        return !isNaN(parseInt(value))
     }
     function validSeconds(value: any) {
-        if (value === undefined || value === '') {
+        if (value === undefined || value === null || value.trim() === '') {
             return false
         }
         return !isNaN(parseInt(value)) && (value >= 0) && (value <= 59)
