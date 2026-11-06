@@ -86,14 +86,17 @@ export class TimeKeeperEnduro {
 }
 
 export function areEqual(l: TimeKeeperEnduro, r: TimeKeeperEnduro): boolean {
-    function checkEqual(c1: Checkpoint, c2: Checkpoint): boolean {
+    function equalNumber(a: number, b: number): boolean {
+        return (isNaN(a) && isNaN(b)) || (a === b)
+    }
+    function equalCheckpoint(c1: Checkpoint, c2: Checkpoint): boolean {
         return c1.type === c2.type &&
-               c1.minute === c2.minute &&
-               c1.seconds === c2.seconds &&
+               equalNumber(c1.minute, c2.minute) &&
+               equalNumber(c1.seconds, c2.seconds) &&
                c1.drop === c2.drop
     }
-    return l.riderMinute === r.riderMinute &&
+    return equalNumber(l.riderMinute, r.riderMinute) &&
            l.format === r.format &&
            l.checkpoints.length === r.checkpoints.length &&
-           l.checkpoints.every((c, i) => checkEqual(c, r.checkpoints[i]!))
+           l.checkpoints.every((c, i) => equalCheckpoint(c, r.checkpoints[i]!))
 }
