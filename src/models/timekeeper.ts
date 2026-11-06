@@ -8,6 +8,7 @@
 
 /******************************* Checkpoints *******************************/
 
+// @todo - switch to strings
 export enum CheckpointTypes {
     Start,
     Known,
