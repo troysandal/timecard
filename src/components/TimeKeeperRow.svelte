@@ -30,7 +30,7 @@
     }
 
     function flagSource(checkDatum: Checkpoint) {
-        const FLAGS = {
+        const FLAGS: Record<CheckpointTypes, string> = {
             [CheckpointTypes.Start]: start,
             [CheckpointTypes.Known]: known,
             [CheckpointTypes.Secret]: secret,
