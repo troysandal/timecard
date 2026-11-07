@@ -45,7 +45,6 @@ describe('Sprint Enduro', () => {
                 new SprintTestTime(NaN, NaN, NaN)
             )
             expect(nanTest.score).to.be.NaN
-            // @todo - this ok?
             expect(scoreString(nanTest.score)).to.equal('NaN:NaN:NaN')
         })
     })
