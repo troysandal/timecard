@@ -81,7 +81,6 @@ export class TimeKeeperEnduro {
     format: ScoreFormat = ScoreFormat.AMA_National
 
     constructor(riderMinute: number, format: ScoreFormat = ScoreFormat.AMA_National) {
-        console.assert(riderMinute >= 1)
         this.riderMinute = riderMinute
         this.format = format
     }
