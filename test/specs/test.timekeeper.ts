@@ -1,6 +1,4 @@
-/// <reference types="mocha" />
-
-import { expect } from "chai"
+import { describe, expect, it } from 'vitest'
 import { areEqual, TimeKeeperEnduro, Secret, Start, Known, Emergency, ScoreFormat } from '../../src/models/timekeeper'
 
 describe('Time Keeper Enduro Equality Tests', () => {

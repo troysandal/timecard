@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, expect, it } from 'vitest'
 import { SprintEnduro, SprintTest, SprintTestTime } from '../../src/models/sprint'
 import { scoreString } from '../../src/lib/SprintUtil'
 

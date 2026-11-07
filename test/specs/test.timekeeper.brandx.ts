@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, expect, it } from 'vitest'
 import { TimeKeeperEnduro, Start, Secret, Known, Emergency, CheckpointTypes, ScoreFormat } from '../../src/models/timekeeper'
 import { ScoreKeeper } from "../../src/lib/scoring/timekeeper.scoring"
 

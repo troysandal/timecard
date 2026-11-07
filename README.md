@@ -10,7 +10,7 @@ For Time Keeping Enduros, the app only supports the [AMA National](https://ecea.
 - Add to the Apple and Google Stores
 
 ## Development
-This is a single page HTML PWA app that uses Svelte with basic CSS, build system is Vite.  All code is written in Typescript.  Unit tests use Mocha+Chai and E2E tests use Cypress. Everything was built with Node 24. Very simple.
+This is a single page HTML PWA app that uses Svelte with basic CSS, build system is Vite.  All code is written in Typescript.  Unit tests use Vitest and E2E tests use Cypress. Everything was built with Node 24. Very simple.
 
 Here are the basics you'll need to work on it.
 

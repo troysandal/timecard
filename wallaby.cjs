@@ -16,6 +16,6 @@ module.exports = function (wallaby) {
         type: 'node',
         runner: 'node'
       },
-      testFramework: 'mocha'
+      testFramework: 'vitest'
     };
   };

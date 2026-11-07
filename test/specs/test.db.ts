@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, expect, it } from 'vitest'
 import { unwrapDB } from '../../src/db/database'
 
 describe('Database', () => {

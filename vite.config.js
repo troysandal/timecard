@@ -42,6 +42,12 @@ export default defineConfig(({ mode }) => {
     ].filter(Boolean),
     define: {
       __IS_CAPACITOR__: JSON.stringify(mode === 'capacitor')
-    }
+    },
+    test: {
+      globals: true,
+      environment: 'node',
+      include: ['test/**/test.*.ts'],
+      
+    },
   }
 })

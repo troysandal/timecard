@@ -1,5 +1,5 @@
 import raceData from '../fixtures/2026-little-rhody-brandx.json' with { type: 'json' };
-import { expect } from "chai"
+import { describe, expect, it } from 'vitest'
 import { TimeKeeperEnduro, Secret, Known, Emergency, ScoreFormat } from '../../src/models/timekeeper'
 import { ScoreKeeper } from '../../src/lib/scoring/timekeeper.scoring';
 
