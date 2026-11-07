@@ -4,8 +4,8 @@ import { TimeKeeperEnduro } from "./timekeeper"
 /**
  * POJOS representing Sprint enduros - parallel to the classes in sprint.ts
  * We persist these objects to the DB, ModelView uses them for editing.
- * We don't do this for Time Keepers and maybe should.  TK classes are 
- * already POJOS but doing so would be symetric.
+ * We don't do this for Time Keepers and maybe should but TK classes are 
+ * already POJOS.  Yet doing so would be symetric.
  */
 export type SprintTestTimeData = {
   hour: number;
