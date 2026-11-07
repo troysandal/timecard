@@ -115,7 +115,7 @@ export class SprintEnduro {
         const score = this.score
         // @todo - this is inconsistent 00:00:00 is not a valid score for NaN
         if (isNaN(score)) {
-            return { hour: 0, minute: 0, second: 0 }
+            return { hour: NaN, minute: NaN, second: NaN }
         }
         const hour = Math.floor(score / 3600)
         const minute = Math.floor((score % 3600) / 60)
