@@ -104,6 +104,10 @@ export class SprintEnduro {
      * any test has an invalid score.
      */
     get score(): number {
+        if (this.tests.length === 0) {
+            return NaN
+        }
+
         let result = 0
         for (let test of this.tests) {
             result += test.score

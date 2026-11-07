@@ -15,6 +15,18 @@
             viewModel.addTestData()
         }
     }
+
+    function onReset() {
+        if (window.confirm('Are you sure you want to reset the Sprint Enduro?')) {
+            viewModel.resetCard()
+        }
+    }
+    
+    function onDeleteTest(test: SprintTestData, index: number) {
+      if (window.confirm(`You sure you want to delete test ${index + 1}?`)) {
+          viewModel.deleteTest(test)
+      }
+    }
 </script>
 <div class="flex flex-col h-full">
   <div class="overflow-x-auto flex-1 overflow-y-auto">
@@ -29,7 +41,7 @@
         </thead>
         <tbody>
             {#each viewModel.race.timeCard.tests as test, index (test)}
-                <SprintTestRow {index} bind:test={viewModel.race.timeCard.tests[index]!} deleteTest={() => viewModel.deleteTest(test)} onEnter={onEnter} />
+                <SprintTestRow {index} bind:test={viewModel.race.timeCard.tests[index]!} deleteTest={() => onDeleteTest(test, index)} onEnter={onEnter} />
             {/each}
         </tbody>
     </table>
@@ -43,7 +55,7 @@
       Add Test
     </button>
     <button
-      onclick={() => viewModel.resetCard()}
+      onclick={onReset}
       class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
              text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
     >

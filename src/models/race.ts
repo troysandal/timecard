@@ -1,4 +1,4 @@
-import { SprintEnduro } from "./sprint"
+import { SprintEnduro, SprintTest, SprintTestTime } from "./sprint"
 import { TimeKeeperEnduro } from "./timekeeper"
 
 /**
@@ -19,6 +19,18 @@ export type SprintTestData = {
 export type SprintEnduroData = {
   tests: SprintTestData[];
 };
+
+
+export function toSprint(data: SprintEnduroData): SprintEnduro {
+  const enduro = new SprintEnduro();
+  enduro.tests = data.tests.map((test) => {
+    return new SprintTest(
+      new SprintTestTime(test.enter.hour, test.enter.minute, test.enter.second),
+      new SprintTestTime(test.exit.hour, test.exit.minute, test.exit.second)
+    );
+  });
+  return enduro;
+}
 
 export function sprintsAreEqual(a: SprintEnduroData, b: SprintEnduroData): boolean {
   if (a.tests.length !== b.tests.length) {

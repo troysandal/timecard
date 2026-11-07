@@ -52,8 +52,8 @@ describe('Sprint Enduro', () => {
     describe('Test Calculations', () => {
         it('hanldes empty time cards', () => {
             const enduro: SprintEnduro = new SprintEnduro()
-            expect(enduro.score).to.equal(0)
-            expect(scoreString(enduro.score)).to.equal('00:00:00')
+            expect(enduro.score).toBeNaN()
+            expect(scoreString(enduro.score)).to.equal('NaN:NaN:NaN')
         })
 
         it('detects bad hours', () => {
