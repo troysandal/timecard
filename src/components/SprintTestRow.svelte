@@ -2,6 +2,7 @@
     import type { SprintTestData } from "../models/race";
     import { SprintTest } from "../models/sprint";
     import SprintTime from './SprintTime.svelte'
+    import { scoreString } from '../lib/SprintUtil'
 
     interface Props {
         index: number,
@@ -30,7 +31,7 @@
 
     let refHour:HTMLInputElement | undefined = $state();
     let testClass = $derived(SprintTest.fromTimes(test.enter, test.exit));
-    let score = $derived(testClass ? testClass.scoreAsTime : '');
+    let score = $derived(testClass && !isNaN(testClass.score) ? scoreString(testClass.score) : '');
 </script>
 
 <tr>

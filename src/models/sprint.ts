@@ -1,16 +1,5 @@
 // Sprint Enduro Data Model and Scoring
 
-// @todo - move out - this belongs in the view.  Globally hh:mm:ss is how ISO says to 
-// do this but in the UK it's hh.mm.ss, France HHhMMmSSs, US militiary hhmmss.
-// Our UI might want to do something funky even
-
-function scoreString(seconds: number): string {
-    const hours = Math.floor(seconds / 3600).toString().padStart(2, '0')
-    const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0')
-    const secs = (seconds % 60).toString().padStart(2, '0')
-    return `${hours}:${minutes}:${secs}`
-}
-
 export interface TimeData {
     hour: number
     minute: number
@@ -70,17 +59,6 @@ export class SprintTest {
       return this.exit.seconds - this.enter.seconds;
     }
 
-    /**
-     * @return total score as a formatted time string hh:mm:ss, empty string if score is NaN.
-     */
-    get scoreAsTime(): string {
-        const score = this.score
-        if (isNaN(score)) {
-            return ''
-        }
-        return scoreString(score)
-    }
-    
     static fromTimes(enter: TimeData, exit: TimeData): SprintTest | undefined {
         const enterTime = validateTimeData(enter)
         const exitTime = validateTimeData(exit)
@@ -133,20 +111,9 @@ export class SprintEnduro {
         return result
     }
 
-    /**
-     * @return total score as a formatted time string hh:mm:ss,
-     * empty string if score is NaN.
-     */
-    get scoreAsTime(): string {
-        const score = this.score
-        if (isNaN(score)) {
-            return ''
-        }
-        return scoreString(score)
-    }
-
     get scoreAsTimeData(): TimeData {
         const score = this.score
+        // @todo - this is inconsistent 00:00:00 is not a valid score for NaN
         if (isNaN(score)) {
             return { hour: 0, minute: 0, second: 0 }
         }
