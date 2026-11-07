@@ -6,7 +6,7 @@
   import type { Race, RaceType } from './models/race'
   import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/race'
   import { onMount } from 'svelte'
-  import { store, wrapDB } from './db/store'
+  import { loadDB, saveDB } from './db/database'
   
   type Page = "home" | "sprint" | "timekeeper"
 
@@ -18,7 +18,7 @@
   let isLoading = $state(true);
 
 	onMount(async () => {
-		const db = await store.load()
+		const db = await loadDB()
 		if (db) {
       items = (db as any).races as Race[];
 		}
@@ -29,8 +29,8 @@
     showTypePicker = true
   }
 
-  const saveDB = async () => {
-    await store.save(wrapDB(items))
+  const save = async () => {
+    await saveDB({races: items})
   }
 
   const handleSelectType = async (type: RaceType) => {
@@ -44,7 +44,7 @@
         : { id, raceType: type, name, createdAt, timeCard: new EnduroSP() }
 
     items.push(newItem)
-    await saveDB()
+    await save()
     editingId = newItem.id
     page = pageForType(newItem.raceType)
     showTypePicker = false
@@ -65,13 +65,13 @@
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this race?')) {
       items = items.filter((i) => i.id !== id)
-      await saveDB()
+      await save()
     }
   }
 
   const handleSave = async (updated: Race) => {
     items = items.map((item) => (item.id === updated.id ? updated : item))
-    await saveDB()
+    await save()
   }
 
   const handleBack = () => {
