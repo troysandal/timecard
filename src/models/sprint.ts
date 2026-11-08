@@ -117,7 +117,6 @@ export class SprintEnduro {
 
     get scoreAsTimeData(): TimeData {
         const score = this.score
-        // @todo - this is inconsistent 00:00:00 is not a valid score for NaN
         if (isNaN(score)) {
             return { hour: NaN, minute: NaN, second: NaN }
         }

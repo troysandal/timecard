@@ -16,15 +16,9 @@ abstract class CheckScoringAMA extends CheckScoring {
     }
 
     disqualified(context: ScoreContext): boolean {
-        // @todo - AMA National hour out at 60:59 (61)
-        // This is hard, e.g. if on minute 1 at key time of 9:00 what does
-        // the club write to indicate DQ?
-        // Clock time - >= 10:02 (looks like an emergency)
-        // DQ ?
         const tooEarly = (context.startingMinute - this.check.minute) > 15
         const tooLate = (this.check.minute - context.startingMinute) > 60
         return tooEarly || tooLate
-        // return false
     }
 }
 /**
