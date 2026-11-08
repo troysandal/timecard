@@ -58,10 +58,8 @@ export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKe
   }
 
   resetCard() {
-    if (window.confirm('Are you sure you want to reset the time card?')) {
-        this.race.timeCard.riderMinute = 1
-        this.race.timeCard.checkpoints = this.initialChecks(5)
-    }
+    // this.race.timeCard.riderMinute = 1
+    this.race.timeCard.checkpoints = this.initialChecks(1)
   }
 
   save(onSave: (race: TimeKeeperRace) => void) {

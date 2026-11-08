@@ -14,6 +14,12 @@
             viewModel.addCheck();
         }
     }
+
+    function onReset() {
+      if (window.confirm('Are you sure you want to reset the time card?')) {
+        viewModel.resetCard()
+      }
+    }
     
     let scoreCard = $derived(viewModel.score.scoreCard)
 </script>
@@ -44,7 +50,7 @@
         </thead>
         <tbody>
         <!-- @todo dump index for item -->
-            {#each viewModel.race.timeCard.checkpoints, index}
+            {#each viewModel.race.timeCard.checkpoints as check, index (check)}
                 <TimeKeeperRow bind:check={viewModel.race.timeCard.checkpoints[index] as Checkpoint} score={scoreCard.checkScores[index]} index={index} onEnter={onEnter} />
             {/each} 
         </tbody>
@@ -59,7 +65,7 @@
       Add Check
     </button>
     <button
-      onclick={() => viewModel.resetCard()}
+      onclick={onReset}
       class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
              text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
     >
