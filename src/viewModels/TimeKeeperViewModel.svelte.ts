@@ -55,6 +55,11 @@ export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKe
       seconds: 30,
       drop: false
     }
+    return this.race.timeCard.checkpoints[this.race.timeCard.checkpoints.length - 1] 
+  }
+
+  deleteCheck(check: Checkpoint) {
+    this.race.timeCard.checkpoints = this.race.timeCard.checkpoints.filter((c) => c !== check)
   }
 
   resetCard() {
@@ -63,9 +68,8 @@ export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKe
   }
 
   save(onSave: (race: TimeKeeperRace) => void) {
-    const saved = $state.snapshot(this.race)
-    onSave(saved)
-    this.raceLKG = saved
+    this.raceLKG = $state.snapshot(this.race)
+    onSave($state.snapshot(this.race))
   }
 
   get isDirty(): boolean {

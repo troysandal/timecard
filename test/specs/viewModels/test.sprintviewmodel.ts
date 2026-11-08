@@ -203,5 +203,14 @@ describe("SprintViewModel", () => {
       viewModel.race.name = 'Renamed'
       expect(viewModel.isDirty).toBe(true)
     })
+
+    it('is not affected by the caller mutating the saved copy', () => {
+      const viewModel = makeOneTestViewModel()
+      let saved: SprintRace | undefined
+      viewModel.save((race) => { saved = race })
+      saved!.name = 'Mutated by caller'
+      saved!.timeCard.tests[0]!.exit.minute = 9
+      expect(viewModel.isDirty).toBe(false)
+    })
   })
 })

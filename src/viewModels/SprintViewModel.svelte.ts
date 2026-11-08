@@ -49,9 +49,8 @@ export class SprintViewModel implements RaceViewModel<SprintRace, SprintScore> {
   }
 
   save(onSave: (race: SprintRace) => void) {
-    const saved = $state.snapshot(this.race)
-    onSave(saved)
-    this.raceLKG = saved
+    this.raceLKG = $state.snapshot(this.race)
+    onSave($state.snapshot(this.race))
   }
 
   get isDirty(): boolean {
