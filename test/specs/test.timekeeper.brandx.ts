@@ -128,6 +128,14 @@ describe('BrandX Time Keeper Enduros', async () => {
             expect(enduro.emergencyPoints).to.equal(0)
             expect(enduro.score.checkScores[1]?.points).to.equal(0)
         })
+
+        it('Never disqualifies', () => {
+            const enduro: BrandXEnduro = new BrandXEnduro(17)
+            enduro.checkpoints = [ new Start(11) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Start(78) ]
+            expect(enduro.disqualified).to.be.false
+        })
     
         it('Computes Early Points', () => {
             const enduro: BrandXEnduro = new BrandXEnduro(17)
@@ -171,6 +179,21 @@ describe('BrandX Time Keeper Enduros', async () => {
             expect(enduro.emergencyPoints).to.equal(0)
         })
 
+        it("B.4 - Can enter between start and current minute", () => {
+            const enduro: BrandXEnduro = new BrandXEnduro(3)
+
+            // Start with a penalty of 7 points
+            enduro.checkpoints.push(new Secret(10))
+
+            // Come in right on last minute
+            enduro.checkpoints.push(new Known(10))
+            expect(enduro.score.points).to.equal(7)
+
+            // Come in at Starting Time
+            enduro.checkpoints.push(new Known(3))
+            expect(enduro.score.points).to.equal(7)
+        })
+
         it('Computes Late Points @ 1pt/min', () => {
             const enduro: BrandXEnduro = new BrandXEnduro(17)
             enduro.checkpoints = [
@@ -191,21 +214,39 @@ describe('BrandX Time Keeper Enduros', async () => {
             expect(enduro.emergencyPoints).to.equal(0)
         })
 
-        it ('Can disqualify if > 5 minutes early', () => {
+        it("Penalize if before start minute", () => {
+            const enduro: BrandXEnduro = new BrandXEnduro(9)
+            enduro.checkpoints.push(new Secret(10))
+            expect(enduro.score.points).to.equal(1)
+
+            // Come in early - before start minute
+            enduro.checkpoints.push(new Known(8))
+            expect(enduro.score.points).to.equal(1 + 7)
+        })
+
+        it("Penalize if after last minute (like a secret)", () => {
+            const enduro: BrandXEnduro = new BrandXEnduro(9)
+            enduro.checkpoints.push(new Secret(10))
+            expect(enduro.score.points).to.equal(1)
+
+            enduro.checkpoints.push(new Known(11))
+            expect(enduro.score.points).to.equal(1 + 1)
+        })
+
+        it ('Does NOT disqualify when early by more than 5 minutes', () => {
             const enduro: BrandXEnduro = new BrandXEnduro(30)
-            enduro.checkpoints = [ new Known(25) ]
-            expect(enduro.points).to.equal(22)
-            expect(enduro.disqualified).to.be.false
-            expect(enduro.emergencyPoints).to.equal(0)
-
             enduro.checkpoints = [ new Known(24) ]
-            expect(enduro.points).to.equal(27)
             expect(enduro.disqualified).to.be.false
-            expect(enduro.emergencyPoints).to.equal(0)
+        })
 
-            enduro.checkpoints = [ new Known(20) ]
-            expect(enduro.points).to.equal(47)
+        it('Rule VII A.7 - DQ at > 1 hour late from starting minute', () => {
+            // First checkpoint changes the current minute to verify that the 
+            // starting minute is used and not current.
+            const enduro: BrandXEnduro = new BrandXEnduro(30)
+            enduro.checkpoints = [ new Secret(40), new Known(90) ]
             expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Secret(40), new Known(91) ]
+            expect(enduro.disqualified).to.be.true
         })
 
         it('Does not count when dropped', () => {
@@ -268,17 +309,26 @@ describe('BrandX Time Keeper Enduros', async () => {
             expect(enduro.emergencyPoints).to.equal(0)
         })
 
-        it('Rule B.2 - DQ at > 5 min early', () => {
-            const enduro: BrandXEnduro = new BrandXEnduro(17)
-            enduro.checkpoints = [
-                new Secret(11)
-            ]
-            expect(enduro.points).to.equal(27)
-            expect(enduro.disqualified).to.be.true
-
-            enduro.checkpoints = [ new Secret(12) ]
-            expect(enduro.points).to.equal(22)
+        it('Rule VII B.2 - DQ at > 5 min early', () => {
+            // First checkpoint moves us back to test that current minute
+            // is used instead of starting.
+            const enduro: BrandXEnduro = new BrandXEnduro(30)
+            enduro.checkpoints = [ new Secret(25), new Secret(24) ]
             expect(enduro.disqualified).to.be.false
+
+            enduro.checkpoints = [ new Secret(25), new Secret(19) ]
+            expect(enduro.disqualified).to.be.true
+        })
+
+        it('Rule VII A.7 - DQ at > 1 hour late from starting minute', () => {
+            // First checkpoint changes the current minute to verify that the 
+            // starting minute is used and not current.
+            const enduro: BrandXEnduro = new BrandXEnduro(30)
+            enduro.checkpoints = [ new Secret(40), new Secret(90) ]
+            expect(enduro.disqualified).to.be.false
+
+            enduro.checkpoints = [ new Secret(40), new Secret(91) ]
+            expect(enduro.disqualified).to.be.true
         })
     })
 
@@ -349,12 +399,28 @@ describe('BrandX Time Keeper Enduros', async () => {
             ]
             expect(enduro.points).to.equal(7)
             expect(enduro.emergencyPoints).to.equal(140)
-
-            enduro.checkpoints = [ new Emergency(11, 30) ]
-            expect(enduro.disqualified).to.be.true
-
-            enduro.checkpoints = [ new Emergency(12, 30) ]
+        })
+        
+        it('Rule VII B.2 - DQ at > 5 min early', () => {
+            // First checkpoint moves us back to test that current minute
+            // is used instead of starting.
+            const enduro: BrandXEnduro = new BrandXEnduro(30)
+            enduro.checkpoints = [ new Secret(25), new Emergency(24, 0) ]
             expect(enduro.disqualified).to.be.false
+
+            enduro.checkpoints = [ new Secret(25), new Emergency(19, 0) ]
+            expect(enduro.disqualified).to.be.true
+        })
+
+        it('Rule VII A.7 - DQ at > 1 hour late from starting minute', () => {
+            // First checkpoint changes the current minute to verify that the 
+            // starting minute is used and not current.
+            const enduro: BrandXEnduro = new BrandXEnduro(30)
+            enduro.checkpoints = [ new Emergency(40, 0), new Emergency(90, 0) ]
+            expect(enduro.disqualified).to.be.false
+
+            enduro.checkpoints = [ new Emergency(40, 0), new Emergency(91, 0) ]
+            expect(enduro.disqualified).to.be.true
         })
 
         it('Does not count when dropped', () => {
@@ -368,42 +434,6 @@ describe('BrandX Time Keeper Enduros', async () => {
             enduro.checkpoints[0]!.drop = true
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(0)
-        })
-    })
-
-    describe('Knowns (Merge)', () => {
-        it("Can enter between start and current minute", () => {
-            const enduro: BrandXEnduro = new BrandXEnduro(3)
-
-            // Start with a penalty of 7 points
-            enduro.checkpoints.push(new Secret(10))
-
-            // Come in right on last minute
-            enduro.checkpoints.push(new Known(10))
-            expect(enduro.score.points).to.equal(7)
-
-            // Come in at Starting Time
-            enduro.checkpoints.push(new Known(3))
-            expect(enduro.score.points).to.equal(7)
-        })
-
-        it("Penalize if before start minute", () => {
-            const enduro: BrandXEnduro = new BrandXEnduro(9)
-            enduro.checkpoints.push(new Secret(10))
-            expect(enduro.score.points).to.equal(1)
-
-            // Come in early - before start minute
-            enduro.checkpoints.push(new Known(8))
-            expect(enduro.score.points).to.equal(1 + 7)
-        })
-
-        it("Penalize if after last minute (like a secret)", () => {
-            const enduro: BrandXEnduro = new BrandXEnduro(9)
-            enduro.checkpoints.push(new Secret(10))
-            expect(enduro.score.points).to.equal(1)
-
-            enduro.checkpoints.push(new Known(11))
-            expect(enduro.score.points).to.equal(1 + 1)
         })
     })
 })

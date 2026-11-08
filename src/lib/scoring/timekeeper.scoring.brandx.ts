@@ -20,6 +20,9 @@ import { type ScoreContext, type Score, CheckScoring } from "./timekeeper.scorin
  * awarded for being late.  Riders leave a start control on the minute 
  * corresponding to their number.
  * 
+ * NETRA Rule VI.A.5
+ * Start Control – Start Controls will not be used
+ * 
  * NETRA Rule A.2
  * Scoring at the Start. A rider shall be penalized one point for every minute
  * late in departing from Starting Control (Known Control).
@@ -69,6 +72,14 @@ export class StartScoring extends CheckScoring {
  * penalized one emergency point for each second early or late at an Emergency
  * Check when a tie must be broken. Emergency points shall be figured from the
  * 30 second mark of his due minute.
+ * 
+ * NETRA Rule B.2 - Early Arrival Suspension
+ * A rider is suspended for being more than five minutes early at a Secret or
+ * Emergency Check, based on his Riding Number at the previous check. (See also 
+ * item 4 below, Scoring at Checks with Resets). Riders removed from competition
+ * under this rule shall be credited with the mileage to the last timed check
+ * prior to the check that he/she arrived at more than 5 minutes early, and shall
+ * be eligible for awards on that basis.
  */
 export class SecretScoring extends CheckScoring {
     constructor(check: Checkpoint) {
@@ -101,7 +112,8 @@ export class SecretScoring extends CheckScoring {
     }
 
     disqualified(context: ScoreContext): boolean {
-        return (context.currentMinute - this.check.minute) > 5
+        return ((context.currentMinute - this.check.minute) > 5) ||
+            ((this.check.minute - context.startingMinute) > 60)
     }
 }
 
@@ -123,7 +135,7 @@ export class SecretScoring extends CheckScoring {
  * “line”. At Known Controls used as a check “out” of a section, the rider’s card
  * is marked with the time taken the moment the rider’s front wheel crosses the
  * line of scoring.
-*/
+ */
 export class KnownScoring extends CheckScoring {
     constructor(check: Checkpoint) {
         super(check)
@@ -134,7 +146,7 @@ export class KnownScoring extends CheckScoring {
             points: this.points(context.currentMinute, context.startingMinute),
             emergencyPoints: 0,
             dropped: this.check.drop,
-            disqualified: false,
+            disqualified: this.disqualified(context),
             invalid: false
         }
     }
@@ -148,6 +160,10 @@ export class KnownScoring extends CheckScoring {
             score = 5 * (riderMinute - this.check.minute) - 3
         }
         return score
+    }
+
+    disqualified(context: ScoreContext): boolean {
+        return (this.check.minute - context.startingMinute) > 60
     }
 }
 
@@ -177,6 +193,14 @@ export class KnownScoring extends CheckScoring {
  * penalized one emergency point for each second early or late at an Emergency
  * Check when a tie must be broken. Emergency points shall be figured from the
  * 30 second mark of his due minute.
+ * 
+ * NETRA Rule B.2 - Early Arrival Suspension
+ * A rider is suspended for being more than five minutes early at a Secret or
+ * Emergency Check, based on his Riding Number at the previous check. (See also 
+ * item 4 below, Scoring at Checks with Resets). Riders removed from competition
+ * under this rule shall be credited with the mileage to the last timed check
+ * prior to the check that he/she arrived at more than 5 minutes early, and shall
+ * be eligible for awards on that basis.
  */
 export class EmergencyScoring extends SecretScoring {
     constructor(check: Checkpoint) {
