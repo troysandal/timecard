@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { untrack } from "svelte";
+
     let {
         placeholder = "",
         value = $bindable(),
@@ -32,12 +34,24 @@
         return isChrome ? "numeric" : undefined;
     }
 
+    // Lots of complication in this component to ensure that NaN works
+    // for value.  The first effect keeps value in sync with strValue,
+    // the second keeps the string strValue in sync with value.
+    // Another reason to revisit rewriting this component.
+
     $effect(() => {
         if (isValid()) {
             value = parseInt(strValue);
         } else {
             value = NaN;
         }
+    });
+
+    $effect(() => {
+        const v = value;
+        const parsed = untrack(() => isValid() ? parseInt(strValue) : NaN);
+        if (Object.is(v, parsed)) return;      // text already represents v, so do nothing
+        strValue = Number.isFinite(v) ? String(v) : '';   // external change, so overwrite the text
     });
 </script>
 
