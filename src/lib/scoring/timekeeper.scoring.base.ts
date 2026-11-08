@@ -33,7 +33,7 @@ export interface ScoreContext {
     currentMinute: number
 }
 
-
+// Shared by all formats - do not mix in format-specific scoring
 export abstract class CheckScoring {
     check: Checkpoint
 

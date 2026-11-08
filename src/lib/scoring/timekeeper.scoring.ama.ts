@@ -10,6 +10,23 @@
 import type { Checkpoint } from "../../models/timekeeper"
 import { CheckScoring, type ScoreContext, type Score } from "./timekeeper.scoring.base"
 
+abstract class CheckScoringAMA extends CheckScoring {
+    constructor(check: Checkpoint) {
+        super(check)
+    }
+
+    disqualified(context: ScoreContext): boolean {
+        // @todo - AMA National hour out at 60:59 (61)
+        // This is hard, e.g. if on minute 1 at key time of 9:00 what does
+        // the club write to indicate DQ?
+        // Clock time - >= 10:02 (looks like an emergency)
+        // DQ ?
+        const tooEarly = (context.startingMinute - this.check.minute) > 15
+        const tooLate = (this.check.minute - context.startingMinute) > 60
+        return tooEarly || tooLate
+        // return false
+    }
+}
 /**
  * Start Control 
  * 
@@ -19,7 +36,7 @@ import { CheckScoring, type ScoreContext, type Score } from "./timekeeper.scorin
  * awarded for being late.  Riders leave a start control on the minute 
  * corresponding to their number.
 */
-export class StartScoring extends CheckScoring {
+export class StartScoring extends CheckScoringAMA {
     constructor(check: Checkpoint) {
         super(check)
     }
@@ -43,15 +60,6 @@ export class StartScoring extends CheckScoring {
         } 
         return score
     }
-
-    disqualified(context: ScoreContext): boolean {
-        // @todo - AMA National hour out at 60:59 (61)
-        // This is hard, e.g. if on minute 1 at key time of 9:00 what does
-        // the club write to indicate DQ?
-        // Clock time - >= 10:02 (looks like an emergency)
-        // DQ ?
-        return false
-    }
 }
 
 /**
@@ -61,7 +69,7 @@ export class StartScoring extends CheckScoring {
  * white flag with the letters ST in black.  Riders are penalized for being 
  * early (2pts 1st minute, 5pts/min after) or late (1pt/min).
 */
-export class SecretScoring extends CheckScoring {
+export class SecretScoring extends CheckScoringAMA {
     constructor(check: Checkpoint) {
         super(check)
     }
@@ -71,7 +79,7 @@ export class SecretScoring extends CheckScoring {
             points: this.points(context.startingMinute),
             emergencyPoints: this.emergencyPoints(context.startingMinute),
             dropped: this.check.drop,
-            disqualified: false,
+            disqualified: this.disqualified(context),
             invalid: false
         }
     }
@@ -103,10 +111,6 @@ export class SecretScoring extends CheckScoring {
 export class KnownScoring extends StartScoring {
     constructor(check: Checkpoint) {
         super(check)
-    }
-
-    disqualified(context: ScoreContext): boolean {
-        return (context.startingMinute - this.check.minute) > 15
     }
 }
 

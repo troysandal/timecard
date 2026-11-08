@@ -143,6 +143,22 @@ describe('AMA Time Keeper Enduro', () => {
             expect(enduro.points).to.equal(4)
             expect(enduro.emergencyPoints).to.equal(0)
         })
+
+        it('Disqualifies when early by more than 15 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Start(2) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Start(1) ]
+            expect(enduro.disqualified).to.be.true
+        })
+
+        it('Disqualifies when late by more than 60 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Start(77) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Start(78) ]
+            expect(enduro.disqualified).to.be.true
+        })
     
         it('Computes Early Points', () => {
             const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
@@ -152,10 +168,6 @@ describe('AMA Time Keeper Enduro', () => {
             ]
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(0)
-
-            enduro.checkpoints = [ new Start(1) ]
-            expect(enduro.points).to.equal(0)
-            expect(enduro.disqualified).to.be.false
         })
 
         it('Does not count when dropped', () => {
@@ -206,7 +218,7 @@ describe('AMA Time Keeper Enduro', () => {
             expect(enduro.emergencyPoints).to.equal(0)
         })
 
-        it ('Can disqualify if > 15 minutes early', () => {
+        it ('Disqualifies when early by more than 15 minutes', () => {
             const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(30)
             enduro.checkpoints = [ new Known(15) ]
             expect(enduro.points).to.equal(0)
@@ -224,6 +236,14 @@ describe('AMA Time Keeper Enduro', () => {
 
             enduro.checkpoints[1]!.drop = true
             expect(enduro.disqualified).to.be.false
+        })
+
+        it('Disqualifies when late by more than 60 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Known(77) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Known(78) ]
+            expect(enduro.disqualified).to.be.true
         })
 
         it('Does not count when dropped', () => {
@@ -284,6 +304,22 @@ describe('AMA Time Keeper Enduro', () => {
             enduro.checkpoints[0]!.drop = true
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(0)
+        })
+        
+        it('Disqualifies when early by more than 15 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Secret(2) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Secret(1) ]
+            expect(enduro.disqualified).to.be.true
+        })
+
+        it('Disqualifies when late by more than 60 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Secret(77) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Secret(78) ]
+            expect(enduro.disqualified).to.be.true
         })
     })
 
@@ -367,6 +403,22 @@ describe('AMA Time Keeper Enduro', () => {
             enduro.checkpoints[0]!.drop = true
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(0)
+        })
+        
+        it('Disqualifies when early by more than 15 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Emergency(2, 30) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Emergency(1, 30) ]
+            expect(enduro.disqualified).to.be.true
+        })
+
+        it('Disqualifies when late by more than 60 minutes', () => {
+            const enduro: TimeKeeperEnduroTest = new TimeKeeperEnduroTest(17)
+            enduro.checkpoints = [ new Emergency(77, 30) ]
+            expect(enduro.disqualified).to.be.false
+            enduro.checkpoints = [ new Emergency(78, 30) ]
+            expect(enduro.disqualified).to.be.true
         })
     })
 
