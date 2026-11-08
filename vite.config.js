@@ -47,7 +47,9 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       include: ['test/**/test.*.ts'],
-      
+      coverage: {
+        provider: 'v8' // or 'istanbul'
+      }
     },
   }
 })
