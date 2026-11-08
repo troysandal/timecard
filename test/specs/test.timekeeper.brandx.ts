@@ -49,9 +49,11 @@ describe('BrandX Time Keeper Enduros', async () => {
     it('Detects invalid scores', () => {
         const enduro = new BrandXEnduro(17)
         enduro.checkpoints.push(new Secret(NaN))
+        enduro.checkpoints.push(new Emergency(17, NaN))
         const score = enduro.score
         expect(score.points).to.equal(0)
         expect(score.checkScores[0]?.invalid).to.be.true
+        expect(score.checkScores[1]?.invalid).to.be.true
     })
 
     it('Does not include dropped or invalid checks', () => {
@@ -63,7 +65,19 @@ describe('BrandX Time Keeper Enduros', async () => {
         const score = enduro.score
         expect(score.points).to.equal(47)
         expect(score.checkScores[0]?.invalid).to.be.true
+        expect(score.checkScores[1]?.dropped).to.be.true
         expect(score.nonDroppedChecks).to.equal(1)
+    })
+
+    it('Throws on unknown checkpoint type or format', () => {
+        const enduro = new BrandXEnduro(17)
+        enduro.checkpoints = [{ type: 'bogus' } as any]
+        expect(() => enduro.score).to.throw()
+
+        const badFormat = new BrandXEnduro(17)
+        badFormat.format = 'X' as any
+        badFormat.checkpoints = [new Secret(17)]
+        expect(() => badFormat.score).to.throw()
     })
 
     it("can drop a checkpoint", () => {
@@ -82,6 +96,11 @@ describe('BrandX Time Keeper Enduros', async () => {
         expect(score.checkScores.length).to.equal(2)
         expect(score.nonDroppedChecks).to.equal(1)
         expect(score.disqualified).to.be.false
+
+        enduro.checkpoints = [ new Secret(11) ]
+        expect(enduro.disqualified).to.be.true
+        enduro.checkpoints[0]!.drop = true
+        expect(enduro.disqualified).to.be.false
     })
 
     describe('Start Controls', () => {
@@ -107,6 +126,7 @@ describe('BrandX Time Keeper Enduros', async () => {
             ]
             expect(enduro.points).to.equal(3)
             expect(enduro.emergencyPoints).to.equal(0)
+            expect(enduro.score.checkScores[1]?.points).to.equal(0)
         })
     
         it('Computes Early Points', () => {
@@ -117,12 +137,16 @@ describe('BrandX Time Keeper Enduros', async () => {
             ]
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(0)
+
+            enduro.checkpoints = [ new Start(1) ]
+            expect(enduro.points).to.equal(0)
+            expect(enduro.disqualified).to.be.false
         })
 
         it('Does not count when dropped', () => {
             const enduro: BrandXEnduro = new BrandXEnduro(17)
             enduro.checkpoints = [
-                new Start(18),  // 2 points
+                new Start(18),
             ]
             expect(enduro.points).to.equal(1)
             expect(enduro.emergencyPoints).to.equal(0)
@@ -178,6 +202,10 @@ describe('BrandX Time Keeper Enduros', async () => {
             expect(enduro.points).to.equal(27)
             expect(enduro.disqualified).to.be.false
             expect(enduro.emergencyPoints).to.equal(0)
+
+            enduro.checkpoints = [ new Known(20) ]
+            expect(enduro.points).to.equal(47)
+            expect(enduro.disqualified).to.be.false
         })
 
         it('Does not count when dropped', () => {
@@ -247,6 +275,10 @@ describe('BrandX Time Keeper Enduros', async () => {
             ]
             expect(enduro.points).to.equal(27)
             expect(enduro.disqualified).to.be.true
+
+            enduro.checkpoints = [ new Secret(12) ]
+            expect(enduro.points).to.equal(22)
+            expect(enduro.disqualified).to.be.false
         })
     })
 
@@ -259,6 +291,7 @@ describe('BrandX Time Keeper Enduros', async () => {
             const enduro: BrandXEnduro = new BrandXEnduro(60)
             const check = new Emergency(60, 30)
             enduro.checkpoints.push(check)
+            expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(0)
         })
 
@@ -286,6 +319,13 @@ describe('BrandX Time Keeper Enduros', async () => {
             ]
             expect(enduro.points).to.equal(2)
             expect(enduro.emergencyPoints).to.equal(99)
+
+            enduro = new BrandXEnduro(17)
+            enduro.checkpoints = [
+                new Emergency(18, 0)
+            ]
+            expect(enduro.points).to.equal(1)
+            expect(enduro.emergencyPoints).to.equal(30)
         })
     
         it('Computes Early Points', () => {
@@ -302,6 +342,19 @@ describe('BrandX Time Keeper Enduros', async () => {
             ]
             expect(enduro.points).to.equal(0)
             expect(enduro.emergencyPoints).to.equal(5)
+
+            enduro = new BrandXEnduro(17)
+            enduro.checkpoints = [
+                new Emergency(15, 10)
+            ]
+            expect(enduro.points).to.equal(7)
+            expect(enduro.emergencyPoints).to.equal(140)
+
+            enduro.checkpoints = [ new Emergency(11, 30) ]
+            expect(enduro.disqualified).to.be.true
+
+            enduro.checkpoints = [ new Emergency(12, 30) ]
+            expect(enduro.disqualified).to.be.false
         })
 
         it('Does not count when dropped', () => {
@@ -349,7 +402,6 @@ describe('BrandX Time Keeper Enduros', async () => {
             enduro.checkpoints.push(new Secret(10))
             expect(enduro.score.points).to.equal(1)
 
-            // Come in early - before start minute
             enduro.checkpoints.push(new Known(11))
             expect(enduro.score.points).to.equal(1 + 1)
         })
