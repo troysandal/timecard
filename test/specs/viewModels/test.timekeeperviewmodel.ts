@@ -59,8 +59,21 @@ describe("TimeKeeperViewModel", () => {
         points: 0,
         emergencyPoints: 0,
         disqualified: false,
-        checkScores: [null, null],
-        nonDroppedChecks: 1,
+        checkScores: [{
+          "disqualified": false,
+          "dropped": false,
+          "emergencyPoints": 0,
+          "invalid": true,
+          "points": 0,
+        },
+        {
+          "disqualified": false,
+          "dropped": true,
+          "emergencyPoints": 0,
+          "invalid": true,
+          "points": 0,
+        }],
+        nonDroppedChecks: 0,
       })
     })
   })

@@ -14,24 +14,9 @@ export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKe
   }
 
   get score(): TimeKeeperScore {
-    const checks = this.race.timeCard.checkpoints;
-    // @todo - won't ScoreKeeper.scoreEnduro already give us this? 
-    // almost - nonDropped doesn't include invalids
-    let scoreCard = {
-        points: 0,
-        emergencyPoints: 0,
-        disqualified: false,
-        checkScores: Array(checks.length).fill(null),
-        nonDroppedChecks: checks.length - checks.filter((v) => v.drop).length,
-    }
-
-    if (!isNaN(this.race.timeCard.riderMinute)) {
-      scoreCard = ScoreKeeper.scoreEnduro(this.race.timeCard)
-    }
-
     return {
       kind: 'time_keeper',
-      scoreCard: scoreCard
+      scoreCard: ScoreKeeper.scoreEnduro(this.race.timeCard)
     };
   }
 
