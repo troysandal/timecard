@@ -5,7 +5,7 @@
  * generic for each enduro, leaving format rules in different TS modules.
  * 
  * Scoring Formats Supported
- * - [AMA National Format](https://ecea.org/ecea/enduro-time-keeping/)
+ * - [AMA National Format](https://ecea.org/documents/ecea-rulebook-current.pdf)
  * - [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf)
  */
 
