@@ -4,6 +4,8 @@
   import EditPage from './pages/EditPage.svelte'
   import RacePickerModal from './components/RacePickerModal.svelte'
   import type { Race, RaceType } from './models/race'
+  import { SprintTest, SprintTestTime } from './models/sprint'
+  import { CheckpointTypes } from './models/timekeeper'
   import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/race'
   import { onMount } from 'svelte'
   import { loadDB, saveDB } from './db/database'
@@ -32,6 +34,25 @@
   const save = async () => {
     await saveDB({races: items})
   }
+  const newTimeKeeper = (): EnduroTK => {
+    const result = new EnduroTK(1)
+    result.checkpoints.push({
+      type: CheckpointTypes.Secret,
+      minute: result.riderMinute,
+      seconds: 30,
+      drop: false
+    })
+    return result
+  }
+  // @todo - shouldn't we be using race.ts SprintXxx types instead?
+  const newSprint = (): EnduroSP => {
+    const result = new EnduroSP()
+    result.tests.push(new SprintTest(
+      new SprintTestTime(NaN, NaN, NaN),
+      new SprintTestTime(NaN, NaN, NaN)
+    ))
+    return result
+  }
 
   const handleSelectType = async (type: RaceType) => {
     const id = Math.random().toString(36).slice(2)
@@ -40,8 +61,8 @@
 
     const newItem: Race =
       type === 'time_keeper'
-        ? { id, raceType: type, name, createdAt, timeCard: new EnduroTK(1) }
-        : { id, raceType: type, name, createdAt, timeCard: new EnduroSP() }
+        ? { id, raceType: type, name, createdAt, timeCard: newTimeKeeper() }
+        : { id, raceType: type, name, createdAt, timeCard: newSprint() }
 
     items.push(newItem)
     await save()
