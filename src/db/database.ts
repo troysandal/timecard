@@ -96,7 +96,10 @@ function wrapDB(db: Object) {
 
 export async function loadDB(): Promise<Object> {
   const db = await store.load();
-  if (!db) throw new Error("database not found");
+  if (!db) {
+    console.info("database not found");
+    return {races: []}
+  }
   return (unwrapDB(db) as any).data;
 }
 
