@@ -2,22 +2,19 @@
 A very simple app to compute your score in a Time Keeping (AMA National & NEI Brand X) or Sprint Enduro.  Enter your time card scores then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). App is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser.  App store version is in a future release.
 
 ## Roadmap
--[X] Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
--[X] More than one timecard
-- Scan timecard with device camera, attach photo to timecard
-- Add to the Apple and Google Stores
+- [X] Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
+- [X] More than one timecard
+- [ ] Scan timecard with device camera, attach photo to timecard
+- [ ] Add to the Apple and Google Stores
 
 ## Development
 This is a single page HTML/CSS/TypeScript/Svelte/Vite/Vitest/Cypress web app that runs as a Web page, PWA and Capacitor iOS and Android app. Everything was built with Node 26. 
 
 First Time Setup
-```
-# 1. Initialize a self signed certificate for PWA
-npm run cert
-
-# 2. Trust Certificate - e.g. in Chrome open chrome://settings/certificates
-# 3. Import ./cert.crt
-```
+1. Initialize a self signed certificate for PWA `npm run cert`
+2. Trust Certificate - e.g. in Chrome open chrome://settings/certificates
+3. Import ./cert.crt
+4. [optional] Jump to [PWA](#pwa) below and setup certs for each simulator
 
 Here are the basics you'll need to work on it.
 ```
@@ -50,16 +47,12 @@ We still support PWA which means you need the openssl certificate trusted by you
 
 **iOS**
 
-Drag and drop your cert.crt file directly from your computer's finder onto the running iOS Simulator screen. Go to Settings -> Profile Downloaded, install the certificate profile, and then go to Settings -> General -> About -> Certificate Trust Settings and toggle full trust on for your certificate.
-
-The iOS Simulator shares your machine's network stack, meaning it recognizes localhost natively.
-1. The URL to use: Open Safari inside the iOS Simulator and go to: https://localhost:5173
-2. Install the Certificate:
-	• Drag and drop your cert.crt file directly onto the running iOS Simulator screen.
-	• Go to Settings -> Profile Downloaded and click Install in the top right.
-3. Enable Full Trust (Crucial Step for iOS):
-	• Go to Settings -> General -> About -> Certificate Trust Settings (at the very bottom).
-	• Find your certificate under "Enable full trust for root certificates" and toggle the switch to green/active.
+Install Cert in simulator
+- XCode 26 and before - Drag and drop your cert.crt file directly from your computer's finder onto the running iOS Simulator screen. 
+- XCode 27+ - run `xcrun simctl keychain booted add-root-cert ./cert.crt`
+- Enable Full Trust (Crucial Step for iOS):
+  - Go to Settings -> General -> About -> Certificate Trust Settings (at the very bottom).
+  - Find your certificate under "Enable full trust for root certificates" and toggle the switch to green/active.
 
 
 **Android**
