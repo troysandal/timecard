@@ -68,6 +68,12 @@
         return !isNaN(parseInt(value)) && (value >= 0) && (value <= 59)
     }
 
+    // WebKit on iOS (Safari, and every iOS browser) gets the full alphanumeric keyboard
+    const isIOSWebKit = typeof navigator !== 'undefined' &&
+        (/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+    const minuteInputMode = isIOSWebKit ? 'url' : undefined;
+
     let points = $derived(computePoints(score));
     let emergencyPoints = $derived(computeEmergencyPoints(score))
     let flagSrc = $derived(flagSource(check))
@@ -89,7 +95,7 @@
     </td>
     <td class="p-1 text-center">{index + 1}</td>
     <td class="p-1">
-        <NumberInput bind:strValue={strMinute} bind:value={check.minute} pattern={undefined} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="3" />
+        <NumberInput bind:strValue={strMinute} bind:value={check.minute} pattern="-?[0-9]*"  inputmode={minuteInputMode} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="3" />
     </td>
     <td class="p-1">
         {#if check.type === CheckpointTypes.Emergency}

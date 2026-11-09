@@ -15,6 +15,7 @@
         onEnter = () => {},
         size = undefined,
         min = undefined,
+        inputmode = undefined,
         class: className = "",
     } = $props();
 
@@ -62,7 +63,7 @@
     {placeholder}
     {maxlength}
     {pattern}
-    inputmode={defaultInputMode()}
+    inputmode={inputmode ?? defaultInputMode()}
     {size}
     {min}
     bind:value={strValue}
