@@ -15,7 +15,7 @@
     "preview": "vite preview --host",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "cert": "openssl req -x509 -newkey rsa:4096 -keyout cert.key -out cert.crt -sha256 -days 365 -nodes -subj '/CN=localhost' -addext \"subjectAltName = DNS:localhost, IP:127.0.0.1, IP:::1, IP:10.0.2.2\""
+    "cert": "openssl req -x509 -newkey rsa:4096 -keyout cert.key -out cert.crt -sha256 -days 365 -nodes -subj '/CN=localhost/O=TimeCard/OU=Development Team' -addext \"subjectAltName = DNS:localhost, IP:127.0.0.1, IP:::1, IP:10.0.2.2\""
   },
   "devDependencies": {
     "@capacitor/assets": "^4.0.0",
