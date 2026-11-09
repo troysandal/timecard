@@ -1,16 +1,14 @@
 # Enduro Time Card
-A very simple app to compute your score in a Time Keeping or Sprint Enduro.  Enter your time card scores then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). App is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser.  App store version is in a future release.
+A very simple app to compute your score in a Time Keeping (AMA National & NEI Brand X) or Sprint Enduro.  Enter your time card scores then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). App is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser.  App store version is in a future release.
 
-For Time Keeping Enduros, the app only supports the [AMA National](https://ecea.org/documents/ecea-rulebook-current.pdf) format.
-
-## Future Plans
-- Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
-- More than one timecard
+## Roadmap
+-[X] Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
+-[X] More than one timecard
 - Scan timecard with device camera, attach photo to timecard
 - Add to the Apple and Google Stores
 
 ## Development
-This is a single page HTML PWA app that uses Svelte with basic CSS, build system is Vite.  All code is written in Typescript.  Unit tests use Vitest and E2E tests use Cypress. Everything was built with Node 24. Very simple.
+This is a single page HTML/CSS/TypeScript/Svelte/Vite/Vitest/Cypress web app that runs as a Web page, PWA and Capacitor iOS and Android app. Everything was built with Node 26. 
 
 First Time Setup
 ```
@@ -54,10 +52,29 @@ We still support PWA which means you need the openssl certificate trusted by you
 
 Drag and drop your cert.crt file directly from your computer's finder onto the running iOS Simulator screen. Go to Settings -> Profile Downloaded, install the certificate profile, and then go to Settings -> General -> About -> Certificate Trust Settings and toggle full trust on for your certificate.
 
+The iOS Simulator shares your machine's network stack, meaning it recognizes localhost natively.
+1. The URL to use: Open Safari inside the iOS Simulator and go to: https://localhost:5173
+2. Install the Certificate:
+	• Drag and drop your cert.crt file directly onto the running iOS Simulator screen.
+	• Go to Settings -> Profile Downloaded and click Install in the top right.
+3. Enable Full Trust (Crucial Step for iOS):
+	• Go to Settings -> General -> About -> Certificate Trust Settings (at the very bottom).
+	• Find your certificate under "Enable full trust for root certificates" and toggle the switch to green/active.
+
+
 **Android**
-Two options:
+Two options - I prefer #2:
 1. The Chrome Flag Trick (Easiest): Open Chrome inside the Android emulator, navigate to chrome://flags, search for "Insecure origins treated as secure", add http://10.0.2.2:5173 (note the http), enable it, and relaunch mobile Chrome. This fools Android into letting you test your PWA over an unencrypted local bridge.
 2. The Local IP Route: If you want to keep HTTPS, update your OpenSSL command one more time to include your machine's actual local IP network block (like IP:192.168.1.X) or IP:10.0.2.2 inside the -addext block.
+
+Since Android runs on a virtualized internal network, typing localhost will fail.
+1. The URL to use: Open Google Chrome inside the Android emulator and go to: https://10.0.2.2:5173
+2. Install the Certificate:
+	• Drag and drop your cert.crt file directly from your computer onto the running Android emulator screen to save it to the virtual device downloads.
+	• Inside the emulator, open Settings -> Security -> More Security Settings -> Encryption & credentials -> Install a certificate -> CA certificate.
+	• Choose Install anyway, locate your cert.crt in the files explorer, and select it.
+3. Restart Mobile Chrome: Fully close and open Chrome inside the emulator. The Service Worker will now register flawlessly over https://10.0.2.2:5173, letting you test the PWA features.
+
 
 
 ## Wallaby.js
