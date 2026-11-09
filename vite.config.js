@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from "@tailwindcss/vite"
+import fs from 'fs'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -15,7 +15,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       tailwindcss(),
       svelte(),
-      !isCapacitor && mkcert(),
       !isCapacitor && VitePWA({
         registerType: 'autoUpdate',
         manifest: {
@@ -51,5 +50,13 @@ export default defineConfig(({ mode }) => {
         provider: 'v8' // or 'istanbul'
       }
     },
+    // Self Signed SSL Certifcate for PWA Debugging
+    server: {
+      https: {
+        key: fs.readFileSync(new URL('./cert.key', import.meta.url)),
+        cert: fs.readFileSync(new URL('./cert.crt', import.meta.url)),
+      },
+      host: true // useful for mobile testing
+    }
   }
 })

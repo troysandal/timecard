@@ -138,3 +138,7 @@ build
 # cypress
 cypress/videos
 cypress/screenshots
+
+# pwa certificates
+*.crt
+*.key

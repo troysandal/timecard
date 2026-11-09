@@ -14,7 +14,8 @@
     "build:preview": "vite build",
     "preview": "vite preview --host",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "cert": "openssl req -x509 -newkey rsa:4096 -keyout cert.key -out cert.crt -sha256 -days 365 -nodes -subj '/CN=localhost' -addext \"subjectAltName = DNS:localhost, IP:127.0.0.1, IP:::1, IP:10.0.2.2\""
   },
   "devDependencies": {
     "@capacitor/assets": "^4.0.0",
@@ -28,7 +29,6 @@
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
-    "vite-plugin-mkcert": "^2.1.0",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0"
   },

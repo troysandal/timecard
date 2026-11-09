@@ -12,8 +12,16 @@ For Time Keeping Enduros, the app only supports the [AMA National](https://ecea.
 ## Development
 This is a single page HTML PWA app that uses Svelte with basic CSS, build system is Vite.  All code is written in Typescript.  Unit tests use Vitest and E2E tests use Cypress. Everything was built with Node 24. Very simple.
 
-Here are the basics you'll need to work on it.
+First Time Setup
+```
+# 1. Initialize a self signed certificate for PWA
+npm run cert
 
+# 2. Trust Certificate - e.g. in Chrome open chrome://settings/certificates
+# 3. Import ./cert.crt
+```
+
+Here are the basics you'll need to work on it.
 ```
 # Run site
 npm run dev
@@ -25,11 +33,32 @@ npm run test
 npm run dev
 npx cypress open
 
-# Deploy
+# Deploy Web / PWA
+npm run build
 npm run test
 npx cyrpress run
 git push origin main
+
+# Deploy to Capacitor
+npm run build:cap
+npx cap sync ios android
+
+# Open Native Projects
+npx cap open [ios|android]
 ```
+
+## PWA
+We still support PWA which means you need the openssl certificate trusted by your browser.  For iOS and Android simulators you need to add the cert.
+
+**iOS**
+
+Drag and drop your cert.crt file directly from your computer's finder onto the running iOS Simulator screen. Go to Settings -> Profile Downloaded, install the certificate profile, and then go to Settings -> General -> About -> Certificate Trust Settings and toggle full trust on for your certificate.
+
+**Android**
+Two options:
+1. The Chrome Flag Trick (Easiest): Open Chrome inside the Android emulator, navigate to chrome://flags, search for "Insecure origins treated as secure", add http://10.0.2.2:5173 (note the http), enable it, and relaunch mobile Chrome. This fools Android into letting you test your PWA over an unencrypted local bridge.
+2. The Local IP Route: If you want to keep HTTPS, update your OpenSSL command one more time to include your machine's actual local IP network block (like IP:192.168.1.X) or IP:10.0.2.2 inside the -addext block.
+
 
 ## Wallaby.js
 
