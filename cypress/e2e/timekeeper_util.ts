@@ -74,3 +74,30 @@ export function setDropped(check: number, dropCheck: boolean) {
     element.uncheck()
   }
 }
+
+export function checkScore(checks: number, points: number, epoints: number, dq: boolean) {
+  cy.getBySel('score-checks').should('have.text', checks)
+  cy.getBySel('score-points').should('have.text', points)
+  cy.getBySel('score-epoints').should('have.text', epoints)
+  cy.getBySel('score-disqualified').should('have.text', dq ? "YES" : "NO")
+}
+
+export function setRiderMinute(minute: number) {
+  cy.getBySel('rider-minute').first().clear().type(minute.toString())
+}
+
+function selectFormat(format: "AMA" | "BrandX") {
+  cy.getBySel('format-select').select(format);
+  cy.getBySel('format-select').should('have.value', format)
+}
+
+export function newTimeKeeper(riderMinute:number = 0, format: "AMA" | "BrandX" = "AMA") {
+  cy.visit('/#')
+  cy.window().then((win) => {
+    cy.stub(win, 'confirm').as('confirmStub').returns(true)
+  });
+  cy.getBySel('add-enduro').first().click()
+  cy.getBySel('add-time-keeper').first().click()
+  if (riderMinute) setRiderMinute(riderMinute)
+  selectFormat(format)
+}

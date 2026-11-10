@@ -6,37 +6,16 @@ import {
   addKnown,
   addEmergency,
   addStart,
-  setDropped
+  setDropped,
+  checkScore,
+  newTimeKeeper
 } from './timekeeper_util';
 
 
 describe('Time Keeper Enduro', () => {
-  function selectFormat(format: "AMA" | "BrandX") {
-    cy.getBySel('format-select').select(format);
-    cy.getBySel('format-select').should('have.value', format)
-  }
-
-  function checkScore(checks: number, points: number, epoints: number, dq: boolean) {
-    cy.getBySel('score-checks').should('have.text', checks)
-    cy.getBySel('score-points').should('have.text', points)
-    cy.getBySel('score-epoints').should('have.text', epoints)
-    cy.getBySel('score-disqualified').should('have.text', dq ? "YES" : "NO")
-  }
-
-  function setRiderMinute(minute: number) {
-    cy.getBySel('rider-minute').first().clear().type(minute.toString())
-  }
-
   describe('AMA Format', () => {
     beforeEach(() => {
-      cy.visit('/#')
-      cy.window().then((win) => {
-        cy.stub(win, 'confirm').as('confirmStub').returns(true)
-      });
-      cy.getBySel('add-enduro').first().click()
-      cy.getBySel('add-time-keeper').first().click()
-      setRiderMinute(17)
-      selectFormat("AMA")
+      newTimeKeeper(17)
     })
 
     it('scores correctly', () => {
@@ -82,14 +61,7 @@ describe('Time Keeper Enduro', () => {
 
   describe('Brand X', () => {
     beforeEach(() => {
-      cy.visit('/#')
-      cy.window().then((win) => {
-        cy.stub(win, 'confirm').as('confirmStub').returns(true)
-      });
-      cy.getBySel('add-enduro').first().click()
-      cy.getBySel('add-time-keeper').first().click()
-      setRiderMinute(17)
-      selectFormat("BrandX")
+      newTimeKeeper(17, "BrandX")
     })
 
     it('Scores Properly', () => {
@@ -112,12 +84,7 @@ describe('Time Keeper Enduro', () => {
 
   describe('Pressing Enter key in checkpoint', () => {
     beforeEach(() => {
-      cy.visit('/#')
-      cy.window().then((win) => {
-        cy.stub(win, 'confirm').as('confirmStub').returns(true)
-      });
-      cy.getBySel('add-enduro').first().click()
-      cy.getBySel('add-time-keeper').first().click()
+      newTimeKeeper()
     })
 
     function verifyNumberOfChecks(expected: number) {
