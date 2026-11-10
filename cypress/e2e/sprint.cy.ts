@@ -1,9 +1,13 @@
 /// <reference types="cypress" />
 
 describe('Sprint Enduro', () => {
+  function verifyNumberOfChecks(expected: number) {
+    cy.get('tbody tr').should('have.length', expected)
+  }
+
   describe('Standard Format', () => {
     function createTest(enter: string, exit: string) {
-      cy.get('button#addTest').first().click()
+      cy.getBySel('add-test').first().click()
       cy.get('tbody tr:last-child').within(() => {
         let fragments = enter.split(':')
         cy.get('input.enterTime').eq(0).clear().type(fragments[0])
@@ -16,20 +20,30 @@ describe('Sprint Enduro', () => {
       })
     }
 
-    function deleteTest(index: number) {
+    function deleteTest(index: number, callCount: number = 1) {
       cy.get('td button').eq(index).click()
+      cy.get('@confirmStub').should('have.callCount', callCount);
     }
 
     function checkScore(expected: string) {
-      cy.get('span.score').should('have.text', expected)
+      const sels = ['hour', 'minute', 'second']
+      expected.split(':').forEach((v, ix) => {
+        cy.getBySel(`score-${sels[ix]}`).should('have.text', v)
+      })
     }
 
     beforeEach(() => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
+      cy.visit('/#')
+      cy.window().then((win) => {
+        cy.stub(win, 'confirm').as('confirmStub').returns(true)
       });
-      cy.get('button').contains('Sprint').first().click()
+      cy.getBySel('add-enduro').first().click()
+      cy.getBySel('add-sprint').first().click()
+    })
+
+    it('can be empty', () => {  
+      deleteTest(0)
+      verifyNumberOfChecks(0)
     })
 
     it('supports 24 hour time', () => {  
@@ -68,14 +82,14 @@ describe('Sprint Enduro', () => {
     })
 
     it('can delete single sprint', () => {
-      cy.get('tbody tr:last-child button').first().click()
+      deleteTest(0)
 
       createTest('01:00:00', '01:20:00')
       createTest('02:00:00', '02:15:00')
       createTest('03:00:00', '03:30:00')
 
       checkScore('01:05:00')
-      deleteTest(1)
+      deleteTest(1, 2)
       checkScore('00:50:00')
     })
   })
@@ -88,17 +102,13 @@ describe('Sprint Enduro', () => {
       cy.get(selector).eq(2).clear().type(fragments[2])
     }
 
-    function verifyNumberOfChecks(expected: number) {
-      cy.get('tbody tr').should('have.length', expected)
-    }
-
     beforeEach(() => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
+      cy.visit('/#')
+      cy.window().then((win) => {
+        cy.stub(win, 'confirm').as('confirmStub').returns(true)
       });
-      cy.get('button').contains('Sprint').first().click()
-    })
+      cy.getBySel('add-enduro').first().click()
+      cy.getBySel('add-sprint').first().click()    })
 
     it('does nothing when the row is blank', () => {
       cy.get('tbody tr:last-child').within(() => {

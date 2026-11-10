@@ -1,35 +1,62 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
+import tailwindcss from "@tailwindcss/vite"
+import fs from 'fs'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    svelte(),
-    mkcert(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      manifest: {
-        name: 'Enduro Time Card',
-        short_name: 'Enduro Time Card',
-        "theme_color": "silver",
-        icons: [
-          {
-            "src": "images/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-          },
-          {
-            "src": "images/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-          }
-        ]
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg}']
+export default defineConfig(({ mode }) => {
+  const isCapacitor = mode === 'capacitor'
+
+  return { 
+    build: {
+      sourcemap: true,
+    },
+    plugins: [
+      tailwindcss(),
+      svelte(),
+      !isCapacitor && VitePWA({
+        registerType: 'autoUpdate',
+        manifest: {
+          name: 'Enduro Time Card',
+          short_name: 'Enduro Time Card',
+          "theme_color": "silver",
+          icons: [
+            {
+              "src": "images/android-chrome-192x192.png",
+              "sizes": "192x192",
+              "type": "image/png"
+            },
+            {
+              "src": "images/android-chrome-512x512.png",
+              "sizes": "512x512",
+              "type": "image/png"
+            }
+          ]
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,png,svg}']
+        }
+      })
+    ].filter(Boolean),
+    define: {
+      __IS_CAPACITOR__: JSON.stringify(mode === 'capacitor')
+    },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      include: ['test/**/test.*.ts'],
+      coverage: {
+        provider: 'v8' // or 'istanbul'
       }
-    })
-  ]
+    },
+    // Self Signed SSL Certifcate for PWA Debugging
+    server: {
+      https: {
+        key: fs.readFileSync(new URL('./cert.key', import.meta.url)),
+        cert: fs.readFileSync(new URL('./cert.crt', import.meta.url)),
+      },
+      host: true // useful for mobile testing
+    }
+  }
 })

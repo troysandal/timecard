@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "races": [
+    {
+      "id": "s7j5ti88hzg",
+      "raceType": "sprint",
+      "name": "My Bad Sprint",
+      "createdAt": "2026-11-04T15:29:52.701Z",
+      "timeCard": {
+        "tests": [
+          {
+            "enter": {
+              "hour": 9,
+              "minute": 0,
+              "second": 1
+            },
+            "exit": {
+              "hour": 9,
+              "minute": 13,
+              "second": 13
+            }
+          },
+          {
+            "enter": {
+              "hour": 9,
+              "minute": 24,
+              "second": 21
+            },
+            "exit": {
+              "hour": 10,
+              "minute": 3,
+              "second": 45
+            }
+          },
+          {
+            "enter": {
+              "hour": 10,
+              "minute": 20,
+              "second": 0
+            },
+            "exit": {
+              "hour": 10,
+              "minute": 31,
+              "second": 45
+            }
+          },
+          {
+            "enter": {
+              "hour": 10,
+              "minute": 42,
+              "second": 0
+            },
+            "exit": {
+              "hour": 11,
+              "minute": 3,
+              "second": 34
+            }
+          },
+          {
+            "enter": {
+              "hour": null,
+              "minute": null,
+              "second": null
+            },
+            "exit": {
+              "hour": null,
+              "minute": null,
+              "second": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "6zp90cghwcr",
+      "raceType": "time_keeper",
+      "name": "Terra JackHammer",
+      "createdAt": "2026-11-06T17:12:57.128Z",
+      "timeCard": {
+        "riderMinute": 14,
+        "checkpoints": [
+          {
+            "type": 2,
+            "minute": 14,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 16,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 13,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 3,
+            "minute": 21,
+            "seconds": 32,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 16,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 17,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 15,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 3,
+            "minute": 17,
+            "seconds": 32,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 22,
+            "seconds": 30,
+            "drop": false
+          }
+        ],
+        "format": "AMA"
+      }
+    },
+    {
+      "id": "1tsb8y8bnpj",
+      "raceType": "time_keeper",
+      "name": "2026 Rhody (BrandX)",
+      "createdAt": "2026-11-06T17:14:44.702Z",
+      "timeCard": {
+        "riderMinute": 6,
+        "checkpoints": [
+          {
+            "type": 1,
+            "minute": 6,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 8,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 8,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 8,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 3,
+            "minute": 8,
+            "seconds": 24,
+            "drop": false
+          },
+          {
+            "type": 1,
+            "minute": 6,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 10,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 1,
+            "minute": 6,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 3,
+            "minute": 9,
+            "seconds": 55,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 14,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 14,
+            "seconds": 30,
+            "drop": false
+          },
+          {
+            "type": 2,
+            "minute": 16,
+            "seconds": 30,
+            "drop": false
+          }
+        ],
+        "format": "BrandX"
+      }
+    }
+  ]
+}

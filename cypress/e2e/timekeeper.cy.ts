@@ -6,32 +6,16 @@ import {
   addKnown,
   addEmergency,
   addStart,
-  setDropped
+  setDropped,
+  checkScore,
+  newTimeKeeper
 } from './timekeeper_util';
 
 
 describe('Time Keeper Enduro', () => {
-  function selectFormat(format: "AMA" | "BrandX") {
-    cy.get('[data-cy="format-select"]').select(format);
-    cy.get('[data-cy="format-select"]').should('have.value', format)
-  }
-
-  function checkScore(checks: number, points: number, epoints: number, dq: boolean) {
-    cy.get('input#checks').should('have.value', checks)
-    cy.get('input#points').should('have.value', points)
-    cy.get('input#emergencyPoints').should('have.value', epoints)
-    cy.get('input#disqualified').should('have.value', dq ? "YES" : "NO")
-  }
-
   describe('AMA Format', () => {
     beforeEach(() => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
-      });
-      cy.get('button').contains('Time Keeper').first().click()
-      cy.get('div#riderMinute input').first().clear().type('17')
-      selectFormat("AMA")
+      newTimeKeeper(17)
     })
 
     it('scores correctly', () => {
@@ -77,13 +61,7 @@ describe('Time Keeper Enduro', () => {
 
   describe('Brand X', () => {
     beforeEach(() => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
-      });
-      cy.get('button').contains('Time Keeper').first().click()
-      cy.get('div#riderMinute input').first().clear().type('17')
-      selectFormat("BrandX")
+      newTimeKeeper(17, "BrandX")
     })
 
     it('Scores Properly', () => {
@@ -106,11 +84,7 @@ describe('Time Keeper Enduro', () => {
 
   describe('Pressing Enter key in checkpoint', () => {
     beforeEach(() => {
-      cy.visit('/')
-      cy.on('window:confirm', (text) => {
-        return true
-      });
-      cy.get('button').contains('Time Keeper').first().click()
+      newTimeKeeper()
     })
 
     function verifyNumberOfChecks(expected: number) {
@@ -119,7 +93,7 @@ describe('Time Keeper Enduro', () => {
 
     it('does nothing when the last row is blank', () => {
       cy.get('tbody tr:last-child').first().within(() => {
-        cy.get('input').first().type('{enter}')
+        cy.get('input').first().clear().type('{enter}')
       })
       verifyNumberOfChecks(1)
     })
@@ -150,6 +124,7 @@ describe('Time Keeper Enduro', () => {
       cy.get('tbody tr:last-child').first().within(() => {
         cy.get('img').first().click()
         cy.get('input').first().clear().type('17')
+        cy.get('input').eq(1).clear()
         cy.get('input').first().type('{enter}')
       })
       verifyNumberOfChecks(1)
