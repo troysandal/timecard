@@ -49,11 +49,12 @@
           <label class="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
             Rider Minute
             <NumberInput
-            maxlength="3"
-            class="block w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
-            bind:strValue={riderMinuteText}
-            bind:value={race.timeCard.riderMinute}
-            validator={validMinute}
+              datacy="rider-minute"
+              maxlength="3"
+              class="block w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
+              bind:strValue={riderMinuteText}
+              bind:value={race.timeCard.riderMinute}
+              validator={validMinute}
             />
           </label>
         </div>

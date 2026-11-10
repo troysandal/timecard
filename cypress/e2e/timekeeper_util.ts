@@ -30,7 +30,7 @@ export function setCheck(type: number, minute: number, seconds: number | undefin
 }
 
 export function addCheck() {
-  cy.get('button#addCheck').first().click()
+  cy.getBySel('add-check').first().click()
 }
 
 export function addStart(minute: number, drop?: boolean) {

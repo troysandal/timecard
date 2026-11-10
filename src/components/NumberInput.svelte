@@ -6,6 +6,7 @@
         value = $bindable(),
         strValue = $bindable(),
         ref = $bindable(),
+        datacy = undefined,
         pad = null,
         maxlength = null,
         pattern = "[0-9]*",
@@ -57,6 +58,7 @@
 </script>
 
 <input
+    data-cy={datacy}
     class:error={!isValid()}
     class="{className} field h-10"
     {style}
