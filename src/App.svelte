@@ -9,7 +9,8 @@
   import { TimeKeeperEnduro as EnduroTK, SprintEnduro as EnduroSP } from './models/race'
   import { onMount } from 'svelte'
   import { loadDB, saveDB } from './db/database'
-  
+  import { installAndroidBackButton } from './lib/backButton'
+
   type Page = "home" | "sprint" | "timekeeper"
 
   let items = $state<Race[]>([])
@@ -18,13 +19,71 @@
   let showTypePicker = $state(false)
   let editingItem = $derived(items.find((i) => i.id === editingId))
   let isLoading = $state(true);
+  let editDirty = $state(false)
 
-	onMount(async () => {
-		const db = await loadDB()
-		if (db) {
-      items = (db as any).races as Race[];
-		}
-		isLoading = false;
+  const editHash = (id: string) => `#/edit/${id}`
+
+  // Only called from popstate, i.e. when leaving the Edit page via history.
+  // editDirty can be stale after EditPage unmounts, so check page too.
+  const confirmLeave = () =>
+    page === 'home' ||
+    !editDirty ||
+    window.confirm('You have unsaved changes. Are you sure you want to discard them?')
+
+  const showHome = () => {
+    page = 'home'
+    editingId = null
+    editDirty = false
+  }
+
+  const showEdit = (id: string) => {
+    const item = items.find((i) => i.id === id)
+    if (!item) return false
+    editingId = id
+    page = pageForType(item.raceType)
+    return true
+  }
+
+  const pushEdit = (id: string) => {
+    history.pushState({ page: 'edit', id }, '', editHash(id))
+  }
+
+  const handlePopState = (event: PopStateEvent) => {
+    const id: string | undefined = event.state?.id
+    if (!id) {
+      // Navigated to Home
+      if (page === 'home') return
+      if (confirmLeave()) {
+        showHome()
+      } else {
+        // popstate can't be cancelled, so put the Edit entry back
+        pushEdit(editingId!)
+      }
+    } else if (!showEdit(id)) {
+      history.replaceState({ page: 'home' }, '', '#/')
+      showHome()
+    }
+  }
+
+	onMount(() => {
+    history.scrollRestoration = 'manual'
+    window.addEventListener('popstate', handlePopState)
+    installAndroidBackButton()
+
+    ;(async () => {
+      const db = await loadDB()
+      if (db) {
+        items = (db as any).races as Race[];
+      }
+      const match = location.hash.match(/^#\/edit\/(.+)$/)
+      history.replaceState({ page: 'home' }, '', '#/')
+      if (match && showEdit(match[1])) {
+        pushEdit(match[1])
+      }
+      isLoading = false;
+    })()
+
+    return () => window.removeEventListener('popstate', handlePopState)
 	});
 
   const handleAdd = () => {
@@ -66,8 +125,8 @@
 
     items.push(newItem)
     await save()
-    editingId = newItem.id
-    page = pageForType(newItem.raceType)
+    showEdit(newItem.id)
+    pushEdit(newItem.id)
     showTypePicker = false
   }
 
@@ -79,8 +138,7 @@
   }
 
   const handleEdit = (id: string) => {
-    editingId = id
-    page = pageForType(editingItem!.raceType)
+    if (showEdit(id)) pushEdit(id)
   }
 
   const handleDelete = async (id: string) => {
@@ -95,9 +153,9 @@
     await save()
   }
 
+  // Navigation goes through history; handlePopState does the guard + page switch.
   const handleBack = () => {
-    page = 'home'
-    editingId = null
+    history.back()
   }
 </script>
 
@@ -114,7 +172,7 @@
       onDelete={handleDelete}
     />
   {:else if (page === "sprint" || page === "timekeeper") && editingItem?.raceType }
-      <EditPage race={editingItem} onSave={handleSave} onBack={handleBack} />
+      <EditPage race={editingItem} onSave={handleSave} onBack={handleBack} bind:isDirty={editDirty} />
   {/if}
 
   {#if showTypePicker}

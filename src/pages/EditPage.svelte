@@ -13,29 +13,24 @@
     race: Race;
     onSave: (race: Race) => void;
     onBack: () => void;
+    isDirty?: boolean;
   }
 
-  let { race: initialRace, onSave, onBack }: Props = $props();
+  let { race: initialRace, onSave, onBack, isDirty = $bindable(false) }: Props = $props();
   let viewModel = $derived(createViewModel(initialRace));
+
+  $effect(() => {
+    isDirty = viewModel.isDirty
+  })
 
   function handleSave() {
     viewModel.save(onSave)
-  }
-
-  function handleBack() {
-    if (viewModel.isDirty) {
-      if (window.confirm('You have unsaved changes. Are you sure you want to discard them?')) {
-        onBack()
-      }
-    } else {
-      onBack()
-    }
   }
 </script>
 
 <div class="h-screen flex flex-col bg-background max-w-2xl w-full mx-auto overflow-hidden">
   <SafeAreaTop color="#F6F5F2" />
-  <EditHeader {viewModel} onBack={handleBack} onSave={handleSave} />
+  <EditHeader {viewModel} {onBack} onSave={handleSave} />
   <RaceDetails bind:race={viewModel.race} />
 
   <section class="flex-1 overflow-hidden border-b border-border bg-card">
