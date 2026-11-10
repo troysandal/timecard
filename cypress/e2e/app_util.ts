@@ -33,6 +33,11 @@ export function stubConfirm(win: Window, result: boolean = true) {
  * in onBeforeLoad so they are in place before the app reads localStorage.
  */
 export function visitHome(races: object[] = [], hash: string = '#') {
+  // Leave the app first. If the previous test ended on an Edit hash, visiting
+  // a URL that differs only by hash is not a page load: it fires popstate in
+  // the old page (hitting the unsaved-changes confirm) and cy.visit never
+  // gets its load event.
+  cy.visit('about:blank')
   cy.visit(`/${hash}`, {
     onBeforeLoad(win) {
       if (races.length) {
@@ -61,4 +66,40 @@ export function rowNames() {
 export function addRace(type: 'time_keeper' | 'sprint') {
   cy.getBySel('add-enduro').click()
   cy.getBySel(type === 'sprint' ? 'add-sprint' : 'add-time-keeper').click()
+}
+
+export const UNSAVED_MSG =
+  'You have unsaved changes. Are you sure you want to discard them?'
+
+/** Assert how many times window.confirm has been called so far. */
+export function confirmCalls(n: number) {
+  cy.get('@confirmStub').should('have.callCount', n)
+}
+
+/** Visit Home with the given seeded races, then open the race at `index`. */
+export function openRace(races: object[], index: number = 0) {
+  visitHome(races)
+  rows().eq(index).find('[data-cy="race-edit"]').click()
+}
+
+/** Save button reads "Saved" (green): no unsaved changes. */
+export function expectClean() {
+  cy.getBySel('save-button')
+    .should('contain.text', 'Saved')
+    .and('have.class', 'bg-green-600')
+}
+
+/** Save button reads "Save" (primary): there are unsaved changes. */
+export function expectDirty() {
+  cy.getBySel('save-button')
+    .should('not.contain.text', 'Saved')
+    .and('contain.text', 'Save')
+    .and('have.class', 'bg-primary')
+}
+
+/** The race has been modified: it must be dirty, then Save makes it clean. */
+export function saveAndExpectClean() {
+  expectDirty()
+  cy.getBySel('save-button').click()
+  expectClean()
 }

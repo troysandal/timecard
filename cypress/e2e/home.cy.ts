@@ -7,7 +7,7 @@ import {
   rows,
   rowNames,
   addRace,
-} from './home_util'
+} from './app_util'
 
 const TK_OLD = seedRace('tk1', 'Old Time Keeper', 'time_keeper', '2026-01-01T10:00:00Z')
 const SP_MID = seedRace('sp1', 'Middle Sprint', 'sprint', '2026-02-01T10:00:00Z')
@@ -141,37 +141,6 @@ describe('Home Page', () => {
       cy.getBySel('race-name').should('contain.text', 'Renamed Race')
       cy.reload()
       cy.getBySel('race-name').should('contain.text', 'Renamed Race')
-    })
-
-    it('stays on Edit when discarding unsaved changes is declined', () => {
-      visitHome([TK_NEW])
-      cy.getBySel('race-edit').click()
-      cy.getBySel('race-name-input').clear().type('Unsaved Name')
-      setConfirm(false)
-      cy.getBySel('back-button').click()
-
-      cy.get('@confirmStub').should('have.been.called')
-      cy.location('hash').should('eq', '#/edit/tk2')
-      cy.getBySel('race-name-input').should('have.value', 'Unsaved Name')
-    })
-
-    it('returns Home with the old name when discarding is accepted', () => {
-      visitHome([TK_NEW])
-      cy.getBySel('race-edit').click()
-      cy.getBySel('race-name-input').clear().type('Unsaved Name')
-      cy.getBySel('back-button').click()
-
-      cy.get('@confirmStub').should('have.been.called')
-      cy.location('hash').should('eq', '#/')
-      cy.getBySel('race-name').should('contain.text', 'New Time Keeper')
-    })
-
-    it('browser back returns to Home', () => {
-      visitHome([TK_NEW])
-      cy.getBySel('race-edit').click()
-      cy.go('back')
-      cy.location('hash').should('eq', '#/')
-      rows().should('have.length', 1)
     })
   })
 

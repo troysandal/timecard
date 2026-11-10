@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { visitHome, addRace, expectClean } from './app_util'
+
 enum CheckType {
   Secret = 0,
   Emergency = 1,
@@ -92,12 +94,9 @@ function selectFormat(format: "AMA" | "BrandX") {
 }
 
 export function newTimeKeeper(riderMinute:number = 0, format: "AMA" | "BrandX" = "AMA") {
-  cy.visit('/#')
-  cy.window().then((win) => {
-    cy.stub(win, 'confirm').as('confirmStub').returns(true)
-  });
-  cy.getBySel('add-enduro').first().click()
-  cy.getBySel('add-time-keeper').first().click()
+  visitHome()
+  addRace('time_keeper')
+  expectClean() // a brand new race starts clean
   if (riderMinute) setRiderMinute(riderMinute)
   selectFormat(format)
 }

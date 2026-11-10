@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { visitHome, addRace, confirmCalls, expectClean, saveAndExpectClean } from './app_util'
+
 describe('Sprint Enduro', () => {
   function verifyNumberOfChecks(expected: number) {
     cy.get('tbody tr').should('have.length', expected)
@@ -22,7 +24,7 @@ describe('Sprint Enduro', () => {
 
     function deleteTest(index: number, callCount: number = 1) {
       cy.get('td button').eq(index).click()
-      cy.get('@confirmStub').should('have.callCount', callCount);
+      confirmCalls(callCount)
     }
 
     function checkScore(expected: string) {
@@ -33,17 +35,15 @@ describe('Sprint Enduro', () => {
     }
 
     beforeEach(() => {
-      cy.visit('/#')
-      cy.window().then((win) => {
-        cy.stub(win, 'confirm').as('confirmStub').returns(true)
-      });
-      cy.getBySel('add-enduro').first().click()
-      cy.getBySel('add-sprint').first().click()
+      visitHome()
+      addRace('sprint')
+      expectClean() // a brand new race starts clean
     })
 
     it('can be empty', () => {  
       deleteTest(0)
       verifyNumberOfChecks(0)
+      saveAndExpectClean()
     })
 
     it('supports 24 hour time', () => {  
@@ -58,6 +58,7 @@ describe('Sprint Enduro', () => {
       createTest('14:21:40', '14:24:28')
 
       checkScore('02:45:03')
+      saveAndExpectClean()
     })
 
     it('supports am/pm', () => {
@@ -72,6 +73,7 @@ describe('Sprint Enduro', () => {
       createTest('2:21:40', '2:24:28')
 
       checkScore('02:45:03')
+      saveAndExpectClean()
     })
 
     it('advances on 00', () => {
@@ -79,6 +81,7 @@ describe('Sprint Enduro', () => {
         cy.get('input.enterTime').eq(0).clear().type('00')
         cy.get('input.enterTime').eq(1).should('have.focus')
       })
+      saveAndExpectClean()
     })
 
     it('can delete single sprint', () => {
@@ -91,6 +94,7 @@ describe('Sprint Enduro', () => {
       checkScore('01:05:00')
       deleteTest(1, 2)
       checkScore('00:50:00')
+      saveAndExpectClean()
     })
   })
   
@@ -103,18 +107,17 @@ describe('Sprint Enduro', () => {
     }
 
     beforeEach(() => {
-      cy.visit('/#')
-      cy.window().then((win) => {
-        cy.stub(win, 'confirm').as('confirmStub').returns(true)
-      });
-      cy.getBySel('add-enduro').first().click()
-      cy.getBySel('add-sprint').first().click()    })
+      visitHome()
+      addRace('sprint')
+      expectClean() // a brand new race starts clean
+    })
 
     it('does nothing when the row is blank', () => {
       cy.get('tbody tr:last-child').within(() => {
         cy.get('input.enterTime').eq(0).type('{enter}')
       })
       verifyNumberOfChecks(1)
+      expectClean()
     })
 
     it('does nothing when only the enter time is filled', () => {
@@ -123,6 +126,7 @@ describe('Sprint Enduro', () => {
         cy.get('input.enterTime').eq(2).type('{enter}')
       })
       verifyNumberOfChecks(1)
+      saveAndExpectClean()
     })
 
     it('adds a test once the row is a complete, valid test, and focuses the new row', () => {
@@ -133,6 +137,7 @@ describe('Sprint Enduro', () => {
       })
       verifyNumberOfChecks(2)
       cy.get('tbody tr:last-child input.enterTime').eq(0).should('have.focus')
+      saveAndExpectClean()
     })
 
     it('does nothing in an earlier row, even if valid', () => {
@@ -147,6 +152,7 @@ describe('Sprint Enduro', () => {
         cy.get('input.exitTime').eq(2).type('{enter}')
       })
       verifyNumberOfChecks(2)
+      saveAndExpectClean()
     })
 
     it('adds a test pressed in an enter-time field', () => {
@@ -156,6 +162,7 @@ describe('Sprint Enduro', () => {
         cy.get('input.enterTime').eq(0).type('{enter}')
       })
       verifyNumberOfChecks(2)
+      saveAndExpectClean()
     })
   })
 })

@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { saveAndExpectClean } from './app_util'
+
 import { addEmergency, setSecret, checkScore, setRiderMinute, newTimeKeeper } from './timekeeper_util';
 
 describe('Time Keeper Bugs', () => {
@@ -9,6 +11,7 @@ describe('Time Keeper Bugs', () => {
       setSecret(10)
       addEmergency(10, 31)
       checkScore(2, 0, 1, false)
+      saveAndExpectClean()
     })
 
     

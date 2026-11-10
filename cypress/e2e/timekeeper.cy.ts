@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { saveAndExpectClean } from './app_util'
+
 import {
   setSecret,
   addSecret,
@@ -46,6 +48,7 @@ describe('Time Keeper Enduro', () => {
       // Check that dropped DQ checks don't DQ you
       setDropped(14, true)
       checkScore(11, 12, 566, false)
+      saveAndExpectClean()
     })
 
     it('does not score invalid rows', () => {
@@ -56,6 +59,7 @@ describe('Time Keeper Enduro', () => {
 
       setSecret(NaN)
       checkScore(1, 1, 0, false)
+      saveAndExpectClean()
     })
   })
 
@@ -69,6 +73,7 @@ describe('Time Keeper Enduro', () => {
       addSecret(18);
 
       checkScore(2, 1, 0, false)
+      saveAndExpectClean()
     })
 
     it('does not score invalid rows', () => {
@@ -79,6 +84,7 @@ describe('Time Keeper Enduro', () => {
 
       setSecret(NaN)
       checkScore(1, 1, 0, false)
+      saveAndExpectClean()
     })
   })
 
@@ -96,6 +102,7 @@ describe('Time Keeper Enduro', () => {
         cy.get('input').first().clear().type('{enter}')
       })
       verifyNumberOfChecks(1)
+      saveAndExpectClean()
     })
 
     it('adds a check when the last row is valid, and focuses the new row', () => {
@@ -105,6 +112,7 @@ describe('Time Keeper Enduro', () => {
       })
       verifyNumberOfChecks(2)
       cy.get('tbody tr:last-child input').first().should('have.focus')
+      saveAndExpectClean()
     })
 
     it('does nothing in an earlier row, even if valid', () => {
@@ -118,6 +126,7 @@ describe('Time Keeper Enduro', () => {
         cy.get('input').first().type('{enter}')
       })
       verifyNumberOfChecks(2)
+      saveAndExpectClean()
     })
 
     it('does nothing for an Emergency check with only a minute', () => {
@@ -128,6 +137,7 @@ describe('Time Keeper Enduro', () => {
         cy.get('input').first().type('{enter}')
       })
       verifyNumberOfChecks(1)
+      saveAndExpectClean()
     })
 
     it('adds a check in seconds once an Emergency check is complete', () => {
@@ -138,6 +148,7 @@ describe('Time Keeper Enduro', () => {
         cy.get('input').eq(1).type('{enter}')
       })
       verifyNumberOfChecks(2)
+      saveAndExpectClean()
     })
   })
 })
