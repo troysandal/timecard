@@ -32,6 +32,7 @@
     </p>
     <button
       onclick={onAdd}
+      data-cy="add-enduro"
       class="w-full flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-sm font-medium px-3 py-3 mb-4 hover:opacity-90 transition-opacity"
       style="borderRadius: 'var(--radius)'"
     >

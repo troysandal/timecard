@@ -48,6 +48,7 @@
   </div>
   <div class="border-t border-border px-3 py-3 flex gap-2">
     <button
+      data-cy="add-test"
       onclick={() => viewModel.addTestData()}
       class="flex-1 min-h-11 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium
              hover:opacity-90 active:scale-95 transition"

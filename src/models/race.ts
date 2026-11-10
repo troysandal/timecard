@@ -23,11 +23,12 @@ export type SprintEnduroData = {
 
 export function toSprint(data: SprintEnduroData): SprintEnduro {
   const enduro = new SprintEnduro();
+  const nanTest = new SprintTest(
+      new SprintTestTime(NaN, NaN, NaN),
+      new SprintTestTime(NaN, NaN, NaN)
+    )
   enduro.tests = data.tests.map((test) => {
-    return new SprintTest(
-      new SprintTestTime(test.enter.hour, test.enter.minute, test.enter.second),
-      new SprintTestTime(test.exit.hour, test.exit.minute, test.exit.second)
-    );
+    return SprintTest.fromTimes(test.enter, test.exit) || nanTest
   });
   return enduro;
 }
