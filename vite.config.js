@@ -5,8 +5,13 @@ import tailwindcss from "@tailwindcss/vite"
 import fs from 'fs'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isCapacitor = mode === 'capacitor'
+  const keyPath = new URL('./cert.key', import.meta.url)
+  const certPath = new URL('./cert.crt', import.meta.url)
+  // Self-signed SSL certificate for local PWA debugging (dev server only)
+  const useHttps =
+    command === 'serve' && fs.existsSync(keyPath) && fs.existsSync(certPath)
 
   return { 
     build: {
@@ -52,11 +57,13 @@ export default defineConfig(({ mode }) => {
     },
     // Self Signed SSL Certifcate for PWA Debugging
     server: {
-      https: {
-        key: fs.readFileSync(new URL('./cert.key', import.meta.url)),
-        cert: fs.readFileSync(new URL('./cert.crt', import.meta.url)),
-      },
-      host: true // useful for mobile testing
+      https: useHttps
+        ? {
+            key: fs.readFileSync(keyPath),
+            cert: fs.readFileSync(certPath),
+          }
+        : undefined,
+      host: true,
     }
   }
 })
