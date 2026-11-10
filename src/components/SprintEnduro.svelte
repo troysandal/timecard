@@ -9,9 +9,10 @@
 
     let {viewModel = $bindable()}: Props = $props()
 
-    function onEnter(test: SprintTestData) {
-        const index = viewModel.race.timeCard.tests.findIndex((i) => i === test)
-        if (index === viewModel.race.timeCard.tests.length - 1) {
+    const tests = $derived(viewModel.race.timeCard.tests)
+
+    function onEnter(index: number) {
+        if (index === tests.length - 1) {
             viewModel.addTestData()
         }
     }
@@ -40,8 +41,8 @@
             </tr>
         </thead>
         <tbody>
-            {#each viewModel.race.timeCard.tests as test, index (test)}
-                <SprintTestRow {index} bind:test={viewModel.race.timeCard.tests[index]!} deleteTest={() => onDeleteTest(test, index)} onEnter={onEnter} />
+            {#each tests as test, index (test)}
+                <SprintTestRow {index} bind:test={tests[index]!} deleteTest={() => onDeleteTest(test, index)} onEnter={() => onEnter(index)} />
             {/each}
         </tbody>
     </table>

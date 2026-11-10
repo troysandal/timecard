@@ -8,14 +8,14 @@
         index: number,
         test: SprintTestData,
         deleteTest: () => void,
-        onEnter: (test: SprintTestData) => void
+        onEnter: () => void
     }
     
     let { 
         index,
         test = $bindable(),
         deleteTest,
-        onEnter = (test: SprintTestData) => {}
+        onEnter = () => {}
     }: Props = $props();
 
 
@@ -25,7 +25,7 @@
 
     function onEnterAny() {
         if (score !== "") {
-            onEnter(test);
+            onEnter();
         }
     }
 

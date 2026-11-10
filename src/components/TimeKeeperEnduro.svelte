@@ -1,6 +1,5 @@
 <script lang="ts">
     import TimeKeeperRow from "../components/TimeKeeperRow.svelte";
-    import { type Checkpoint } from "../models/timekeeper";
     import { TimeKeeperViewModel } from "../viewModels/viewModels.svelte"
 
     interface Props { 
@@ -9,8 +8,10 @@
 
     let {viewModel = $bindable()}: Props = $props()
 
+    const checkpoints = $derived(viewModel.race.timeCard.checkpoints)
+
     function onEnter(index: number) {
-        if (index === viewModel.race.timeCard.checkpoints.length - 1) {
+        if (index === checkpoints.length - 1) {
             viewModel.addCheck();
         }
     }
@@ -49,9 +50,9 @@
             </tr>
         </thead>
         <tbody>
-            {#each viewModel.race.timeCard.checkpoints as check, index (check)}
-                <TimeKeeperRow bind:check={viewModel.race.timeCard.checkpoints[index] as Checkpoint} score={scoreCard.checkScores[index]} index={index} onEnter={onEnter} />
-            {/each} 
+            {#each checkpoints as check, index (check)}
+                <TimeKeeperRow bind:check={checkpoints[index]!} score={scoreCard.checkScores[index]} {index} {onEnter} />
+            {/each}
         </tbody>
     </table>  
   </div>

@@ -63,11 +63,9 @@
           <label class="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
             Format
             <select class="field block h-10 w-full normal-case tracking-normal text-foreground" id="score-format" data-cy="format-select" bind:value={race.timeCard.format}>
-                {#each formatOptions as opt}
-                <option data-cy="format-option-{opt.value}" value={opt.value}>
-                {opt.label}
-                </option>
-            {/each}
+                {#each formatOptions as opt (opt.value)}
+                    <option data-cy="format-option-{opt.value}" value={opt.value}>{opt.label}</option>
+                {/each}
             </select>
           </label>
         </div>
