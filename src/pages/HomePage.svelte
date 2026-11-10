@@ -48,6 +48,7 @@
     </button>
     {#if items.length === 0}
       <div
+        data-cy="empty-state"
         class="border border-dashed border-border rounded-none py-16 text-center"
       >
         <p class="text-muted-foreground text-sm">No items yet.</p>
@@ -56,17 +57,20 @@
         </p>
       </div>
     {:else}
-      <ul class="divide-y divide-border border border-border bg-card">
+      <ul data-cy="race-list" class="divide-y divide-border border border-border bg-card">
         {#each sortedItems as item (item.id)}
           <li
+            data-cy="race-item"
             class="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors group"
           >
             <button
+              data-cy="race-edit"
               class="flex-1 min-w-0 text-left flex items-center gap-3"
               onclick={() => onEdit(item.id)}
             >
               <div class="min-w-0 flex-1">
                 <span
+                  data-cy="race-name"
                   class="font-medium text-sm text-foreground truncate block"
                 >
                   {#if item.name}
@@ -96,6 +100,7 @@
             </button>
             <button
               onclick={() => onDelete(item.id)}
+              data-cy="race-delete"
               class="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
               style="borderRadius: 'var(--radius)'"
               aria-label="Delete item"

@@ -39,6 +39,7 @@
           <input
           class="w-full border border-border bg-background text-foreground text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
           placeholder="Race Name"
+          data-cy="race-name-input"
           bind:value={race.name}
           />
         </label>

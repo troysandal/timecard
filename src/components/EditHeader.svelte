@@ -22,6 +22,7 @@
 <header class="shrink-0 border-b border-border bg-card px-4 py-3 flex items-center justify-between gap-3">
   <button
     onclick={onBack}
+    data-cy="back-button"
     class="shrink-0 flex items-center gap-1.5 p-1.5 font-medium hover:text-foreground transition-colors bg-gray-200"
     aria-label="Go back"
   >
@@ -32,6 +33,7 @@
   </button>
   <button
     onclick={onSave}
+    data-cy="save-button"
     class="shrink-0 flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 transition-all {dirtyClass}"
     style="borderRadius: 'var(--radius)'"
   >

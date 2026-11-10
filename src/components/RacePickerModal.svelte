@@ -11,7 +11,7 @@
     }: Props = $props();
 </script>
 
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+<div data-cy="race-picker" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
   <div class="bg-card border border-border shadow-lg w-80 p-6" style="borderRadius: 'var(--radius)'">
     <h2 class="font-display text-lg font-800 tracking-tight mb-1 text-foreground">New Item</h2>
     <p class="text-sm text-muted-foreground mb-5">Choose the item type to add.</p>
@@ -37,6 +37,7 @@
     </div>
     <button
       onclick={onClose}
+      data-cy="cancel-picker"
       class="mt-4 w-full text-xs font-extrabold hover:text-foreground transition-colors py-1"
     >
       Cancel

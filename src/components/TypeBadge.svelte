@@ -21,6 +21,7 @@
 </script>
 
 <span
+  data-cy="type-badge"
   class="mono text-[10px] font-medium px-1.5 py-0.5 uppercase tracking-widest border {raceTypeClass}"
   style="borderRadius: 'var(--radius)'"
 >
