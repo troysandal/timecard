@@ -1,2 +1,0 @@
-import{n as e}from"./index-C7zo1q_-.js";var t=class extends e{async isAvailable(){return{available:!1}}async captureCard(e){throw this.unavailable(`Card scanning is only available on iOS 26 or later.`)}async scanImage(e){throw this.unavailable(`Card scanning is only available on iOS 26 or later.`)}};export{t as TimeCardScannerUnsupported};
-//# sourceMappingURL=web-C8iXPYgE.js.map
