@@ -17,7 +17,7 @@ First Time Setup
 4. [optional] Jump to [PWA](#pwa) below and setup certs for each simulator
 
 Here are the basics you'll need to work on it.
-```
+``` sh
 # Run site
 npm run dev
 
