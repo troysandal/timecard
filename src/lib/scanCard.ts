@@ -1,0 +1,64 @@
+// scanCard.ts
+import { TimeCardScanner, type ScanResult } from 'time-card-scanner';
+import { CheckpointTypes, type Checkpoint } from "../models/timekeeper"
+
+export type ScanOutcome =
+  | { status: 'ok'; result: ScanResult }
+  | { status: 'cancelled' }
+  | { status: 'no-table'; imagePath: string } // photo taken, nothing readable
+  | { status: 'unavailable' }
+  | { status: 'error'; message: string };
+
+export async function canScan(): Promise<boolean> {
+  return (await TimeCardScanner.isAvailable()).available;
+}
+
+export async function scanCard(id:string): Promise<ScanOutcome> {
+  try {
+    const result = await TimeCardScanner.captureCard({
+      directory: 'DOCUMENTS',
+      folder: id, // created if missing; file name is generated
+    });
+    return { status: 'ok', result };
+  } catch (e: any) {
+    switch (e.code) {
+      case 'CANCELLED':
+        return { status: 'cancelled' }; // user backed out; not an error
+      case 'UNAVAILABLE':
+        return { status: 'unavailable' };
+      case 'NO_TABLE':
+        // The photo was saved; e.data.image.path / webPath point at it.
+        return { status: 'no-table', imagePath: e.data?.image?.webPath };
+      default:
+        return { status: 'error', message: e.message ?? String(e) };
+    }
+  }
+}
+
+const SECRET_SECONDS = 30
+
+// Cells from the scanner only contain [0-9:], so no character normalization.
+// Always returns a check; unreadable rows become a dropped Secret with NaN minute.
+export function parseRow(c1: string, c2: string): Checkpoint {
+  const fallback: Checkpoint = { type: CheckpointTypes.Secret, minute: NaN, seconds: SECRET_SECONDS, drop: true }
+  const joined = c2 ? `${c1}:${c2}` : c1
+  const text = joined.replace(/:+/g, ':').replace(/^:|:$/g, '')
+
+  const emergency = (minute: number, seconds: number): Checkpoint =>
+    seconds > 59 ? fallback : { type: CheckpointTypes.Emergency, minute, seconds, drop: false }
+
+  let m = /^(\d+):(\d{1,2})$/.exec(text)
+  if (m) return emergency(parseInt(m[1]!), parseInt(m[2]!))
+
+  m = /^(\d{2,})(\d{2})$/.exec(text) // mmss with no separator, 4+ digits (3 digits is a Secret)
+  if (m) return emergency(parseInt(m[1]!), parseInt(m[2]!))
+
+  if (/^\d{1,3}$/.test(text)) { // minutes can exceed 99
+    return { type: CheckpointTypes.Secret, minute: parseInt(text), seconds: SECRET_SECONDS, drop: false }
+  }
+  return fallback
+}
+
+export function scanToCheckpoints(rows: { c1: string; c2: string }[]): Checkpoint[] {
+  return rows.map(r => parseRow(r.c1 ?? '', r.c2 ?? ''))
+}

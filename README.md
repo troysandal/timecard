@@ -28,6 +28,11 @@ npm run test
 npm run dev
 npx cypress open
 
+# Debug Capacitor App w/Live Reloading
+npm run build:cap:dev
+npx cap open [ios|android]
+npm run dev
+
 # Deploy Web / PWA
 npm run build
 npm run test

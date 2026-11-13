@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import TimeKeeperRow from "../components/TimeKeeperRow.svelte";
     import { TimeKeeperViewModel } from "../viewModels/viewModels.svelte"
+    import { canScan, scanCard, scanToCheckpoints } from '../lib/scanCard';
 
     interface Props { 
         viewModel: TimeKeeperViewModel; 
@@ -9,6 +11,8 @@
     let {viewModel = $bindable()}: Props = $props()
 
     const checkpoints = $derived(viewModel.race.timeCard.checkpoints)
+    let available = $state(false);
+    onMount(async () => { available = await canScan(); });
 
     function onEnter(index: number) {
         if (index === checkpoints.length - 1) {
@@ -19,6 +23,24 @@
     function onReset() {
       if (window.confirm('Are you sure you want to reset the time card?')) {
         viewModel.resetCard()
+      }
+    }
+
+    async function onScan() {
+      if (!window.confirm("Warning - This will replace the contents of your time card - are you sure?")) {
+        return 
+      }
+      const outcome = await scanCard(viewModel.race.id)
+      if (outcome.status === "ok") {
+        if (outcome.result.rows.length === 0) {
+          window.alert("No checkpoints found in scan.")
+          return
+        }
+        console.log(JSON.stringify(outcome.result))
+        viewModel.race.timeCard.checkpoints = scanToCheckpoints(outcome.result.rows)
+        window.alert("Scan Complete - WARNING - Double check time card, AI can make mistakes.")
+      } else {
+        window.alert("Sorry, the scan failed, please try again.")
       }
     }
     
@@ -72,5 +94,14 @@
     >
       Reset
     </button>
+    {#if available}
+    <button
+      onclick={onScan}
+      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+             text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
+    >
+      Scan
+    </button>
+    {/if}
   </div>
 </div>

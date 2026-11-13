@@ -1,0 +1,38 @@
+{
+  "composite": true,
+  "emitDeclarationOnly": true,
+  "outDir": "node_modules/.tmp/tsconfig.node",
+
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "types": ["node"],
+
+    // Module resolution
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // Strict Checks
+    "strict": true,
+    "alwaysStrict": true,
+    "allowUnreachableCode": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+
+    // Linter Checks
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false
+  },
+  "include": [
+    "capacitor.config.ts","vite.config.js"
+  ],
+  "exclude": [
+    "node_modules/**/*"
+  ]
+}
