@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('time-card-scanner', () => ({ TimeCardScanner: {} }))
 
-import { parseRow, scanToCheckpoints } from '../../src/lib/scanCard'
+import { parseRow, parseSprintTime, scanToCheckpoints, scanToSprintTests } from '../../src/lib/scanCard'
 import { CheckpointTypes } from '../../src/models/timekeeper'
 
 const E = CheckpointTypes.Emergency
@@ -70,5 +70,66 @@ describe('scanToCheckpoints', () => {
 
   it('does not trim a trailing row that only has c3', () => {
     expect(scanToCheckpoints([row('5'), row('', '', '9')])).toHaveLength(2)
+  })
+})
+
+
+describe('parseSprintTime', () => {
+  it.each([
+    [['1230'], 12, 30, 0],
+    [['153'], 1, 53, 0],
+    [['123015'], 12, 30, 15],
+    [['92629'], 9, 26, 29],
+    [['9:26'], 9, 26, 0],
+    [['12:30:15'], 12, 30, 15],
+    [['9:5:7'], 9, 5, 7],
+    [['9:26', '29'], 9, 26, 29],
+    [['158', '26'], 1, 58, 26],
+    [['12:30', ':15'], 12, 30, 15],
+  ])('%j', (parts, hour, minute, second) => {
+    expect(parseSprintTime(...parts)).toEqual({ hour, minute, second })
+  })
+
+  it.each([
+    [['']],
+    [['12']],
+    [['1234567']],
+    [['12:345']],
+    [['2460']],
+    [['1275']],
+    [['12:30:75']],
+  ])('unreadable %j gives NaN', (parts) => {
+    const t = parseSprintTime(...parts)
+    expect(t.hour).toBeNaN()
+    expect(t.minute).toBeNaN()
+    expect(t.second).toBeNaN()
+  })
+})
+
+describe('scanToSprintTests', () => {
+  const row = (c1 = '', c2 = '', c3 = '') => ({ c1, c2, c3 })
+
+  it('maps c1 to enter and c2+c3 to exit', () => {
+    expect(scanToSprintTests([row('153', '158', '26')])).toEqual([
+      { enter: { hour: 1, minute: 53, second: 0 }, exit: { hour: 1, minute: 58, second: 26 } },
+    ])
+  })
+
+  it('trims trailing empty rows', () => {
+    expect(scanToSprintTests([row('153', '158', '26'), row(), row()])).toHaveLength(1)
+  })
+
+  it('returns [] when every row is empty', () => {
+    expect(scanToSprintTests([row(), row()])).toEqual([])
+  })
+
+  it('keeps an empty row in the middle as an all-NaN test', () => {
+    const tests = scanToSprintTests([row('153', '158', '26'), row(), row('200', '205', '10')])
+    expect(tests).toHaveLength(3)
+    for (const t of [tests[1]!.enter, tests[1]!.exit]) {
+      expect(t.hour).toBeNaN()
+      expect(t.minute).toBeNaN()
+      expect(t.second).toBeNaN()
+    }
   })
 })

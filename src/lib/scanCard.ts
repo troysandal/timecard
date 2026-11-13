@@ -1,6 +1,7 @@
 // scanCard.ts
 import { TimeCardScanner, type ScanResult } from 'time-card-scanner';
 import { CheckpointTypes, type Checkpoint } from "../models/timekeeper"
+import type { SprintTestData, SprintTestTimeData } from "../models/race"
 
 export type ScanOutcome =
   | { status: 'ok'; result: ScanResult }
@@ -64,8 +65,45 @@ type ScanRow = { c1: string; c2: string; c3: string }
 const isEmptyRow = (r: ScanRow) => !r.c1 && !r.c2 && !r.c3
 
 // Trailing blank rows are dropped; blank rows in the middle are kept to preserve positions.
-export function scanToCheckpoints(rows: ScanRow[]): Checkpoint[] {
+function trimTrailingEmptyRows(rows: ScanRow[]): ScanRow[] {
   let end = rows.length
   while (end > 0 && isEmptyRow(rows[end - 1]!)) end--
-  return rows.slice(0, end).map(r => parseRow(r.c1 ?? '', r.c2 ?? ''))
+  return rows.slice(0, end)
+}
+
+export function scanToCheckpoints(rows: ScanRow[]): Checkpoint[] {
+  return trimTrailingEmptyRows(rows).map(r => parseRow(r.c1 ?? '', r.c2 ?? ''))
+}
+
+const unreadableTime = (): SprintTestTimeData => ({ hour: NaN, minute: NaN, second: NaN })
+
+const HMM_OR_HHMM_OPTIONAL_SS = /^(?<hour>\d{1,2})(?<minute>\d{2})(?<second>\d{2})?$/
+
+const isTimeOfDay = ({ hour, minute, second }: SprintTestTimeData) =>
+  hour <= 23 && minute <= 59 && second <= 59
+
+// ['9:26', '29'] -> '92629', ['158', '26'] -> '15826', ['9:5:7'] -> '90507'
+function joinIntoDigits(parts: string[]): string | undefined {
+  const [leading = '', ...pairs] = parts.join(':').split(':').filter(Boolean)
+  if (pairs.some(pair => pair.length > 2)) return undefined
+  return leading + pairs.map(pair => pair.padStart(2, '0')).join('')
+}
+
+export function parseSprintTime(...parts: string[]): SprintTestTimeData {
+  const groups = HMM_OR_HHMM_OPTIONAL_SS.exec(joinIntoDigits(parts) ?? '')?.groups
+  if (!groups) return unreadableTime()
+
+  const time = {
+    hour: Number(groups.hour),
+    minute: Number(groups.minute),
+    second: Number(groups.second ?? 0),
+  }
+  return isTimeOfDay(time) ? time : unreadableTime()
+}
+
+export function scanToSprintTests(rows: ScanRow[]): SprintTestData[] {
+  return trimTrailingEmptyRows(rows).map(r => ({
+    enter: parseSprintTime(r.c1 ?? ''),
+    exit: parseSprintTime(r.c2 ?? '', r.c3 ?? ''),
+  }))
 }
