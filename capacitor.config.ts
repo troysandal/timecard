@@ -3,6 +3,9 @@ import os from 'os';
 
 declare const process: { env: Record<string, string | undefined> };
 
+// Plain-http dev server for the native app: `npm run dev:cap`. The PWA's https
+// server (`npm run dev`) uses 5173.
+const CAP_DEV_PORT = 5174;
 const isDev = process.env.CAP_DEV === 'true';
 
 function getLocalIp(): string {
@@ -23,7 +26,7 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   ...(isDev && {
     server: {
-      url: `http://${getLocalIp()}:5173`,
+      url: `http://${getLocalIp()}:${CAP_DEV_PORT}`,
       cleartext: true,
     },
   }),

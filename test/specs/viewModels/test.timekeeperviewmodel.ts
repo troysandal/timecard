@@ -1,9 +1,20 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TimeKeeperViewModel } from "../../../src/viewModels/viewModels.svelte"
 import type { TimeKeeperScore } from '../../../src/viewModels/ViewModelTypes';
 import { TimeKeeperEnduro, type TimeKeeperRace } from "../../../src/models/race";
 import { CheckpointTypes, ScoreFormat, Secret } from '../../../src/models/timekeeper';
 import { ScoreKeeper } from '../../../src/lib/scoring/timekeeper.scoring';
+vi.mock('../../../src/lib/scanCard', async (orig) => ({
+  ...(await orig<typeof import('../../../src/lib/scanCard')>()),
+  scanCard: vi.fn(),
+}))
+vi.mock('../../../src/lib/photos', async (orig) => ({
+  ...(await orig<typeof import('../../../src/lib/photos')>()),
+  deleteImage: vi.fn(async () => {}),
+}))
+import { scanCard } from '../../../src/lib/scanCard'
+import { deleteImage } from '../../../src/lib/photos'
+
 
 describe("TimeKeeperViewModel", () => {
   function makeTimeKeeperRace(timeCard: TimeKeeperEnduro = new TimeKeeperEnduro(1)): TimeKeeperRace {
@@ -259,5 +270,69 @@ describe("TimeKeeperViewModel", () => {
       saved!.timeCard.checkpoints[0]!.minute = 9
       expect(viewModel.isDirty).toBe(false)
     })
+  })
+})
+
+describe("TimeKeeperViewModel photo & scan", () => {
+  const newVm = () => new TimeKeeperViewModel({
+    id: "t", name: "n", createdAt: new Date(), raceType: "time_keeper", timeCard: new TimeKeeperEnduro(1)
+  })
+  const scanMock = vi.mocked(scanCard)
+  const okRows = (rows: { c1: string; c2: string; c3: string }[]) =>
+    ({ status: 'ok', imagePath: 't/scans/a.jpg', result: { rows, warnings: [], image: { path: '', webPath: '' } } }) as any
+
+  beforeEach(() => { vi.clearAllMocks() })
+
+  it('is dirty when imagePath changes and clean after save', () => {
+    const vm = newVm()
+    expect(vm.isDirty).toBe(false)
+    vm.race.imagePath = "t/scans/a.jpg"
+    expect(vm.isDirty).toBe(true)
+    vm.save(() => {})
+    expect(vm.isDirty).toBe(false)
+  })
+
+  it('resetCard clears the photo', () => {
+    const vm = newVm()
+    vm.race.imagePath = "t/scans/a.jpg"
+    vm.resetCard()
+    expect(vm.race.imagePath).toBeUndefined()
+  })
+
+  it('rowEntered adds a check only on the last row', () => {
+    const vm = newVm()
+    vm.resetCard()
+    vm.addCheck()
+    const n = vm.race.timeCard.checkpoints.length
+    vm.rowEntered(0)
+    expect(vm.race.timeCard.checkpoints.length).toBe(n)
+    vm.rowEntered(n - 1)
+    expect(vm.race.timeCard.checkpoints.length).toBe(n + 1)
+  })
+
+  it('scan applies rows and keeps the photo', async () => {
+    scanMock.mockResolvedValue(okRows([{ c1: '12:30', c2: '', c3: '' }]))
+    const vm = newVm()
+    expect(await vm.scan()).toBe('applied')
+    expect(vm.race.timeCard.checkpoints.length).toBeGreaterThan(0)
+    expect(vm.race.imagePath).toBe('t/scans/a.jpg')
+  })
+
+  it('scan with no usable rows deletes the photo and changes nothing', async () => {
+    scanMock.mockResolvedValue(okRows([]))
+    const vm = newVm()
+    expect(await vm.scan()).toBe('empty')
+    expect(deleteImage).toHaveBeenCalledWith('t/scans/a.jpg')
+    expect(vm.race.imagePath).toBeUndefined()
+  })
+
+  it('scan with no table deletes the photo and fails; cancel is a no-op', async () => {
+    scanMock.mockResolvedValue({ status: 'no-table', imagePath: 't/scans/b.jpg' })
+    expect(await newVm().scan()).toBe('failed')
+    expect(deleteImage).toHaveBeenCalledWith('t/scans/b.jpg')
+    vi.clearAllMocks()
+    scanMock.mockResolvedValue({ status: 'cancelled' })
+    expect(await newVm().scan()).toBe('cancelled')
+    expect(deleteImage).not.toHaveBeenCalled()
   })
 })

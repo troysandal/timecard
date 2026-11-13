@@ -1,17 +1,12 @@
 import { type TimeKeeperRace, } from '../models/race';
 import { ScoreKeeper } from '../lib/scoring/timekeeper.scoring';
 import { areEqual, CheckpointTypes, type Checkpoint } from "../models/timekeeper"
+import { scanToCheckpoints, type ScanRow } from '../lib/scanCard';
+import { RaceViewModelBase } from './RaceViewModelBase.svelte';
 import type { RaceViewModel, TimeKeeperScore } from './ViewModelTypes';
 
-export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKeeperScore> {
+export class TimeKeeperViewModel extends RaceViewModelBase<TimeKeeperRace> implements RaceViewModel<TimeKeeperRace, TimeKeeperScore> {
   readonly kind = 'time_keeper';
-  race: TimeKeeperRace;
-  raceLKG: TimeKeeperRace;
-
-  constructor(race: TimeKeeperRace) {
-    this.race = $state($state.snapshot(race));
-    this.raceLKG = $state($state.snapshot(race));
-  }
 
   get score(): TimeKeeperScore {
     return {
@@ -47,21 +42,26 @@ export class TimeKeeperViewModel implements RaceViewModel<TimeKeeperRace, TimeKe
     this.race.timeCard.checkpoints = this.race.timeCard.checkpoints.filter((c) => c !== check)
   }
 
+  /** Called when Enter is pressed in a row; the last row grows the card. */
+  rowEntered(index: number) {
+    if (index === this.race.timeCard.checkpoints.length - 1) this.addCheck()
+  }
+
   resetCard() {
     // this.race.timeCard.riderMinute = 1
     this.race.timeCard.checkpoints = this.initialChecks(1)
+    this.clearPhoto()
   }
 
-  save(onSave: (race: TimeKeeperRace) => void) {
-    this.raceLKG = $state.snapshot(this.race)
-    onSave($state.snapshot(this.race))
+  protected applyScanRows(rows: ScanRow[]): boolean {
+    const checks = scanToCheckpoints(rows)
+    if (checks.length === 0) return false
+    this.race.timeCard.checkpoints = checks
+    return true
   }
 
   get isDirty(): boolean {
-    const l = this.race;
-    const r = this.raceLKG;
-
-    return (l.name != r.name) || 
-           !areEqual($state.snapshot(l.timeCard), $state.snapshot(r.timeCard))
+    return this.isBaseDirty() ||
+           !areEqual($state.snapshot(this.race).timeCard, $state.snapshot(this.raceLKG).timeCard)
   }
 }

@@ -2,11 +2,12 @@
 import { TimeCardScanner, type ScanResult } from 'time-card-scanner';
 import { CheckpointTypes, type Checkpoint } from "../models/timekeeper"
 import type { SprintTestData, SprintTestTimeData } from "../models/race"
+import { PHOTO_SCAN_DIRECTORY, scanFolder, toImagePath } from "./photos"
 
 export type ScanOutcome =
-  | { status: 'ok'; result: ScanResult }
+  | { status: 'ok'; result: ScanResult; imagePath: string }
   | { status: 'cancelled' }
-  | { status: 'no-table'; imagePath: string } // photo taken, nothing readable
+  | { status: 'no-table'; imagePath?: string } // photo taken, nothing readable
   | { status: 'unavailable' }
   | { status: 'error'; message: string };
 
@@ -17,10 +18,10 @@ export async function canScan(): Promise<boolean> {
 export async function scanCard(id:string): Promise<ScanOutcome> {
   try {
     const result = await TimeCardScanner.captureCard({
-      directory: 'DOCUMENTS',
-      folder: id, // created if missing; file name is generated
+      directory: PHOTO_SCAN_DIRECTORY,
+      folder: scanFolder(id), // created if missing; file name is generated
     });
-    return { status: 'ok', result };
+    return { status: 'ok', result, imagePath: toImagePath(id, result.image.path) };
   } catch (e: any) {
     switch (e.code) {
       case 'CANCELLED':
@@ -29,12 +30,15 @@ export async function scanCard(id:string): Promise<ScanOutcome> {
         return { status: 'unavailable' };
       case 'NO_TABLE':
         // The photo was saved; e.data.image.path / webPath point at it.
-        return { status: 'no-table', imagePath: e.data?.image?.webPath };
+        const path: string | undefined = e.data?.image?.path;
+        return { status: 'no-table', imagePath: path ? toImagePath(id, path) : undefined };
       default:
         return { status: 'error', message: e.message ?? String(e) };
     }
   }
 }
+
+/******************** Time Keeper Scanning  *********************/
 
 const SECRET_SECONDS = 30
 
@@ -60,7 +64,7 @@ export function parseRow(c1: string, c2: string): Checkpoint {
   return fallback
 }
 
-type ScanRow = { c1: string; c2: string; c3: string }
+export type ScanRow = { c1: string; c2: string; c3: string }
 
 const isEmptyRow = (r: ScanRow) => !r.c1 && !r.c2 && !r.c3
 
@@ -74,6 +78,8 @@ function trimTrailingEmptyRows(rows: ScanRow[]): ScanRow[] {
 export function scanToCheckpoints(rows: ScanRow[]): Checkpoint[] {
   return trimTrailingEmptyRows(rows).map(r => parseRow(r.c1 ?? '', r.c2 ?? ''))
 }
+
+/*********************** Sprint Scanning  ************************/
 
 const unreadableTime = (): SprintTestTimeData => ({ hour: NaN, minute: NaN, second: NaN })
 

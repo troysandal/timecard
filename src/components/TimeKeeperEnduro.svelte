@@ -2,7 +2,8 @@
     import { onMount } from 'svelte'
     import TimeKeeperRow from "../components/TimeKeeperRow.svelte";
     import { TimeKeeperViewModel } from "../viewModels/viewModels.svelte"
-    import { canScan, scanCard, scanToCheckpoints } from '../lib/scanCard';
+    import { canScan } from '../lib/scanCard';
+    import PhotoViewerModal from './PhotoViewerModal.svelte';
 
     interface Props { 
         viewModel: TimeKeeperViewModel; 
@@ -12,13 +13,8 @@
 
     const checkpoints = $derived(viewModel.race.timeCard.checkpoints)
     let available = $state(false);
+    let showPhoto = $state(false);
     onMount(async () => { available = await canScan(); });
-
-    function onEnter(index: number) {
-        if (index === checkpoints.length - 1) {
-            viewModel.addCheck();
-        }
-    }
 
     function onReset() {
       if (window.confirm('Are you sure you want to reset the time card?')) {
@@ -30,17 +26,12 @@
       if (!window.confirm("Warning - This will replace the contents of your time card - are you sure?")) {
         return 
       }
-      const outcome = await scanCard(viewModel.race.id)
-      if (outcome.status === "ok") {
-        console.log(JSON.stringify(outcome.result))
-        const newChecks = scanToCheckpoints(outcome.result.rows)
-        if (newChecks.length === 0) {
-          window.alert("No checkpoints found in scan.")
-          return
-        }
-        viewModel.race.timeCard.checkpoints = newChecks
+      const result = await viewModel.scan()
+      if (result === "applied") {
         window.alert("Scan Complete - WARNING - Double check time card, AI can make mistakes.")
-      } else {
+      } else if (result === "empty") {
+        window.alert("No checkpoints found in scan.")
+      } else if (result === "failed") {
         window.alert("Sorry, the scan failed, please try again.")
       }
     }
@@ -74,7 +65,7 @@
         </thead>
         <tbody>
             {#each checkpoints as check, index (check)}
-                <TimeKeeperRow bind:check={checkpoints[index]!} score={scoreCard.checkScores[index]} {index} {onEnter} />
+                <TimeKeeperRow bind:check={checkpoints[index]!} score={scoreCard.checkScores[index]} {index} onEnter={(i: number) => viewModel.rowEntered(i)} />
             {/each}
         </tbody>
     </table>  
@@ -104,5 +95,18 @@
       Scan
     </button>
     {/if}
+    {#if viewModel.race.imagePath}
+    <button
+      data-cy="view-photo"
+      onclick={() => { showPhoto = true }}
+      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+             text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
+    >
+      View
+    </button>
+    {/if}
   </div>
 </div>
+{#if showPhoto && viewModel.race.imagePath}
+  <PhotoViewerModal imagePath={viewModel.race.imagePath} onClose={() => { showPhoto = false }} />
+{/if}

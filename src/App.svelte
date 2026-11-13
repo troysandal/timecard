@@ -10,6 +10,7 @@
   import { onMount } from 'svelte'
   import { loadDB, saveDB } from './db/database'
   import { installAndroidBackButton } from './lib/backButton'
+  import { pruneRaceImages, deleteRaceImages } from './lib/photos'
 
   type Page = "home" | "sprint" | "timekeeper"
 
@@ -75,10 +76,10 @@
       if (db) {
         items = (db as any).races as Race[];
       }
-      const match = location.hash.match(/^#\/edit\/(.+)$/)
+      const hashId = location.hash.match(/^#\/edit\/(.+)$/)?.[1]
       history.replaceState({ page: 'home' }, '', '#/')
-      if (match && showEdit(match[1])) {
-        pushEdit(match[1])
+      if (hashId && showEdit(hashId)) {
+        pushEdit(hashId)
       }
       isLoading = false;
     })()
@@ -145,12 +146,14 @@
     if (window.confirm('Are you sure you want to delete this race?')) {
       items = items.filter((i) => i.id !== id)
       await save()
+      await deleteRaceImages(id)
     }
   }
 
   const handleSave = async (updated: Race) => {
     items = items.map((item) => (item.id === updated.id ? updated : item))
     await save()
+    await pruneRaceImages(updated.id, updated.imagePath)
   }
 
   // Navigation goes through history; handlePopState does the guard + page switch.

@@ -4,7 +4,8 @@ A very simple app to compute your score in a Time Keeping (AMA National & NEI Br
 ## Roadmap
 - [X] Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
 - [X] More than one timecard
-- [ ] Scan timecard with device camera, attach photo to timecard
+- [X] Scan timecard with device camera, attach photo to timecard
+- [ ] Restyle UI for native
 - [ ] Add to the Apple and Google Stores
 
 ## Development
@@ -32,10 +33,11 @@ npx cypress open
 # Debug Capacitor App w/Live Reloading
 npm run build:cap:dev
 npx cap open [ios|android]
-npm run dev
+npm run dev:cap   # http:/localhost:5174
 
 # Deploy Web / PWA
 npm run build
+npm run dev       # https://localhost:5173
 npm run test
 npx cyrpress run
 git push origin main
