@@ -59,6 +59,13 @@ export function parseRow(c1: string, c2: string): Checkpoint {
   return fallback
 }
 
-export function scanToCheckpoints(rows: { c1: string; c2: string }[]): Checkpoint[] {
-  return rows.map(r => parseRow(r.c1 ?? '', r.c2 ?? ''))
+type ScanRow = { c1: string; c2: string; c3: string }
+
+const isEmptyRow = (r: ScanRow) => !r.c1 && !r.c2 && !r.c3
+
+// Trailing blank rows are dropped; blank rows in the middle are kept to preserve positions.
+export function scanToCheckpoints(rows: ScanRow[]): Checkpoint[] {
+  let end = rows.length
+  while (end > 0 && isEmptyRow(rows[end - 1]!)) end--
+  return rows.slice(0, end).map(r => parseRow(r.c1 ?? '', r.c2 ?? ''))
 }

@@ -32,12 +32,13 @@
       }
       const outcome = await scanCard(viewModel.race.id)
       if (outcome.status === "ok") {
-        if (outcome.result.rows.length === 0) {
+        console.log(JSON.stringify(outcome.result))
+        const newChecks = scanToCheckpoints(outcome.result.rows)
+        if (newChecks.length === 0) {
           window.alert("No checkpoints found in scan.")
           return
         }
-        console.log(JSON.stringify(outcome.result))
-        viewModel.race.timeCard.checkpoints = scanToCheckpoints(outcome.result.rows)
+        viewModel.race.timeCard.checkpoints = newChecks
         window.alert("Scan Complete - WARNING - Double check time card, AI can make mistakes.")
       } else {
         window.alert("Sorry, the scan failed, please try again.")

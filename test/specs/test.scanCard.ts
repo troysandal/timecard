@@ -47,7 +47,28 @@ describe('parseRow', () => {
 })
 
 describe('scanToCheckpoints', () => {
+  const row = (c1 = '', c2 = '', c3 = '') => ({ c1, c2, c3 })
+
   it('returns one check per row', () => {
-    expect(scanToCheckpoints([{ c1: '5', c2: '' }, { c1: '', c2: '' }])).toHaveLength(2)
+    expect(scanToCheckpoints([row('5'), row('7')])).toHaveLength(2)
+  })
+
+  it('trims trailing empty rows', () => {
+    expect(scanToCheckpoints([row('5'), row(), row()])).toHaveLength(1)
+  })
+
+  it('returns [] when every row is empty', () => {
+    expect(scanToCheckpoints([row(), row()])).toEqual([])
+  })
+
+  it('keeps an empty row in the middle', () => {
+    const checks = scanToCheckpoints([row('5'), row(), row('7')])
+    expect(checks).toHaveLength(3)
+    expect(checks[1]!.minute).toBeNaN()
+    expect(checks[1]!.drop).toBe(true)
+  })
+
+  it('does not trim a trailing row that only has c3', () => {
+    expect(scanToCheckpoints([row('5'), row('', '', '9')])).toHaveLength(2)
   })
 })
