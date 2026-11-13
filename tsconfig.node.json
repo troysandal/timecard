@@ -1,16 +1,15 @@
 {
-  "composite": true,
-  "emitDeclarationOnly": true,
-  "outDir": "node_modules/.tmp/tsconfig.node",
-
   "compilerOptions": {
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "node_modules/.tmp/tsconfig.node",
+    
     "lib": ["ESNext"],
     "target": "ESNext",
     "module": "ESNext",
     "types": ["node"],
 
     // Module resolution
-    "noEmit": true,
     "allowJs": true,
     "checkJs": true,
     "resolveJsonModule": true,
