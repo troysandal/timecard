@@ -1,0 +1,35 @@
+{
+  "name": "time-card-scanner",
+  "version": "0.1.0",
+  "description": "Capacitor plugin (TimeCardScanner): photograph an enduro time card and read its table, offline, on iOS 26+.",
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "dist/",
+    "ios/Sources",
+    "ios/Core/Package.swift",
+    "ios/Core/Sources",
+    "Package.swift"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "verify:ios": "xcodebuild -scheme TimeCardScanner -destination generic/platform=iOS build",
+    "prepublishOnly": "npm run build"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "peerDependencies": {
+    "@capacitor/core": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/core": "^8.6.0",
+    "typescript": "^5.6.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

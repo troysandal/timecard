@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import SprintTestRow from "./SprintTestRow.svelte"
     import type { SprintViewModel } from "../viewModels/viewModels.svelte"
     import type { SprintTestData } from "../models/race";
+    import { canScan, scanCard, scanToSprintTests } from '../lib/scanCard';
     
     interface Props { 
         viewModel: SprintViewModel; 
@@ -10,6 +12,8 @@
     let {viewModel = $bindable()}: Props = $props()
 
     const tests = $derived(viewModel.race.timeCard.tests)
+    let available = $state(false);
+    onMount(async () => { available = await canScan(); });
 
     function onEnter(index: number) {
         if (index === tests.length - 1) {
@@ -23,12 +27,31 @@
         }
     }
     
+    async function onScan() {
+      if (!window.confirm("Warning - This will replace the contents of your score card - are you sure?")) {
+        return
+      }
+      const outcome = await scanCard(viewModel.race.id)
+      if (outcome.status === "ok") {
+        const newTests = scanToSprintTests(outcome.result.rows)
+        if (newTests.length === 0) {
+          window.alert("No tests found in scan.")
+          return
+        }
+        viewModel.race.timeCard.tests = newTests
+        window.alert("Scan Complete - WARNING - Double check score card, AI can make mistakes.")
+      } else {
+        window.alert("Sorry, the scan failed, please try again.")
+      }
+    }
+
     function onDeleteTest(test: SprintTestData, index: number) {
       if (window.confirm(`You sure you want to delete test ${index + 1}?`)) {
           viewModel.deleteTest(test)
       }
     }
 </script>
+
 <div class="flex flex-col h-full">
   <div class="overflow-x-auto flex-1 overflow-y-auto">
     <table class="w-full text-sm min-w-[320px]">
@@ -63,5 +86,14 @@
     >
       Reset
     </button>
+    {#if available}
+    <button
+      onclick={onScan}
+      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+             text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
+    >
+      Scan
+    </button>
+    {/if}
   </div>
 </div>
