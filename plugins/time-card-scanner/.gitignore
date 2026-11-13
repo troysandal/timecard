@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.build/
+.swiftpm/
+*.xcodeproj
+Package.resolved

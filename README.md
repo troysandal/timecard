@@ -23,6 +23,7 @@ npm run dev
 
 # Unit Tests
 npm run test
+(cd plugins/time-card-scanner/ios/Core && swift test)
 
 # Integration Tests
 npm run dev
@@ -46,6 +47,9 @@ npx cap sync ios android
 # Open Native Projects
 npx cap open [ios|android]
 ```
+
+## Time Card Scanner (iOS)
+On-device time card scanning (iOS 26+) is a Capacitor plugin in [plugins/time-card-scanner](plugins/time-card-scanner/README.md), installed as an npm workspace. Rebuild it after TypeScript changes with `npm run build -w time-card-scanner`; run its Swift tests with `cd plugins/time-card-scanner/ios/Core && swift test`.
 
 ## PWA
 We still support PWA which means you need the openssl certificate trusted by your browser.  For iOS and Android simulators you need to add the cert.
