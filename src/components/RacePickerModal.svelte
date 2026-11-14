@@ -23,7 +23,7 @@
         style="borderRadius: 'var(--radius)'"
       >
         <div class="font-display font-700 text-sm text-foreground group-hover:text-[#D4420A] transition-colors">Time Keeper</div>
-        <div class="text-xs text-muted-foreground mt-0.5">Track tasks and hours</div>
+        <div class="text-xs text-muted-foreground mt-0.5">AMA or BrandX Format</div>
       </button>
       <button
         data-cy="add-sprint"
@@ -32,7 +32,7 @@
         style="borderRadius: 'var(--radius)'"
       >
         <div class="font-display font-700 text-sm text-foreground group-hover:text-[#0A6ED4] transition-colors">Sprint</div>
-        <div class="text-xs text-muted-foreground mt-0.5">Plan stories and points</div>
+        <div class="text-xs text-muted-foreground mt-0.5">Timed Tests</div>
       </button>
     </div>
     <button
