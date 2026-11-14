@@ -1,0 +1,2 @@
+import{n as e}from"./index-CEtOMy79.js";var t=class extends e{async isAvailable(){return{available:!1}}async captureCard(e){throw this.unavailable(`Card scanning is only available in the iOS and Android apps.`)}async scanImage(e){throw this.unavailable(`Card scanning is only available in the iOS and Android apps.`)}};export{t as TimeCardScannerUnsupported};
+//# sourceMappingURL=web-B0ksrwfU.js.map
