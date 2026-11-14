@@ -51,11 +51,12 @@ npx cap sync ios android
 npx cap open [ios|android]
 
 # Publish to App Stores
-npm run build:cap
-npm run dev:cap # in separate terminal
+npm run build
 npm run test
+npm run dev       # in separate terminal
 npm run test:e2e
-# open Android and Xcode and deploy to app stores
+npm run build:cap
+# Now open Android and Xcode and deploy to app stores
 ```
 
 ## Time Card Scanner
