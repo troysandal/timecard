@@ -1,15 +1,16 @@
 # Enduro Time Card
-A very simple app to compute your score in a Time Keeping (AMA National & NEI Brand X) or Sprint Enduro.  Enter your time card scores then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). App is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser.  App store version is in a future release.
+An app to compute your Enduro scores.  Supports Time Keeping (AMA National & NEI Brand X) and Sprint Enduro.  Type or scan in your time cards then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). Web app is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser. 
 
 ## Roadmap
 - [X] Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
 - [X] More than one timecard
-- [X] Scan timecard with device camera, attach photo to timecard
+- [X] [iOS] Scan timecard with camera
+- [ ] [Android] Scan timecard with camera
 - [ ] Restyle UI for native
 - [ ] Add to the Apple and Google Stores
 
 ## Development
-This is a single page HTML/CSS/TypeScript/Svelte/Vite/Vitest/Cypress web app that runs as a Web page, PWA and Capacitor iOS and Android app. Everything was built with Node 26. 
+This is a single page HTML/CSS/TypeScript/Svelte/Vite/Vitest/Cypress web app that runs as a Web page, PWA and Capacitor iOS and Android app. Everything was built with Node/NPM v26.
 
 First Time Setup
 1. Initialize a self signed certificate for PWA `npm run cert`
@@ -51,13 +52,12 @@ npx cap open [ios|android]
 ```
 
 ## Time Card Scanner (iOS)
-On-device time card scanning (iOS 26+) is a Capacitor plugin in [plugins/time-card-scanner](plugins/time-card-scanner/README.md), installed as an npm workspace. Rebuild it after TypeScript changes with `npm run build -w time-card-scanner`; run its Swift tests with `cd plugins/time-card-scanner/ios/Core && swift test`.
+On-device time card scanning is done by a Capacitor plugin we built in [plugins/time-card-scanner](plugins/time-card-scanner/README.md), installed as an npm workspace. 
 
 ## PWA
 We still support PWA which means you need the openssl certificate trusted by your browser.  For iOS and Android simulators you need to add the cert.
 
 **iOS**
-
 Install Cert in simulator
 - XCode 26 and before - Drag and drop your cert.crt file directly from your computer's finder onto the running iOS Simulator screen. 
 - XCode 27+ - run `xcrun simctl keychain booted add-root-cert ./cert.crt`
@@ -78,8 +78,6 @@ Since Android runs on a virtualized internal network, typing localhost will fail
 	• Inside the emulator, open Settings -> Security -> More Security Settings -> Encryption & credentials -> Install a certificate -> CA certificate.
 	• Choose Install anyway, locate your cert.crt in the files explorer, and select it.
 3. Restart Mobile Chrome: Fully close and open Chrome inside the emulator. The Service Worker will now register flawlessly over https://10.0.2.2:5173, letting you test the PWA features.
-
-
 
 ## Wallaby.js
 

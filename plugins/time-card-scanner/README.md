@@ -13,6 +13,7 @@ Root `npm install` links it and builds `dist/`.
 ```sh
 npm run build -w time-card-scanner   # rebuild after TypeScript changes
 npx cap sync ios                     # after Swift or package changes
+ios/Core && swift test               # unit tests
 ```
 
 The camera permission (`NSCameraUsageDescription`) is already set in the app's
