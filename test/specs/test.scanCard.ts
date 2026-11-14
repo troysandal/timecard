@@ -90,6 +90,8 @@ describe('Time Card Scanning', () => {
         [['9:26', '29'], 9, 26, 29],
         [['158', '26'], 1, 58, 26],
         [['12:30', ':15'], 12, 30, 15],
+        [['2:2830'], 2, 28, 30],
+        [['12:2830'], 12, 28, 30] 
       ])('%j', (parts, hour, minute, second) => {
         expect(parseSprintTime(...parts)).toEqual({ hour, minute, second })
       })
