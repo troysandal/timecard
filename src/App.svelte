@@ -11,6 +11,7 @@
   import { loadDB, saveDB } from './db/database'
   import { installAndroidBackButton } from './lib/backButton'
   import { pruneRaceImages, deleteRaceImages } from './lib/photos'
+  import { TimeCardScanner } from 'timecard-scanner';
 
   type Page = "home" | "sprint" | "timekeeper"
 
@@ -72,6 +73,7 @@
     installAndroidBackButton()
 
     ;(async () => {
+      await TimeCardScanner.isAvailable()
       const db = await loadDB()
       if (db) {
         items = (db as any).races as Race[];

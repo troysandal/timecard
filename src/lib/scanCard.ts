@@ -90,10 +90,10 @@ const isTimeOfDay = ({ hour, minute, second }: SprintTestTimeData) =>
 
 // ['9:26', '29'] -> '92629', ['158', '26'] -> '15826', ['9:5:7'] -> '90507', ['2:2830'] -> '22830'
 function joinIntoDigits(parts: string[]): string | undefined {
-  const [leading = '', ...pairs] = parts.join(':').split(':').filter(Boolean)
-  const fusedMinuteSecond = pairs.length === 1 && pairs[0].length === 4
-  if (!fusedMinuteSecond && pairs.some(pair => pair.length > 2)) return undefined
-  return leading + pairs.map(pair => pair.padStart(2, '0')).join('')
+  const [leading = '', ...pairs] = parts.join(':').split(':').filter(Boolean);
+  const fusedMinuteSecond = pairs.length === 1 && pairs[0]?.length === 4;
+  if (!fusedMinuteSecond && pairs.some(pair => pair.length > 2)) return undefined;
+  return leading + pairs.map(pair => pair.padStart(2, '0')).join('');
 }
 
 export function parseSprintTime(...parts: string[]): SprintTestTimeData {

@@ -10,13 +10,10 @@
   "engines": {
     "node": ">=26"
   },
-  "workspaces": [
-    "plugins/*"
-  ],
   "scripts": {
-    "postinstall": "npm run build -w timecard-scanner",
     "dev": "vite --host",
     "dev:cap": "vite --host --mode capacitor --port 5174 --strictPort",
+    "compile": "tsc -p tsconfig.json --noEmit",
     "build": "vite build --base=/timecard/",
     "build:cap": "vite build --mode capacitor && npx cap sync",
     "build:cap:dev": "vite build --mode capacitor && CAP_DEV=true npx cap sync",
@@ -51,6 +48,6 @@
     "@capacitor/ios": "^8.6.0",
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
-    "timecard-scanner": "*"
+    "timecard-scanner": "github:troysandal/timecard-scanner#v0.2.1"
   }
 }

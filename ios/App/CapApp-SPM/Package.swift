@@ -14,7 +14,7 @@ let package = Package(
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.6.0"),
         .package(name: "CapacitorApp", path: "../../../node_modules/@capacitor/app"),
         .package(name: "CapacitorFilesystem", path: "../../../node_modules/@capacitor/filesystem"),
-        .package(name: "TimecardScanner", path: "../../../plugins/timecard-scanner")
+        .package(name: "TimecardScanner", path: "../../../node_modules/timecard-scanner")
     ],
     targets: [
         .target(
