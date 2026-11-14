@@ -25,7 +25,7 @@ npm run dev
 
 # Unit Tests
 npm run test
-(cd plugins/time-card-scanner/ios/Core && swift test)
+(cd plugins/timecard-scanner/ios/Core && swift test)
 
 # Integration Tests
 npm run dev
@@ -49,10 +49,17 @@ npx cap sync ios android
 
 # Open Native Projects
 npx cap open [ios|android]
+
+# Publish to App Stores
+npm run build:cap
+npm run dev:cap # in separate terminal
+npm run test
+npm run test:e2e
+# open Android and Xcode and deploy to app stores
 ```
 
-## Time Card Scanner (iOS)
-On-device time card scanning is done by a Capacitor plugin we built in [plugins/time-card-scanner](plugins/time-card-scanner/README.md), installed as an npm workspace. 
+## Time Card Scanner
+On-device time card scanning is done by a Capacitor plugin we built in [plugins/timecard-scanner](plugins/timecard-scanner/README.md), installed as an npm workspace. iOS requires iOS 26+, Android 8+ (SDK 24) for MLKit.
 
 ## PWA
 We still support PWA which means you need the openssl certificate trusted by your browser.  For iOS and Android simulators you need to add the cert.

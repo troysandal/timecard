@@ -1,5 +1,5 @@
 // scanCard.ts
-import { TimeCardScanner, type ScanResult } from 'time-card-scanner';
+import { TimeCardScanner, type ScanResult } from 'timecard-scanner';
 import { CheckpointTypes, type Checkpoint } from "../models/timekeeper"
 import type { SprintTestData, SprintTestTimeData } from "../models/race"
 import { PHOTO_SCAN_DIRECTORY, scanFolder, toImagePath } from "./photos"

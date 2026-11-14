@@ -1,5 +1,5 @@
 {
-  "name": "time-card-scanner",
+  "name": "timecard-scanner",
   "version": "0.1.0",
   "description": "Capacitor plugin (TimeCardScanner): photograph an enduro time card and read its table, offline, on iOS 26+.",
   "main": "dist/esm/index.js",

@@ -14,7 +14,7 @@
     "plugins/*"
   ],
   "scripts": {
-    "postinstall": "npm run build -w time-card-scanner",
+    "postinstall": "npm run build -w timecard-scanner",
     "dev": "vite --host",
     "dev:cap": "vite --host --mode capacitor --port 5174 --strictPort",
     "build": "vite build --base=/timecard/",
@@ -51,6 +51,6 @@
     "@capacitor/ios": "^8.6.0",
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
-    "time-card-scanner": "*"
+    "timecard-scanner": "*"
   }
 }

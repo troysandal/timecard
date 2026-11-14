@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('time-card-scanner', () => ({ TimeCardScanner: {} }))
+vi.mock('timecard-scanner', () => ({ TimeCardScanner: {} }))
 
 import { parseRow, parseSprintTime, scanToCheckpoints, scanToSprintTests } from '../../src/lib/scanCard'
 import { CheckpointTypes } from '../../src/models/timekeeper'
