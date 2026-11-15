@@ -18,8 +18,8 @@
 	);
 </script>
 
-<div class="min-h-screen bg-background flex flex-col">
-  <SafeAreaTop color="#F6F5F2" />
+<div class="min-h-dvh bg-background flex flex-col safe-x safe-bottom-edge">
+  <SafeAreaTop />
 
   <main class="flex-1 px-4 py-4 max-w-2xl w-full mx-auto">
     <h2

@@ -34,6 +34,22 @@ Rules for the mobile UI. Values (colors, sizes, radii) live in `src/app.css` and
 - Known limit: the clamp is not applied in Android Chrome or an installed Android PWA. Chrome applies the system font scale itself and a page can't read or cap it, so a user at the largest Android setting gets text up to 200% there. Layouts should degrade without breaking (scroll rather than overlap), but only the native apps and iOS are capped.
 - Changing the system text size recreates the Android activity (`fontScale` is not in the manifest's `configChanges`), which is what re-runs the clamp. Do not add `fontScale` to `configChanges` without also listening for the change.
 
+## Safe areas and system bars
+- Never write `env(safe-area-inset-*)` in a component. Use the `--safe-top/right/bottom/left` variables in `src/app.css` or the utilities built on them: `.safe-x` (left/right), `.safe-bottom` (footers that already pad), `.safe-bottom-edge` (screens with no bottom padding of their own), `.safe-top`, and the `SafeAreaTop` spacer. Tests override the variables because Chrome's `env()` is always 0 inside Cypress's iframe.
+- Every page shell applies all four edges: `SafeAreaTop` at the top, `.safe-x` on the root, and a bottom inset on whatever sits at the bottom edge. New screens and full-screen overlays must do the same.
+- Page heights use `dvh` (`h-dvh`, `min-h-dvh`), not `vh`, so the bottom doesn't hide behind a browser toolbar.
+- The web view draws edge to edge under the status bar and home indicator, so the page background token is what shows there. Never hard-code a color for the safe-area band.
+- No `@capacitor/status-bar` plugin. Capacitor 8's built-in `SystemBars` plugin handles Android insets and sets the status and gesture bar icon colors from the system theme (default config). iOS follows the system appearance on its own.
+- Android shows the theme's `windowBackground` behind the system bars, so `res/values/colors.xml` and `res/values-night/colors.xml` define `appBackground`, and the theme uses it. Keep it equal to the `background` token for each scheme (XML comments can't contain two hyphens in a row).
+- Android WebView 140 and newer goes edge to edge and reports real `env()` insets. Older WebViews are padded natively and report 0, and the layout must work in both. The emulator in use has WebView 124, so only the padded mode is checked on it.
+
+## Zoom, keyboard and full-screen height
+- Double-tap zoom is off everywhere (`touch-action: manipulation` on `html`). Native builds also lock the zoom with `maximum-scale=1`, added to the viewport meta by the `native-viewport-lock` plugin in `vite.config.js`, so a stray pinch can't zoom a native app. The web build and PWA stay pinch-zoomable for accessibility. Check `dist/index.html` after `build:cap` if you touch the viewport meta.
+- Full-screen layouts use `h-app` (height `var(--app-height)`, kept equal to `visualViewport.height` by `src/lib/viewportHeight.ts`), not `h-dvh`. On iOS the keyboard shrinks the visual viewport but not the layout viewport, so a `100dvh` page becomes taller than the screen and can be dragged.
+- `@capacitor/keyboard` is installed so iOS resizes the web view itself when the keyboard appears (its default `resize: native`). With that, the layout viewport equals the visible area and the page cannot scroll or pan. Do not set `resize: none`.
+- The iOS accessory bar (^ v Done) stays visible: the number pad has no Return key, so Done is how people dismiss it. The plugin hides it by default; `src/lib/keyboard.ts` turns it back on. Android uses Capacitor's SystemBars insets; web and PWA rely on `viewportHeight.ts`.
+- To debug viewport or scroll problems on a device, temporarily print `innerHeight`, `visualViewport.height`, `scrollY` and `documentElement.scrollHeight` on screen and capture with `scripts/screenshots.sh`; the simulator can't be dragged from the command line.
+
 ## PWA compatibility
 The GitHub Pages PWA and plain browser stay fully functional as long as possible; native is not allowed to break them.
 - Every native-only feature (haptics, status bar, keyboard, splash, orientation lock, native dialogs/sheets, share, browser) goes through a small adapter that switches on `getRunMode()` in `src/platform.ts`. Callers never import a Capacitor plugin directly.
@@ -44,4 +60,4 @@ The GitHub Pages PWA and plain browser stay fully functional as long as possible
 - Verify every step on the web build (`npm run test:e2e`, `npm run test:screenshots`) as well as on devices.
 
 ## Sections added by later steps
-Safe areas and status bar (3), touch targets and press states (4), tablet layout (5), navigation and back (6), sheets vs native dialogs (7), keyboard (8), haptics (9), accessibility and sunlight contrast (11).
+Splash and launch screens (3b), touch targets and press states (4), tablet layout (5), navigation and back (6), sheets vs native dialogs (7), keyboard (8), haptics (9), accessibility and sunlight contrast (11).

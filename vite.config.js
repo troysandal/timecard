@@ -22,6 +22,21 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       tailwindcss(),
       svelte(),
+      {
+        // Native apps lock the zoom so a double-tap or pinch can't zoom the UI (native apps
+        // don't). The web build and PWA stay zoomable for accessibility; touch-action in
+        // app.css still stops double-tap zoom there.
+        name: 'native-viewport-lock',
+        /** @param {string} html */
+        transformIndexHtml: (html) => {
+          if (!isCapacitor) return html
+          if (!html.includes('viewport-fit=cover')) {
+            // Fail the build rather than ship native apps that can be zoomed by accident.
+            throw new Error('native-viewport-lock: index.html viewport meta must contain viewport-fit=cover')
+          }
+          return html.replace('viewport-fit=cover', 'maximum-scale=1, viewport-fit=cover')
+        },
+      },
       !isCapacitor && VitePWA({
         registerType: 'autoUpdate',
         manifest: {

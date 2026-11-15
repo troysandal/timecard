@@ -28,8 +28,8 @@
   }
 </script>
 
-<div class="h-screen flex flex-col bg-background max-w-2xl w-full mx-auto overflow-hidden">
-  <SafeAreaTop color="#F6F5F2" />
+<div class="h-app flex flex-col bg-background max-w-2xl w-full mx-auto overflow-hidden safe-x">
+  <SafeAreaTop />
   <EditHeader {viewModel} {onBack} onSave={handleSave} />
   <RaceDetails bind:race={viewModel.race} />
 

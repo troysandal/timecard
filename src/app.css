@@ -84,12 +84,47 @@
   box-sizing: border-box;
 }
 
+/* Safe-area insets behind variables. Always use these, never env() directly: layouts
+   stay testable (Chrome's env() is always 0 inside Cypress's iframe, so tests override
+   the variables) and there is one place to change them. env() is real on iOS, in PWAs,
+   and on Android WebView 140+; older Android WebViews get native padding and 0 here. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
 .safe-top {
-  padding-top: max(0.75rem, env(safe-area-inset-top));
+  padding-top: max(0.75rem, var(--safe-top));
 }
 
 .safe-bottom {
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-bottom: max(1rem, var(--safe-bottom));
+}
+
+/* Left/right insets: landscape notch and cutouts (iPad, Android). Zero on portrait phones. */
+.safe-x {
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+/* Bottom inset only, for screens whose last element has no padding of its own
+   (keeps content clear of the iOS home indicator and Android gesture bar). */
+.safe-bottom-edge {
+  padding-bottom: var(--safe-bottom);
+}
+
+/* Full-screen layouts: exactly as tall as the visible area (set by lib/viewportHeight.ts),
+   so the iOS keyboard can never make the page taller than the screen and draggable. */
+.h-app {
+  height: var(--app-height, 100dvh);
+}
+
+/* No double-tap zoom anywhere (pan and pinch still work). Needed on the web and PWA;
+   native builds also lock the zoom in the viewport meta (vite.config.js). */
+html {
+  touch-action: manipulation;
 }
 
 body {

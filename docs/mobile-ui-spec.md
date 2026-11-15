@@ -52,14 +52,21 @@ Goal: make every later step visually verifiable.
 **Known gap, handled in 10c:** the table fits at the cap, but on a 375×667 phone the fixed chrome (header, details, buttons, footer) leaves room for only ~1.5 rows. See 10c.
 
 ### 3. Safe areas, status bar, splash
-- Safe areas on all edges, extending `SafeAreaTop.svelte` into a general approach. Android 15 edge-to-edge.
-- `@capacitor/status-bar` follows the theme; `@capacitor/splash-screen` light and dark, with no white flash.
+Split in two. Finding: Capacitor 8 has a built-in `SystemBars` plugin, so `@capacitor/status-bar` is not needed (one fewer plugin).
 
-**Verify:** screenshots on a notched iPhone, the iPhone SE and Android API 35, in both themes.
+**3a. Safe areas and system bars (done).**
+- Safe areas on all four edges through `--safe-*` variables, `SafeAreaTop` using the page background token (it hard-coded a light color, which left a light strip behind the iOS status bar in dark mode), `dvh` heights.
+- Android: `windowBackground` per scheme so the area behind the status and gesture bars matches the page; SystemBars sets the icon colors.
+- Verified: `cypress/e2e/safeArea.cy.ts` (notch, home indicator, landscape insets, band color in both schemes), and screenshots on iPhone 17, iPhone SE and Android API 35 in both themes.
+- Not verified: Android WebView 140+ edge-to-edge (the emulator has 124).
+
+**3b. Splash and launch screens (next).** Launch screen and web view background match the theme with no white or black flash, light and dark. Decide whether `@capacitor/splash-screen` is needed or native launch assets are enough.
+
+**Verify (3b):** launch captures taken immediately after launch, light and dark, on iOS and Android.
 
 ### 4. Touch polish
 - Replace `hover:` (5 files) with active states; use `:focus-visible`.
-- Remove the tap highlight, long-press callout, text selection on chrome, overscroll on fixed chrome and double-tap zoom.
+- Remove the tap highlight, long-press callout, text selection on chrome and overscroll on fixed chrome. (Double-tap zoom was pulled forward and is done: it regressed when `maximum-scale=1` was removed in step 2. See `DESIGN.md` "Zoom, keyboard and full-screen height".)
 - Touch targets ≥44pt/48dp.
 
 **Verify:** Cypress passes; manual tap check on a device.
@@ -84,7 +91,8 @@ Goal: make every later step visually verifiable.
 **Verify:** screenshots of each sheet and dialog on both platforms; Back dismisses sheets.
 
 ### 8. Keyboard
-- `@capacitor/keyboard`: resize mode, focused row scrolled into view, footer behavior while the keyboard is up, accessory bar decision.
+- Pulled forward and done: `@capacitor/keyboard` installed with the default native resize (fixed the whole page dragging by ~44px when an input was focused on iOS), accessory bar kept visible (the number pad has no Return key), and `--app-height` for web/PWA.
+- Still to do: confirm the focused row stays visible with the full number pad (not just the accessory bar), footer behavior while the keyboard is up, Android keyboard behavior.
 
 **Verify:** keyboard-up screenshots on the SE and Android; entering a full TK card stays usable.
 
