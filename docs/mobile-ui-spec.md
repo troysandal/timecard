@@ -92,7 +92,9 @@ Split in two. Finding: Capacitor 8 has a built-in `SystemBars` plugin, so `@capa
 
 ### 8. Keyboard
 - Pulled forward and done: `@capacitor/keyboard` installed with the default native resize (fixed the whole page dragging by ~44px when an input was focused on iOS), accessory bar kept visible (the number pad has no Return key), and `--app-height` for web/PWA.
-- Still to do: confirm the focused row stays visible with the full number pad (not just the accessory bar), footer behavior while the keyboard is up, Android keyboard behavior.
+- Decision: keep the plugin. Before it (checked with the pre-session build on the SE), the keyboard covered a 667pt page: the footer and Add/Reset hid behind it, and the page could be dragged because the layout stayed 667pt tall against a 407pt visible area. With it, the web view shrinks, nothing can be dragged, and the footers ride above the keyboard, which is what made the collapse below necessary.
+- Done for time keeper and sprint: with the number pad up on a 375×407 web view the time keeper list had 9px (no rows) and sprint had 1.5 rows. The score footer and, while the focus is in the list, the details panel now collapse, giving about 4 time keeper rows and 5.9 sprint rows (`keyboard.cy.ts`). The new time picker control (10d) may replace the sprint inputs later.
+- Still to do: confirm on a device with the full number pad (not just the accessory bar), Android keyboard behavior. Done on iOS: `keyboardState` and `--app-height` follow the plugin's `keyboardWillShow`/`keyboardWillHide` (exact height) instead of waiting ~470ms for the resize event, so the rows move once, not twice; the viewport-shrink heuristic stays for web/PWA. Not measured on Android, and the hide direction (Done) was unit-tested but not watched on a device.
 
 **Verify:** keyboard-up screenshots on the SE and Android; entering a full TK card stays usable.
 

@@ -10,15 +10,29 @@
 // innerHeight / scale. Multiplying by the scale undoes that, so zooming never shrinks
 // the layout; only the keyboard does.
 
+import { KEYBOARD_EVENT, getFullHeight, getNativeKeyboardHeight } from './keyboardState.svelte'
+
 export function installViewportHeight(): void {
   const root = document.documentElement
-  const update = () => {
+  const apply = (height: number) => root.style.setProperty('--app-height', `${Math.round(height)}px`)
+  const measured = () => {
     const vv = window.visualViewport
-    const height = vv ? vv.height * vv.scale : window.innerHeight
-    root.style.setProperty('--app-height', `${Math.round(height)}px`)
+    return vv ? vv.height * vv.scale : window.innerHeight
   }
-  update()
-  window.visualViewport?.addEventListener('resize', update)
-  window.addEventListener('resize', update)
-  window.addEventListener('orientationchange', update)
+
+  // What the browser reports (web, PWA, and the final word on iOS).
+  const onResize = () => apply(measured())
+  // iOS: the keyboard plugin reports early, with an exact height. Lay out for it right away
+  // instead of waiting for the resize event that follows ~470ms later and moves the rows twice.
+  const onKeyboard = () => {
+    const native = getNativeKeyboardHeight()
+    const full = getFullHeight()
+    apply(native === null || full <= 0 ? measured() : full - native)
+  }
+
+  onResize()
+  window.visualViewport?.addEventListener('resize', onResize)
+  window.addEventListener('resize', onResize)
+  window.addEventListener('orientationchange', onResize)
+  window.addEventListener(KEYBOARD_EVENT, onKeyboard)
 }

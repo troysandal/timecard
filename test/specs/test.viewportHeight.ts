@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { installViewportHeight } from '../../src/lib/viewportHeight'
+import {
+  resetKeyboardBaseline,
+  setNativeKeyboardHeight,
+  updateKeyboardState,
+} from '../../src/lib/keyboardState.svelte'
 
 describe('installViewportHeight', () => {
   const root = document.documentElement
@@ -44,5 +49,28 @@ describe('installViewportHeight', () => {
     installViewportHeight()
     resize()
     expect(root.style.getPropertyValue('--app-height')).toBe('667px')
+  })
+
+  it('lays out for the native keyboard height right away, then follows the resize event', () => {
+    resetKeyboardBaseline()
+    const vv = { height: 667, scale: 1, addEventListener: () => {} }
+    Object.defineProperty(window, 'visualViewport', { value: vv, configurable: true })
+    window.innerWidth = 375
+    updateKeyboardState() // learn the full height: 667
+    installViewportHeight()
+    expect(root.style.getPropertyValue('--app-height')).toBe('667px')
+
+    // keyboardWillShow: the viewport has not resized yet.
+    setNativeKeyboardHeight(260)
+    expect(root.style.getPropertyValue('--app-height')).toBe('407px')
+
+    // keyboardWillHide: back to full height before the viewport reports it.
+    setNativeKeyboardHeight(0)
+    expect(root.style.getPropertyValue('--app-height')).toBe('667px')
+
+    // The browser's own report is still the final word.
+    vv.height = 500
+    window.dispatchEvent(new Event('resize'))
+    expect(root.style.getPropertyValue('--app-height')).toBe('500px')
   })
 })
