@@ -38,6 +38,10 @@ npx cypress run --spec cypress/e2e/home.cy.ts
 - `test/specs`: vitest unit tests for scoring, db migrations, sprint and view models.
 - `cypress/e2e`: UI flows. `app_util.ts` and `timekeeper_util.ts` hold shared helpers.
 
+## UI design
+
+Read `DESIGN.md` before changing styles or components: it holds the mobile UI rules (theme, fonts, tokens in `src/app.css`). The staged restyle plan is `docs/mobile-ui-spec.md`. To see UI changes on devices, run `scripts/screenshots.sh ios|android`, or `npm run test:screenshots` for Cypress phone viewports (light/dark). If Cypress fails with "bad option: --no-sandbox", run it with `env -u ELECTRON_RUN_AS_NODE`.
+
 ## Agent skills
 
 ### Issue tracker

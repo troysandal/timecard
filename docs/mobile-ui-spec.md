@@ -9,6 +9,7 @@ The work is split into small steps. Each step builds on the previous one and end
 - **Stack**: Tailwind 4 + Capacitor only.
 - **Plugins**: Capacitor-owned plugins, plus an exception for `timecard-scanner`.
 - **Design**: one design, with platform-specific behaviors.
+- **PWA keeps working** (decided after the initial spec): the GitHub Pages PWA and plain browser stay fully functional as long as possible. Native-only features need a web fallback or must degrade silently, and each step is also verified on the web build. Rules in `DESIGN.md` ("PWA compatibility").
 - **Theme**: follow the system; no override. Photos are shown as-is.
 - **iOS swipe-back**: off. Every non-root screen has a visible back button.
 - **Orientation**: portrait on phones. All orientations on tablets (fall back to `UIRequiresFullScreen` if that's much less work).

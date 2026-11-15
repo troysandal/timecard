@@ -1,6 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+/* Fonts are bundled (latin subset, variable) so they work offline. See DESIGN.md. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url('./assets/fonts/nunito-latin-wght-normal.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./assets/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('./assets/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -36,6 +57,27 @@
   --border: #DEDCD8;
   --ring: #D4420A;
   --radius: 3px;
+  color-scheme: light dark; /* native controls and scrollbars follow the system theme */
+}
+
+/* Dark theme follows the system; there is no in-app override. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121211;
+    --foreground: #F2F1EE;
+    --card: #1C1C1A;
+    --card-foreground: #F2F1EE;
+    --primary: #D4420A;
+    --primary-foreground: #FFFFFF;
+    --secondary: #2A2A27;
+    --secondary-foreground: #F2F1EE;
+    --muted: #2A2A27;
+    --muted-foreground: #A5A39E;
+    --accent: #D4420A;
+    --accent-foreground: #FFFFFF;
+    --border: #3A3936;
+    --ring: #FF7A45;
+  }
 }
 
 * {
@@ -53,12 +95,19 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
+  /* Inter's digits are proportional by default; keep times and scores aligned.
+     Nunito and JetBrains Mono digits are already fixed-width. */
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
+input, select, textarea {
+  font-variant-numeric: tabular-nums;
+}
+
 h1, h2, h3, .font-display {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', system-ui, sans-serif;
 }
 
 .field {
@@ -73,7 +122,7 @@ h1, h2, h3, .font-display {
 }
 
 .mono {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* Hide scrollbars by default, show on scroll */
@@ -103,9 +152,9 @@ h1, h2, h3, .font-display {
 
 input:disabled {
   font-weight: bold;
-  color: black;
-  background-color: lightgray;
-  -webkit-text-fill-color: #000000;
+  color: var(--foreground);
+  background-color: var(--muted);
+  -webkit-text-fill-color: var(--foreground);
   opacity: 1; /* required on iOS */
 }
 

@@ -23,7 +23,7 @@
   <button
     onclick={onBack}
     data-cy="back-button"
-    class="shrink-0 flex items-center gap-1.5 p-1.5 font-medium hover:text-foreground transition-colors bg-gray-200"
+    class="shrink-0 flex items-center gap-1.5 p-1.5 font-medium hover:text-foreground transition-colors bg-secondary text-secondary-foreground"
     aria-label="Go back"
   >
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
