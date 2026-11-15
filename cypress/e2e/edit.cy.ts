@@ -3,7 +3,6 @@
 import {
   seedRace,
   visitHome,
-  setConfirm,
   rows,
   rowNames,
   addRace,
@@ -11,7 +10,9 @@ import {
   expectClean,
   expectDirty,
   saveAndExpectClean,
-  confirmCalls,
+  expectConfirm,
+  answerConfirm,
+  expectNoConfirm,
   UNSAVED_MSG,
 } from './app_util'
 
@@ -34,9 +35,13 @@ describe('Edit Page', () => {
   afterEach(() => {
     cy.location('hash').then((hash) => {
       if (!hash.startsWith('#/edit/')) return
-      setConfirm(true)
-      cy.go('back')
-      cy.location('hash').should('eq', '#/')
+      cy.get('body').then(($body) => {
+        // A dirty page asks before it lets go.
+        const dirty = $body.find('[data-cy=save-button].bg-primary').length > 0
+        cy.go('back')
+        if (dirty) answerConfirm(true)
+        cy.location('hash').should('eq', '#/')
+      })
     })
   })
 
@@ -100,7 +105,7 @@ describe('Edit Page', () => {
         saveAndExpectClean()
         cy.getBySel('back-button').click()
         cy.location('hash').should('eq', '#/')
-        confirmCalls(0)
+        expectNoConfirm()
         rowNames().eq(0).should('contain.text', 'Saved Name')
       })
     })
@@ -111,16 +116,16 @@ describe('Edit Page', () => {
         cy.getBySel('back-button').click()
         cy.location('hash').should('eq', '#/')
         rows().should('have.length', 1)
-        confirmCalls(0)
+        expectNoConfirm()
       })
 
       it('stays on Edit when the discard confirm is declined', () => {
         openRace([race])
         rename('Unsaved')
-        setConfirm(false)
         cy.getBySel('back-button').click()
 
-        cy.get('@confirmStub').should('have.been.calledOnceWith', UNSAVED_MSG)
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(false)
         cy.location('hash').should('eq', hash)
         nameInput().should('have.value', 'Unsaved')
         expectDirty()
@@ -129,13 +134,13 @@ describe('Edit Page', () => {
       it('can still leave after declining once', () => {
         openRace([race])
         rename('Unsaved')
-        setConfirm(false)
         cy.getBySel('back-button').click()
+        answerConfirm(false)
         cy.location('hash').should('eq', hash)
 
-        setConfirm(true)
         cy.getBySel('back-button').click()
-        confirmCalls(2)
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(true)
         cy.location('hash').should('eq', '#/')
         rowNames().eq(0).should('contain.text', name)
       })
@@ -144,6 +149,7 @@ describe('Edit Page', () => {
         openRace([race])
         rename('Unsaved')
         cy.getBySel('back-button').click()
+        answerConfirm(true)
         cy.location('hash').should('eq', '#/')
         rowNames().eq(0).should('contain.text', name)
 
@@ -159,16 +165,16 @@ describe('Edit Page', () => {
         cy.go('back')
         cy.location('hash').should('eq', '#/')
         rows().should('have.length', 1)
-        confirmCalls(0)
+        expectNoConfirm()
       })
 
       it('stays on Edit when dirty and the confirm is declined', () => {
         openRace([race])
         rename('Unsaved')
-        setConfirm(false)
         cy.go('back')
 
-        cy.get('@confirmStub').should('have.been.calledOnceWith', UNSAVED_MSG)
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(false)
         cy.location('hash').should('eq', hash)
         nameInput().should('have.value', 'Unsaved')
         expectDirty()
@@ -179,8 +185,9 @@ describe('Edit Page', () => {
         rename('Unsaved')
         cy.go('back')
 
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(true)
         cy.location('hash').should('eq', '#/')
-        confirmCalls(1)
         rowNames().eq(0).should('contain.text', name)
         cy.reload()
         rowNames().eq(0).should('contain.text', name)
@@ -189,17 +196,36 @@ describe('Edit Page', () => {
       it('asks again on every back attempt after a decline', () => {
         openRace([race])
         rename('Unsaved')
-        setConfirm(false)
         cy.go('back')
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(false)
         cy.location('hash').should('eq', hash)
         cy.go('back')
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(false)
         cy.location('hash').should('eq', hash)
-        confirmCalls(2)
 
-        setConfirm(true)
         cy.go('back')
+        expectConfirm(UNSAVED_MSG)
+        answerConfirm(true)
         cy.location('hash').should('eq', '#/')
-        confirmCalls(3)
+      })
+
+      it('handles navigation one step at a time: a forward while the discard dialog is open waits for the answer', () => {
+        // The dialog is asynchronous, so a second popstate can arrive while it is open. If it were
+        // handled at once, answering Discard afterwards would blank the Edit page that the URL
+        // (now back on #/edit/...) says is showing.
+        openRace([race])
+        rename('Unsaved')
+        cy.go('back')
+        expectConfirm(UNSAVED_MSG)
+        cy.go('forward')
+        answerConfirm(true)
+
+        cy.location('hash').should('eq', hash)
+        nameInput().should('have.value', name)
+        expectClean()
+        expectNoConfirm()
       })
 
       it('does not ask after a save', () => {
@@ -208,7 +234,7 @@ describe('Edit Page', () => {
         saveAndExpectClean()
         cy.go('back')
         cy.location('hash').should('eq', '#/')
-        confirmCalls(0)
+        expectNoConfirm()
       })
 
       it('reopens the saved race on forward, clean', () => {
@@ -228,6 +254,7 @@ describe('Edit Page', () => {
         openRace([race])
         rename('Unsaved')
         cy.go('back')
+        answerConfirm(true)
         cy.location('hash').should('eq', '#/')
 
         cy.go('forward')
@@ -239,13 +266,13 @@ describe('Edit Page', () => {
       it('guards a deep linked Edit page too', () => {
         visitHome([race], hash)
         rename('Unsaved')
-        setConfirm(false)
         cy.go('back')
+        answerConfirm(false)
         cy.location('hash').should('eq', hash)
         nameInput().should('have.value', 'Unsaved')
 
-        setConfirm(true)
         cy.go('back')
+        answerConfirm(true)
         cy.location('hash').should('eq', '#/')
         rows().should('have.length', 1)
       })
@@ -295,6 +322,7 @@ describe('Edit Page', () => {
       rename('Unsaved')
       expectDirty()
       cy.getBySel('back-button').click()
+      answerConfirm(true)
       cy.location('hash').should('eq', '#/')
 
       rows().eq(1).find('[data-cy="race-edit"]').click()
@@ -305,7 +333,7 @@ describe('Edit Page', () => {
       // and leaving the clean race must not prompt
       cy.getBySel('back-button').click()
       cy.location('hash').should('eq', '#/')
-      confirmCalls(1)
+      expectNoConfirm()
     })
   })
 })

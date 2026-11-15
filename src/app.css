@@ -169,6 +169,47 @@ html {
   }
 }
 
+/* Sheets (components/Sheet.svelte). Layered, so utilities on the elements still win.
+   Motion is skipped for people who ask the OS to reduce it. */
+@layer components {
+  .sheet-backdrop {
+    animation: sheet-fade 0.15s ease-out;
+  }
+  .sheet-panel {
+    animation: sheet-up 0.2s ease-out;
+  }
+  @keyframes sheet-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes sheet-up {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet-backdrop,
+    .sheet-panel {
+      animation: none;
+    }
+  }
+}
+/* The page does not scroll behind an open sheet. */
+@layer base {
+  html.sheet-open {
+    overflow: hidden;
+  }
+}
+
 /* Keyboard focus ring for controls (not shown after a tap). Text fields keep .field:focus. */
 :where(button, select, a, [role='button'], input[type='checkbox']):focus-visible {
   outline: 2px solid var(--ring);

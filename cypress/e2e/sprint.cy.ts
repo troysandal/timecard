@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { visitHome, addRace, confirmCalls, expectClean, saveAndExpectClean } from './app_util'
+import { visitHome, addRace, answerConfirm, expectClean, saveAndExpectClean } from './app_util'
 
 describe('Sprint Enduro', () => {
   function verifyNumberOfChecks(expected: number) {
@@ -22,9 +22,9 @@ describe('Sprint Enduro', () => {
       })
     }
 
-    function deleteTest(index: number, callCount: number = 1) {
+    function deleteTest(index: number) {
       cy.get('td button').eq(index).click()
-      confirmCalls(callCount)
+      answerConfirm(true)
     }
 
     function checkScore(expected: string) {
@@ -92,7 +92,7 @@ describe('Sprint Enduro', () => {
       createTest('03:00:00', '03:30:00')
 
       checkScore('01:05:00')
-      deleteTest(1, 2)
+      deleteTest(1)
       checkScore('00:50:00')
       saveAndExpectClean()
     })

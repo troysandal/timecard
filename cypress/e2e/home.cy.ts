@@ -3,7 +3,8 @@
 import {
   seedRace,
   visitHome,
-  setConfirm,
+  expectConfirm,
+  answerConfirm,
   rows,
   rowNames,
   addRace,
@@ -148,17 +149,15 @@ describe('Home Page', () => {
     beforeEach(() => visitHome([TK_OLD, SP_MID, TK_NEW]))
 
     it('keeps the race when confirm is declined', () => {
-      setConfirm(false)
       rows().eq(0).find('[data-cy="race-delete"]').click()
-      cy.get('@confirmStub').should(
-        'have.been.calledWith',
-        'Are you sure you want to delete this race?'
-      )
+      expectConfirm('Are you sure you want to delete this race?')
+      answerConfirm(false)
       rows().should('have.length', 3)
     })
 
     it('removes only the chosen race when confirmed', () => {
       rows().eq(1).find('[data-cy="race-delete"]').click() // Middle Sprint
+      answerConfirm(true)
       rows().should('have.length', 2)
       rowNames().eq(0).should('contain.text', 'New Time Keeper')
       rowNames().eq(1).should('contain.text', 'Old Time Keeper')
@@ -168,6 +167,7 @@ describe('Home Page', () => {
       for (let i = 3; i > 0; i--) {
         rows().should('have.length', i)
         rows().first().find('[data-cy="race-delete"]').click()
+        answerConfirm(true)
       }
       cy.getBySel('empty-state').should('be.visible')
       cy.getBySel('race-list').should('not.exist')
@@ -175,6 +175,7 @@ describe('Home Page', () => {
 
     it('persists a deletion across reload', () => {
       rows().eq(0).find('[data-cy="race-delete"]').click()
+      answerConfirm(true)
       rows().should('have.length', 2)
       cy.reload()
       rows().should('have.length', 2)

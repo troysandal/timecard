@@ -5,6 +5,7 @@
     import type { SprintTestData } from "../models/race";
     import { canScan } from '../lib/scanCard';
     import PhotoViewerModal from './PhotoViewerModal.svelte';
+    import { alertDialog, confirmDialog } from '../lib/dialogs.svelte'
     
     interface Props { 
         viewModel: SprintViewModel; 
@@ -17,28 +18,43 @@
     let showPhoto = $state(false);
     onMount(async () => { available = await canScan(); });
 
-    function onReset() {
-        if (window.confirm('Are you sure you want to reset the Sprint Enduro?')) {
+    async function onReset() {
+        if (await confirmDialog({
+            title: 'Reset sprint?',
+            message: 'Are you sure you want to reset the Sprint Enduro?',
+            confirmLabel: 'Reset',
+            destructive: true,
+        })) {
             viewModel.resetCard()
         }
     }
     
     async function onScan() {
-      if (!window.confirm("Warning - This will replace the contents of your score card - are you sure?")) {
+      if (!(await confirmDialog({
+        title: 'Replace score card?',
+        message: 'Warning - This will replace the contents of your score card - are you sure?',
+        confirmLabel: 'Replace',
+        destructive: true,
+      }))) {
         return
       }
       const result = await viewModel.scan()
       if (result === "applied") {
-        window.alert("Scan Complete - WARNING - Double check score card, AI can make mistakes.")
+        await alertDialog({ title: 'Scan complete', message: 'Scan Complete - WARNING - Double check score card, AI can make mistakes.' })
       } else if (result === "empty") {
-        window.alert("No tests found in scan.")
+        await alertDialog({ title: 'Nothing found', message: 'No tests found in scan.' })
       } else if (result === "failed") {
-        window.alert("Sorry, the scan failed, please try again.")
+        await alertDialog({ title: 'Scan failed', message: 'Sorry, the scan failed, please try again.' })
       }
     }
 
-    function onDeleteTest(test: SprintTestData, index: number) {
-      if (window.confirm(`You sure you want to delete test ${index + 1}?`)) {
+    async function onDeleteTest(test: SprintTestData, index: number) {
+      if (await confirmDialog({
+        title: 'Delete test?',
+        message: `You sure you want to delete test ${index + 1}?`,
+        confirmLabel: 'Delete',
+        destructive: true,
+      })) {
           viewModel.deleteTest(test)
       }
     }

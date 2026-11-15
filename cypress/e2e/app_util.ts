@@ -23,14 +23,9 @@ export function seedRace(
   return { id, name, raceType, createdAt, timeCard }
 }
 
-/** Stub window.confirm so tests can assert on and control it. */
-export function stubConfirm(win: Window, result: boolean = true) {
-  cy.stub(win, 'confirm').as('confirmStub').returns(result)
-}
-
 /**
- * Visit the app with an optional seeded database. Seeding and stubbing happen
- * in onBeforeLoad so they are in place before the app reads localStorage.
+ * Visit the app with an optional seeded database. Seeding happens in
+ * onBeforeLoad so it is in place before the app reads localStorage.
  */
 export function visitHome(races: object[] = [], hash: string = '#') {
   // Leave the app first. If the previous test ended on an Edit hash, visiting
@@ -46,13 +41,8 @@ export function visitHome(races: object[] = [], hash: string = '#') {
           JSON.stringify({ schemaVersion: SCHEMA_VERSION, data: { races } })
         )
       }
-      stubConfirm(win)
     },
   })
-}
-
-export function setConfirm(result: boolean) {
-  cy.get('@confirmStub').then((stub: any) => stub.returns(result))
 }
 
 export function rows() {
@@ -71,9 +61,24 @@ export function addRace(type: 'time_keeper' | 'sprint') {
 export const UNSAVED_MSG =
   'You have unsaved changes. Are you sure you want to discard them?'
 
-/** Assert how many times window.confirm has been called so far. */
-export function confirmCalls(n: number) {
-  cy.get('@confirmStub').should('have.callCount', n)
+/**
+ * The web confirm dialog (components/ConfirmHost.svelte; native builds use the system dialog,
+ * which tests can't see). It is a real sheet, so tests read it and press its buttons.
+ */
+export function expectConfirm(message: string) {
+  cy.getBySel('confirm-sheet').should('be.visible')
+  cy.getBySel('confirm-message').should('have.text', message)
+}
+
+/** Press OK (accept) or Cancel (decline) and wait for the dialog to go away. */
+export function answerConfirm(accept: boolean) {
+  cy.getBySel(accept ? 'confirm-ok' : 'confirm-cancel').click()
+  cy.getBySel('confirm-sheet').should('not.exist')
+}
+
+/** No confirm dialog is showing. */
+export function expectNoConfirm() {
+  cy.getBySel('confirm-sheet').should('not.exist')
 }
 
 /** Visit Home with the given seeded races, then open the race at `index`. */

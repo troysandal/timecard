@@ -86,11 +86,14 @@ Split in two. Finding: Capacitor 8 has a built-in `SystemBars` plugin, so `@capa
 
 **Verify:** Cypress navigation specs; Android emulator back tests.
 
-### 7. Sheets and dialogs
-- A Tailwind bottom-sheet component; migrate `RacePickerModal` and `PhotoViewerModal` to it.
-- `@capacitor/dialog` / `@capacitor/action-sheet` for confirms and simple choices; replace `window.confirm`/`alert`. The web fallback is the Tailwind sheet.
+### 7. Sheets and dialogs (done)
+- One Tailwind `Sheet` (bottom sheet on phones, centered dialog on tablets) with focus handling, Escape, tap-outside, scroll lock and reduced motion. The race picker and photo viewer use it.
+- `confirmDialog` and `alertDialog` replace every `window.confirm` and `window.alert` (8 and 6 call sites): the system dialog through `@capacitor/dialog` on iOS and Android, our sheet on the web and PWA, with the sheet as the fallback if the native call fails.
+- Android Back closes the newest open sheet first, then runs the unsaved-changes guard, then exits. Web browser Back does not close a web sheet (by design, see DESIGN.md).
+- `@capacitor/action-sheet` was not needed: the only simple choice is the race picker, which the spec gives to the Tailwind sheet.
+- Tests: about 25 existing Cypress tests stubbed `window.confirm`; they now drive the real dialog and assert its text. New: `sheet.cy.ts`, and unit tests for the dialog adapter, the sheet registry and the Back handler.
 
-**Verify:** screenshots of each sheet and dialog on both platforms; Back dismisses sheets.
+**Verify:** screenshots of the race-picker sheet on iPhone 17 (light and dark) and iPad (centered) and Android; the native confirm dialog on iOS and Android; on Android, Back closes the sheet, a second Back exits, and Back on the native dialog cancels it and keeps the app open.
 
 ### 8. Keyboard
 - Pulled forward and done: `@capacitor/keyboard` installed with the default native resize (fixed the whole page dragging by ~44px when an input was focused on iOS), accessory bar kept visible (the number pad has no Return key), and `--app-height` for web/PWA.

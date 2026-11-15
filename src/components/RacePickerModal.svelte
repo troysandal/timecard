@@ -1,19 +1,20 @@
 <script lang="ts">
     import { type RaceType } from '../models/race'
+    import Sheet from './Sheet.svelte'
 
     interface Props {
       onSelect: (t: RaceType) => void;
       onClose: () => void
     }
-    
-    let { 
+
+    let {
         onSelect, onClose
     }: Props = $props();
 </script>
 
-<div data-cy="race-picker" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-card border border-border shadow-lg w-80 p-6" style="borderRadius: 'var(--radius)'">
-    <h2 class="font-display text-lg font-800 tracking-tight mb-1 text-foreground">New Item</h2>
+<Sheet title="New item" labelledBy="race-picker-title" dataCy="race-picker" {onClose}>
+  <div class="px-4 pt-4 md:px-6">
+    <h2 id="race-picker-title" class="font-display text-lg font-800 tracking-tight mb-1 text-foreground">New Item</h2>
     <p class="text-sm text-muted-foreground mb-5">Choose the item type to add.</p>
     <div class="flex flex-col gap-3">
       <button
@@ -35,12 +36,12 @@
         <div class="text-xs text-muted-foreground mt-0.5">Timed Tests</div>
       </button>
     </div>
-    <button
-      onclick={onClose}
-      data-cy="cancel-picker"
-      class="mt-4 w-full min-h-touch text-xs font-extrabold hover:text-foreground transition-colors"
-    >
-      Cancel
-    </button>
   </div>
-</div>
+  <button
+    onclick={onClose}
+    data-cy="cancel-picker"
+    class="mt-2 mb-2 min-h-touch w-full text-xs font-extrabold hover:text-foreground transition-colors"
+  >
+    Cancel
+  </button>
+</Sheet>

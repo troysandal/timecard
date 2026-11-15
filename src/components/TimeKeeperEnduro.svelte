@@ -4,6 +4,7 @@
     import { TimeKeeperViewModel } from "../viewModels/viewModels.svelte"
     import { canScan } from '../lib/scanCard';
     import PhotoViewerModal from './PhotoViewerModal.svelte';
+    import { alertDialog, confirmDialog } from '../lib/dialogs.svelte'
 
     interface Props { 
         viewModel: TimeKeeperViewModel; 
@@ -16,23 +17,33 @@
     let showPhoto = $state(false);
     onMount(async () => { available = await canScan(); });
 
-    function onReset() {
-      if (window.confirm('Are you sure you want to reset the time card?')) {
+    async function onReset() {
+      if (await confirmDialog({
+        title: 'Reset time card?',
+        message: 'Are you sure you want to reset the time card?',
+        confirmLabel: 'Reset',
+        destructive: true,
+      })) {
         viewModel.resetCard()
       }
     }
 
     async function onScan() {
-      if (!window.confirm("Warning - This will replace the contents of your time card - are you sure?")) {
-        return 
+      if (!(await confirmDialog({
+        title: 'Replace time card?',
+        message: 'Warning - This will replace the contents of your time card - are you sure?',
+        confirmLabel: 'Replace',
+        destructive: true,
+      }))) {
+        return
       }
       const result = await viewModel.scan()
       if (result === "applied") {
-        window.alert("Scan Complete - WARNING - Double check time card, AI can make mistakes.")
+        await alertDialog({ title: 'Scan complete', message: 'Scan Complete - WARNING - Double check time card, AI can make mistakes.' })
       } else if (result === "empty") {
-        window.alert("No checkpoints found in scan.")
+        await alertDialog({ title: 'Nothing found', message: 'No checkpoints found in scan.' })
       } else if (result === "failed") {
-        window.alert("Sorry, the scan failed, please try again.")
+        await alertDialog({ title: 'Scan failed', message: 'Sorry, the scan failed, please try again.' })
       }
     }
     

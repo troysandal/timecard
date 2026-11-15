@@ -10,6 +10,8 @@
   import { onMount } from 'svelte'
   import { loadDB, saveDB } from './db/database'
   import { installAndroidBackButton } from './lib/backButton'
+  import ConfirmHost from './components/ConfirmHost.svelte'
+  import { confirmDialog } from './lib/dialogs.svelte'
   import { pruneRaceImages, deleteRaceImages } from './lib/photos'
   import { TimeCardScanner } from 'timecard-scanner';
 
@@ -27,10 +29,16 @@
 
   // Only called from popstate, i.e. when leaving the Edit page via history.
   // editDirty can be stale after EditPage unmounts, so check page too.
-  const confirmLeave = () =>
+  const confirmLeave = async () =>
     page === 'home' ||
     !editDirty ||
-    window.confirm('You have unsaved changes. Are you sure you want to discard them?')
+    (await confirmDialog({
+      title: 'Discard changes?',
+      message: 'You have unsaved changes. Are you sure you want to discard them?',
+      confirmLabel: 'Discard',
+      cancelLabel: 'Keep editing',
+      destructive: true,
+    }))
 
   const showHome = () => {
     page = 'home'
@@ -50,16 +58,27 @@
     history.pushState({ page: 'edit', id }, '', editHash(id))
   }
 
+  // Navigation events are handled strictly one at a time, in order. The discard dialog is
+  // asynchronous (window.confirm used to block the page), so a second popstate can arrive while
+  // it is open; handling that at once would let the dialog's answer act on a page the history
+  // has already moved away from.
+  let popQueue: Promise<void> = Promise.resolve()
   const handlePopState = (event: PopStateEvent) => {
+    popQueue = popQueue.then(() => processPopState(event)).catch((error) => console.error(error))
+  }
+
+  const processPopState = async (event: PopStateEvent) => {
     const id: string | undefined = event.state?.id
     if (!id) {
       // Navigated to Home
       if (page === 'home') return
-      if (confirmLeave()) {
+      // The dialog is asynchronous, and by the time it is answered a second popstate may
+      // already have taken us Home, so check again afterwards.
+      if (await confirmLeave()) {
         showHome()
-      } else {
+      } else if (editingId) {
         // popstate can't be cancelled, so put the Edit entry back
-        pushEdit(editingId!)
+        pushEdit(editingId)
       }
     } else if (!showEdit(id)) {
       history.replaceState({ page: 'home' }, '', '#/')
@@ -145,7 +164,12 @@
   }
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this race?')) {
+    if (await confirmDialog({
+      title: 'Delete race?',
+      message: 'Are you sure you want to delete this race?',
+      confirmLabel: 'Delete',
+      destructive: true,
+    })) {
       items = items.filter((i) => i.id !== id)
       await save()
       await deleteRaceImages(id)
@@ -186,6 +210,9 @@
 {:else}
   <p>Loading database...</p>
 {/if}
+
+<!-- The web confirm/alert dialog (native builds show the system dialog instead). -->
+<ConfirmHost />
 
 <style>
   :global(body) {
