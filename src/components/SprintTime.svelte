@@ -55,6 +55,8 @@
     $effect(() => { nextInput(timeData.second, strSecond, () => { onSeconds() }) });
 </script>
 
+<!-- hh mm ss stay together on one line; the row scrolls sideways before a time splits. -->
+<div class="flex flex-nowrap items-center gap-1">
 <SprintNumberInput 
     placeholder="hh" 
     class={className}
@@ -80,3 +82,4 @@
     bind:value={timeData.second}
     bind:strValue={strSecond}
     onEnter={onEnter} />
+</div>

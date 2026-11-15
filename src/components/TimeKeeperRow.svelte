@@ -87,7 +87,7 @@
 
 <tr class={droppedRow} data-cy="tkr">   
     <td class="p-1 align-middle">
-        <div class="h-12 w-12 flex items-center justify-center mx-auto">
+        <div class="h-10 w-10 md:h-12 md:w-12 flex items-center justify-center mx-auto">
             <button onclick={toggleType}>
                 <img src={flagSrc} alt="Flag" class="h-full w-full object-contain block"/>
             </button>
@@ -95,15 +95,15 @@
     </td>
     <td class="p-1 text-center">{index + 1}</td>
     <td class="p-1">
-        <NumberInput bind:strValue={strMinute} bind:value={check.minute} pattern="-?[0-9]*"  inputmode={minuteInputMode} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="3" />
+        <NumberInput bind:strValue={strMinute} bind:value={check.minute} pattern="-?[0-9]*"  inputmode={minuteInputMode} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} field-compact w-full min-w-0" size="3" />
     </td>
     <td class="p-1">
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput bind:strValue={strSeconds} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} w-full min-w-0" size="2" />
+            <NumberInput bind:strValue={strSeconds} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} field-compact w-full min-w-0" size="2" />
         {/if}
     </td>
-    <td class="p-1"><input class="{droppedRow} field h-8 w-full min-w-0" disabled value={points} size="3" /></td>
-    <td class="p-1"><input class="{droppedRow} field h-8 w-full min-w-0" disabled value={emergencyPoints} size="4" /></td>
+    <td class="p-1"><input class="{droppedRow} field field-compact h-8 w-full min-w-0" disabled value={points} size="3" /></td>
+    <td class="p-1"><input class="{droppedRow} field field-compact h-8 w-full min-w-0" disabled value={emergencyPoints} size="4" /></td>
     <td class="p-1">
         <div class="flex items-center justify-center">
         <input class="size-5 accent-primary" type="checkbox" bind:checked={check.drop}>

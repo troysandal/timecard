@@ -6,19 +6,19 @@
   const dq = $derived(scoreCard.disqualified ? "text-red-600" : "text-green-600")
 </script>
 
-<div class="flex items-center gap-2 md:gap-6 flex-wrap">
+<div class="flex items-center gap-1 md:gap-6 flex-wrap">
   <div>
     <p class="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Points</p>
     <p data-cy="score-points" class="mono text-2xl font-500 text-foreground">{scoreCard.points}</p>
   </div>
   <div class="w-px h-10 bg-border"></div>
   <div>
-    <p class="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Emergency</p>
+    <p class="text-xs text-muted-foreground uppercase tracking-wider mb-0.5"><span aria-hidden="true">E-Pts</span><span class="sr-only">Emergency</span></p>
     <p data-cy="score-epoints" class="mono text-2xl font-500 text-blue-600">{scoreCard.emergencyPoints}</p>
   </div>
   <div class="w-px h-10 bg-border"></div>
   <div>
-    <p class="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Disqualified</p>
+    <p class="text-xs text-muted-foreground uppercase tracking-wider mb-0.5"><span aria-hidden="true">DQ</span><span class="sr-only">Disqualified</span></p>
     <p data-cy="score-disqualified" class="mono text-2xl font-500 {dq}">{scoreCard.disqualified ? "YES" : "NO"}</p>
   </div>
   <div class="w-px h-10 bg-border"></div>

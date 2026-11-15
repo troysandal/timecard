@@ -46,7 +46,7 @@
 
 <div class="flex flex-col h-full">
   <div class="overflow-x-auto flex-1 overflow-y-auto">
-    <table class="w-full text-sm min-w-[320px]">
+    <table class="w-full text-sm">
         <thead>
             <tr>
                 <th>#</th>

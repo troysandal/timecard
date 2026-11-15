@@ -28,8 +28,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 THEMES=(light dark)
-# name:ios content_size:android font_scale
-TEXT_SIZES=(default:large:1.0 large:accessibility-extra-large:1.3)
+# name:ios content_size:android font_scale. "large" is inside the clamp, "max" is far past it (see src/lib/textScale.ts).
+TEXT_SIZES=(default:large:1.0 large:extra-large:1.15 max:accessibility-extra-extra-extra-large:2.0)
 SHOT_NAME=${SHOT_NAME:-home}
 SETTLE=${SETTLE:-10}  # seconds to wait after launch before capturing
 

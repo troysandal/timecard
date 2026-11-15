@@ -115,10 +115,18 @@ h1, h2, h3, .font-display {
   background-color: var(--background);
   border-radius: var(--radius);
   padding-inline: 0.5rem;
-  font-size: 0.875rem;
+  /* iOS zooms the page when focusing an input under 16px, and we no longer
+     block zoom with maximum-scale=1. Never go below 16px, even at 85% text scale. */
+  font-size: max(16px, 1rem);
 }
 .field:focus {
   outline: 1px solid var(--ring);
+}
+/* For narrow table cells holding 2-3 digit numbers. Must be unlayered like
+   .field above, because Tailwind utilities (layered) can't override it. */
+.field-compact {
+  padding-inline: 0.125rem;
+  text-align: center;
 }
 
 .mono {

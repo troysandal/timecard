@@ -42,10 +42,14 @@ Goal: make every later step visually verifiable.
 
 ### 2. Text scaling and viewport
 - Root `font-size` uses the OS size, clamped to about 85–130% (iOS `-apple-system-body`; Android WebView text zoom).
-- Remove `maximum-scale=1`. Decide whether to define breakpoints in px (rem breakpoints shift when the root scales).
+- Remove `maximum-scale=1`. This brings back iOS auto-zoom on inputs under 16px, so form controls are never below 16px (`.field`).
+- Breakpoints need no change: in media queries `rem` is relative to the browser's default size, not the page's root `font-size`, so scaling the root does not shift Tailwind's rem-based breakpoints. (An earlier draft of this spec said otherwise; that was wrong.)
 - Audit and replace arbitrary px values.
+- Done: `src/lib/textScale.ts` (iOS/iPadOS), `MainActivity.java` (Android), both clamped to 85–130%. Web: no-op on desktop and Android Chrome.
 
-**Verify:** large-text screenshots; a TK row fits at 375pt at the cap.
+**Verify:** large-text screenshots; a TK row fits at 375pt at the cap (`cypress/e2e/textScale.cy.ts` asserts this at 85/100/130%).
+
+**Known gap, handled in 10c:** the table fits at the cap, but on a 375×667 phone the fixed chrome (header, details, buttons, footer) leaves room for only ~1.5 rows. See 10c.
 
 ### 3. Safe areas, status bar, splash
 - Safe areas on all edges, extending `SafeAreaTop.svelte` into a general approach. Android 15 edge-to-edge.
@@ -92,9 +96,9 @@ Goal: make every later step visually verifiable.
 ### 10. Screen restyle, one screen at a time
 Each is its own sub-step, verified with screenshots before moving on:
 - 10a. Home
-- 10b. Edit header and footers
-- 10c. Time-keeper edit
-- 10d. Sprint edit
+- 10b. Edit header and footers. The score footers (`TimeKeeperFooter`, `SprintFooter`) must stay tidy at every text scale. Interim fix in step 2: the time-keeper footer labels are shortened to "Emerg" and "DQ" (full words kept for screen readers) and the phone gap is tighter, so all four stats fit one row at 375pt and 130% text, enforced in `textScale.cy.ts`. Revisit here: a layout that never orphans a stat (such as a 2×2 grid) is sturdier than abbreviations. `SprintFooter` is confirmed to wrap "Seconds" onto a second line at the 130% cap on 375pt.
+- 10c. Time-keeper edit. At max text scale on 375×667, at least 3 checkpoint rows must be visible (for example the Name/Rider/Format details scroll away with the list, or collapse).
+- 10d. Sprint edit. At the 130% cap on 375pt a full row (Time In, Time Out, Score) is about 440px against 371px available, so today the Score column scrolls off to the right (no time splits across lines; asserted in `textScale.cy.ts`). Restyle so the row fits at the cap, e.g. stack Time In above Time Out.
 
 ### 11. Field and accessibility pass
 - Sunlight contrast (WCAG AA or better) in both themes.

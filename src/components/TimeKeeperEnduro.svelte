@@ -41,15 +41,15 @@
 
 <div class="flex flex-col h-full">
   <div class="overflow-x-auto flex-1 overflow-y-auto">
-    <table class="w-full text-sm min-w-[320px]">
+    <table class="w-full text-sm">
         <colgroup>
-        <col class="w-8 md:w-16"> <!-- Flag/Image -->
-        <col class="w-8 md:w-12"> <!-- Chk. # -->
-        <col class="w-12 md:w-20"> <!-- Minute Input -->
-        <col class="w-12 md:w-20"> <!-- Second Input -->
-        <col class="w-12 md:w-20"> <!-- Points Input -->
-        <col class="w-12 md:w-24"> <!-- Emergency Points -->
-        <col class="w-12 md:w-16"> <!-- Drop Checkbox -->
+        <col class="w-12 md:w-16"> <!-- Flag/Image -->
+        <col class="w-6 md:w-12"> <!-- Chk. # -->
+        <col class="w-11 md:w-20"> <!-- Minute Input -->
+        <col class="w-11 md:w-20"> <!-- Second Input -->
+        <col class="w-10 md:w-20"> <!-- Points Input -->
+        <col class="w-10 md:w-24"> <!-- Emergency Points -->
+        <col class="w-10 md:w-16"> <!-- Drop Checkbox -->
         </colgroup>
 
         <thead>
