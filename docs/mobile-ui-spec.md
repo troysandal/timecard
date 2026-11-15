@@ -60,16 +60,16 @@ Split in two. Finding: Capacitor 8 has a built-in `SystemBars` plugin, so `@capa
 - Verified: `cypress/e2e/safeArea.cy.ts` (notch, home indicator, landscape insets, band color in both schemes), and screenshots on iPhone 17, iPhone SE and Android API 35 in both themes.
 - Not verified: Android WebView 140+ edge-to-edge (the emulator has 124).
 
-**3b. Splash and launch screens (next).** Launch screen and web view background match the theme with no white or black flash, light and dark. Decide whether `@capacitor/splash-screen` is needed or native launch assets are enough.
+**3b. Splash and launch screens: out of scope** (decided by the owner). The app still shows the plain system white or black before the page loads, rather than our background color. Not planned.
 
-**Verify (3b):** launch captures taken immediately after launch, light and dark, on iOS and Android.
+### 4. Touch polish (done)
+- Pressed state for everything tappable, as a global rule (`button:active`, checkbox labels) instead of per-class. Tailwind 4 already gates `hover:` behind `@media (hover: hover)`, so hover never sticks on touch; it is kept for desktop and PWA mouse users. `:focus-visible` ring for buttons, selects and checkboxes.
+- Tap highlight off. Text selection and the long-press callout off on touch screens only (`@media (pointer: coarse)`), with inputs kept selectable (iOS can't edit them otherwise). `overscroll-behavior: none` on the page and `overscroll-contain` on the scrolling lists.
+- Touch targets: the `--touch-target` token (44px, scales with text). Buttons, inputs and selects are at least that tall; the drop checkbox sits in a 44px label; Home's trash button and the picker's Cancel were enlarged. Material asks for 48dp; 44 is the floor held here.
+- Double-tap zoom was pulled forward and is done (see `DESIGN.md` "Zoom, keyboard and full-screen height").
+- Known exceptions, both replaced by the new time picker (10d): the six Sprint hh/mm/ss fields are 44 tall but only about 36 wide, and the Sprint delete button (❌) is about 18×20.
 
-### 4. Touch polish
-- Replace `hover:` (5 files) with active states; use `:focus-visible`.
-- Remove the tap highlight, long-press callout, text selection on chrome and overscroll on fixed chrome. (Double-tap zoom was pulled forward and is done: it regressed when `maximum-scale=1` was removed in step 2. See `DESIGN.md` "Zoom, keyboard and full-screen height".)
-- Touch targets ≥44pt/48dp.
-
-**Verify:** Cypress passes; manual tap check on a device.
+**Verify:** `cypress/e2e/touch.cy.ts` measures every tappable element on Home, the picker and both Edit screens. Manual tap check on a device is still open.
 
 ### 5. Orientation and tablet layout
 - Phones locked to portrait (iOS Info.plist; Android at runtime with `@capacitor/screen-orientation` and a smallest-width check).

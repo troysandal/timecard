@@ -45,7 +45,7 @@
 </script>
 
 <div class="flex flex-col h-full">
-  <div class="overflow-x-auto flex-1 overflow-y-auto">
+  <div class="overflow-x-auto flex-1 overflow-y-auto overscroll-contain">
     <table class="w-full text-sm">
         <thead>
             <tr>
@@ -66,14 +66,14 @@
     <button
       data-cy="add-test"
       onclick={() => viewModel.addTestData()}
-      class="flex-1 min-h-11 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium
+      class="flex-1 min-h-touch px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium
              hover:opacity-90 active:scale-95 transition"
     >
       Add Test
     </button>
     <button
       onclick={onReset}
-      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+      class="flex-1 min-h-touch px-4 rounded-md border border-border text-sm font-medium
              text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
     >
       Reset
@@ -81,7 +81,7 @@
     {#if available}
     <button
       onclick={onScan}
-      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+      class="flex-1 min-h-touch px-4 rounded-md border border-border text-sm font-medium
              text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
     >
       Scan
@@ -91,7 +91,7 @@
     <button
       data-cy="view-photo"
       onclick={() => { showPhoto = true }}
-      class="flex-1 min-h-11 px-4 rounded-md border border-border text-sm font-medium
+      class="flex-1 min-h-touch px-4 rounded-md border border-border text-sm font-medium
              text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition"
     >
       View

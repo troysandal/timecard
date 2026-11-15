@@ -28,7 +28,7 @@
   <button
     onclick={onClose}
     data-cy="close-photo"
-    class="m-3 min-h-11 px-4 rounded-md bg-white text-black text-sm font-medium"
+    class="m-3 min-h-touch px-4 rounded-md bg-white text-black text-sm font-medium"
   >
     Close
   </button>

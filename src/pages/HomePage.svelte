@@ -101,7 +101,7 @@
             <button
               onclick={() => onDelete(item.id)}
               data-cy="race-delete"
-              class="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
+              class="flex items-center justify-center min-h-touch min-w-touch text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
               style="borderRadius: 'var(--radius)'"
               aria-label="Delete item"
             >

@@ -56,6 +56,22 @@ Rules for the mobile UI. Values (colors, sizes, radii) live in `src/app.css` and
 - Test the keyboard by resizing the viewport (`cy.viewport(375, 407)`), as the OS does; wait for `--app-height` to update before measuring (`cypress/e2e/keyboard.cy.ts`). On the simulator, the number pad only shows with Connect Hardware Keyboard off (⌘K).
 - To debug viewport or scroll problems on a device, temporarily print `innerHeight`, `visualViewport.height`, `scrollY` and `documentElement.scrollHeight` on screen and capture with `scripts/screenshots.sh`; the simulator can't be dragged from the command line.
 
+## CSS layering
+Tailwind 4 puts its utilities in `@layer utilities`, and unlayered CSS beats every layered rule regardless of specificity. So a plain rule in `app.css` silently overrides utility classes (it once flattened the Save button's `transition-all` and stacked with `active:scale-95`).
+- New global styles go inside a layer: `@layer base { ... }` for element defaults and app-wide behavior, `@layer components { ... }` for reusable classes. Then any utility class on an element still wins, which is what people expect when they write one.
+- Write unlayered CSS only when a rule must beat utilities, say why in a comment, and add it to the list below.
+- Prefer the property Tailwind uses (`scale`, `translate`, `rotate`) over `transform`, so a utility replaces your rule instead of stacking with it.
+- Existing deliberate exceptions (unlayered, so utilities can't change them): `.field`, `.field-compact`, `.field:disabled`, `.safe-*`, `.h-app`, and the `html`/`body`/`input`/heading base rules. Leave them; don't copy the pattern.
+
+## Touch
+- Every tappable element is at least `--touch-target` (44px, in `rem`, so it scales with text) in each direction. Size things with the `min-h-touch`, `min-w-touch` and `size-touch` utilities (they read the token), never a hard-coded `min-h-11`. Make a small thing bigger with padding or a wrapping `label`, not by changing how it looks (the drop checkbox is a 20px box inside a 44px label). `.field` has `min-height: var(--touch-target)`; disabled `.field`s only display a value and are exempt. `cypress/e2e/touch.cy.ts` measures every screen; add new screens to it.
+- Known exceptions, until the new time picker replaces them: the six Sprint hh/mm/ss fields (44 tall, about 36 wide, six per row on a 375pt phone) and the Sprint delete button.
+- Pressed feedback is global (`button:not(:disabled):active`, checkbox labels): a button needs no `active:` class. The rule lives in `@layer base` and uses the `scale` property, so utility classes (`transition-colors`, `active:scale-95`) still win and never stack with it. Keep global styles for controls in that layer: an unlayered rule beats every Tailwind utility. Don't add feedback that only exists on hover; Tailwind 4 gates `hover:` behind `@media (hover: hover)`, so it never fires on a phone. Hover is a desktop and PWA extra.
+- Keyboard focus ring comes from `:focus-visible` (buttons, selects, checkboxes), so a tap leaves no ring. Text fields keep `.field:focus`.
+- Touch screens (`@media (pointer: coarse)`): no text selection and no long-press callout on the app chrome. Inputs, textareas and selects stay selectable: iOS can't focus or edit a field inside a `user-select: none` ancestor without it. Desktop keeps selection.
+- `-webkit-tap-highlight-color` is transparent everywhere; `overscroll-behavior: none` on the page (no pull-to-refresh or scroll chaining) and `overscroll-contain` on scrolling lists.
+- Chrome drops iOS-only properties (`-webkit-touch-callout`) when parsing CSS, so tests can't see them in the CSSOM; `touch.cy.ts` checks that one in the source file.
+
 ## PWA compatibility
 The GitHub Pages PWA and plain browser stay fully functional as long as possible; native is not allowed to break them.
 - Every native-only feature (haptics, status bar, keyboard, splash, orientation lock, native dialogs/sheets, share, browser) goes through a small adapter that switches on `getRunMode()` in `src/platform.ts`. Callers never import a Capacitor plugin directly.
@@ -66,4 +82,4 @@ The GitHub Pages PWA and plain browser stay fully functional as long as possible
 - Verify every step on the web build (`npm run test:e2e`, `npm run test:screenshots`) as well as on devices.
 
 ## Sections added by later steps
-Splash and launch screens (3b), touch targets and press states (4), tablet layout (5), navigation and back (6), sheets vs native dialogs (7), keyboard (8), haptics (9), accessibility and sunlight contrast (11).
+tablet layout (5), navigation and back (6), sheets vs native dialogs (7), keyboard (8), haptics (9), accessibility and sunlight contrast (11).

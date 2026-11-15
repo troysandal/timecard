@@ -38,7 +38,7 @@
     <button
       onclick={onClose}
       data-cy="cancel-picker"
-      class="mt-4 w-full text-xs font-extrabold hover:text-foreground transition-colors py-1"
+      class="mt-4 w-full min-h-touch text-xs font-extrabold hover:text-foreground transition-colors"
     >
       Cancel
     </button>

@@ -24,6 +24,8 @@
 }
 
 @theme inline {
+  /* min-h-touch, size-touch, ...: one source for the 44pt tap target (--touch-target below). */
+  --spacing-touch: var(--touch-target);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -113,6 +115,74 @@
    (keeps content clear of the iOS home indicator and Android gesture bar). */
 .safe-bottom-edge {
   padding-bottom: var(--safe-bottom);
+}
+
+/* ---- Touch ----------------------------------------------------------------
+   Rules for every screen; see DESIGN.md "Touch". */
+
+:root {
+  /* Minimum tap target: 44pt (Apple HIG). Material asks for 48dp; 44 is the floor we hold to.
+     In rem so it grows with the text size. */
+  --touch-target: 2.75rem;
+}
+
+html {
+  /* No grey flash when tapping; every tappable thing has a pressed state instead (below). */
+  -webkit-tap-highlight-color: transparent;
+  /* Don't scroll-chain or pull-to-refresh the page from a drag in the app chrome. */
+  overscroll-behavior: none;
+}
+
+/* Inputs and selects are at least a tap target tall. Disabled ones only display a value. */
+.field {
+  min-height: var(--touch-target);
+}
+.field:disabled {
+  min-height: 0;
+}
+
+/* Pressed feedback for everything tappable, on every screen. Hover (hover: hover devices
+   only, Tailwind 4 gates it) is a desktop extra, not the only feedback.
+   In the base layer so any utility class (transition-colors, active:scale-95, ...) still wins.
+   Uses `scale`, the property Tailwind 4's scale utilities set, so they replace this instead of
+   stacking with it. Selects open the OS picker and need no pressed state. */
+@layer base {
+  button,
+  [role='button'],
+  label:has(input[type='checkbox']) {
+    transition:
+      opacity 0.1s,
+      scale 0.1s;
+  }
+  button:not(:disabled):active,
+  [role='button']:active,
+  label:has(input[type='checkbox']):active {
+    opacity: 0.7;
+    scale: 0.97;
+  }
+}
+
+/* Keyboard focus ring for controls (not shown after a tap). Text fields keep .field:focus. */
+:where(button, select, a, [role='button'], input[type='checkbox']):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* On touch screens the app chrome is not text: no long-press callout or selection handles.
+   Inputs must stay selectable, or iOS can't focus or edit them. Desktop keeps selection. */
+@media (pointer: coarse) {
+  html {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input,
+  textarea,
+  select,
+  [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 /* Full-screen layouts: exactly as tall as the visible area (set by lib/viewportHeight.ts),

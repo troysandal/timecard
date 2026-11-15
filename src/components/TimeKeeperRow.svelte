@@ -86,9 +86,9 @@
 </script>
 
 <tr class={droppedRow} data-cy="tkr">   
-    <td class="p-1 align-middle">
-        <div class="h-10 w-10 md:h-12 md:w-12 flex items-center justify-center mx-auto">
-            <button onclick={toggleType}>
+    <td class="p-0 align-middle">
+        <div class="size-touch md:size-12 flex items-center justify-center mx-auto">
+            <button onclick={toggleType} class="size-full">
                 <img src={flagSrc} alt="Flag" class="h-full w-full object-contain block"/>
             </button>
         </div>
@@ -104,10 +104,11 @@
     </td>
     <td class="p-1"><input class="{droppedRow} field field-compact h-8 w-full min-w-0" disabled value={points} size="3" /></td>
     <td class="p-1"><input class="{droppedRow} field field-compact h-8 w-full min-w-0" disabled value={emergencyPoints} size="4" /></td>
-    <td class="p-1">
-        <div class="flex items-center justify-center">
-        <input class="size-5 accent-primary" type="checkbox" bind:checked={check.drop}>
-        </div>
+    <td class="p-0">
+        <!-- The label is the 44pt tap target; the checkbox itself stays small. -->
+        <label class="flex items-center justify-center size-touch mx-auto cursor-pointer">
+            <input class="size-5 accent-primary" type="checkbox" bind:checked={check.drop}>
+        </label>
     </td>
 </tr>
 
