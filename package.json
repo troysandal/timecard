@@ -7,13 +7,20 @@
   "repository": "github:troysandal/timecard",
   "homepage": "https://github.com/troysandal/timecard#readme",
   "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
   "scripts": {
     "dev": "vite --host",
+    "dev:cap": "vite --host --mode capacitor --port 5174 --strictPort",
+    "compile": "tsc -p tsconfig.json --noEmit",
     "build": "vite build --base=/timecard/",
     "build:cap": "vite build --mode capacitor && npx cap sync",
+    "build:cap:dev": "vite build --mode capacitor && CAP_DEV=true npx cap sync",
     "build:preview": "vite build",
     "preview": "vite preview --host",
     "test": "vitest",
+    "test:e2e": "npx cypress run",
     "test:coverage": "vitest run --coverage",
     "cert": "openssl req -x509 -newkey rsa:4096 -keyout cert.key -out cert.crt -sha256 -days 365 -nodes -subj '/CN=localhost/O=TimeCard/OU=Development Team' -addext \"subjectAltName = DNS:localhost, IP:127.0.0.1, IP:::1, IP:10.0.2.2\""
   },
@@ -22,6 +29,7 @@
     "@capacitor/cli": "^8.6.0",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.1.0",
     "cypress": "^16.0.0",
     "jsdom": "^31.0.0",
@@ -39,6 +47,7 @@
     "@capacitor/filesystem": "^8.1.5",
     "@capacitor/ios": "^8.6.0",
     "@tailwindcss/vite": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "timecard-scanner": "github:troysandal/timecard-scanner#v0.2.1"
   }
 }

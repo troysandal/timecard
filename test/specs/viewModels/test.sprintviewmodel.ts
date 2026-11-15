@@ -1,7 +1,18 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SprintViewModel } from "../../../src/viewModels/viewModels.svelte"
 import type { SprintScore } from '../../../src/viewModels/ViewModelTypes';
 import type { SprintEnduroData, SprintRace } from "../../../src/models/race";
+vi.mock('../../../src/lib/scanCard', async (orig) => ({
+  ...(await orig<typeof import('../../../src/lib/scanCard')>()),
+  scanCard: vi.fn(),
+}))
+vi.mock('../../../src/lib/photos', async (orig) => ({
+  ...(await orig<typeof import('../../../src/lib/photos')>()),
+  deleteImage: vi.fn(async () => {}),
+}))
+import { scanCard } from '../../../src/lib/scanCard'
+import { deleteImage } from '../../../src/lib/photos'
+
 
 describe("SprintViewModel", () => {
   function makeSprintRace(timeCard: SprintEnduroData): SprintRace {
@@ -212,5 +223,73 @@ describe("SprintViewModel", () => {
       saved!.timeCard.tests[0]!.exit.minute = 9
       expect(viewModel.isDirty).toBe(false)
     })
+  })
+})
+
+describe("SprintViewModel photo & scan", () => {
+  const newVm = () => new SprintViewModel({
+    id: "t", name: "n", createdAt: new Date(), raceType: "sprint", timeCard: { tests: [] }
+  })
+  const scanMock = vi.mocked(scanCard)
+  const okRows = (rows: { c1: string; c2: string; c3: string }[]) =>
+    ({ status: 'ok', imagePath: 't/scans/a.jpg', result: { rows, warnings: [], image: { path: '', webPath: '' } } }) as any
+
+  beforeEach(() => { vi.clearAllMocks() })
+
+  it('is dirty when imagePath changes and clean after save', () => {
+    const vm = newVm()
+    expect(vm.isDirty).toBe(false)
+    vm.race.imagePath = "t/scans/a.jpg"
+    expect(vm.isDirty).toBe(true)
+    vm.save(() => {})
+    expect(vm.isDirty).toBe(false)
+  })
+
+  it('resetCard clears the photo', () => {
+    const vm = newVm()
+    vm.race.imagePath = "t/scans/a.jpg"
+    vm.resetCard()
+    expect(vm.race.imagePath).toBeUndefined()
+  })
+
+  it('rowEntered adds a test only on the last row', () => {
+    const vm = newVm()
+    vm.addTestData()
+    vm.addTestData()
+    vm.rowEntered(0)
+    expect(vm.race.timeCard.tests.length).toBe(2)
+    vm.rowEntered(1)
+    expect(vm.race.timeCard.tests.length).toBe(3)
+  })
+
+  it('scan applies rows and keeps the photo', async () => {
+    scanMock.mockResolvedValue(okRows([{ c1: '1:00:00', c2: '1:01:00', c3: '' }]))
+    const vm = newVm()
+    expect(await vm.scan()).toBe('applied')
+    expect(vm.race.timeCard.tests.length).toBeGreaterThan(0)
+    expect(vm.race.imagePath).toBe('t/scans/a.jpg')
+    expect(deleteImage).not.toHaveBeenCalled()
+  })
+
+  it('scan with no usable rows deletes the photo and changes nothing', async () => {
+    scanMock.mockResolvedValue(okRows([]))
+    const vm = newVm()
+    expect(await vm.scan()).toBe('empty')
+    expect(deleteImage).toHaveBeenCalledWith('t/scans/a.jpg')
+    expect(vm.race.imagePath).toBeUndefined()
+  })
+
+  it('scan with no table deletes the photo and fails', async () => {
+    scanMock.mockResolvedValue({ status: 'no-table', imagePath: 't/scans/b.jpg' })
+    expect(await newVm().scan()).toBe('failed')
+    expect(deleteImage).toHaveBeenCalledWith('t/scans/b.jpg')
+  })
+
+  it('cancelled scan does nothing', async () => {
+    scanMock.mockResolvedValue({ status: 'cancelled' })
+    const vm = newVm()
+    expect(await vm.scan()).toBe('cancelled')
+    expect(deleteImage).not.toHaveBeenCalled()
+    expect(vm.isDirty).toBe(false)
   })
 })

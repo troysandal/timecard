@@ -57,6 +57,7 @@ interface RaceBase {
   id: string
   name: string
   createdAt: Date
+  imagePath?: string
 }
 
 export type TimeKeeperRace = RaceBase & { raceType: "time_keeper"; timeCard: TimeKeeperEnduro };

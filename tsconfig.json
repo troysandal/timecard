@@ -25,6 +25,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": false
   },
+    "references": [{ "path": "./tsconfig.node.json" }],
   "include": [
     "src/**/*"
   ],

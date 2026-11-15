@@ -17,3 +17,5 @@ export interface RaceViewModel<TRace extends Race, TScore extends AnyScore> {
 
   save(onSave: (race: TRace) => void): void;
 }
+
+export type ScanApplyResult = 'applied' | 'empty' | 'cancelled' | 'failed';

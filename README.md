@@ -1,14 +1,16 @@
 # Enduro Time Card
-A very simple app to compute your score in a Time Keeping (AMA National & NEI Brand X) or Sprint Enduro.  Enter your time card scores then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). App is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser.  App store version is in a future release.
+An app to compute your Enduro scores.  Supports Time Keeping (AMA National & NEI Brand X) and Sprint Enduro.  Type or scan in your time cards then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). Web app is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser. 
 
 ## Roadmap
 - [X] Support [NETRA Brand X](https://www.netra.org/wp-content/uploads/2023/03/2023-NETRA-Enduro-Rules.pdf) scoring format
 - [X] More than one timecard
-- [ ] Scan timecard with device camera, attach photo to timecard
+- [X] [iOS] Scan timecard with camera
+- [ ] [Android] Scan timecard with camera
+- [ ] Restyle UI for native
 - [ ] Add to the Apple and Google Stores
 
 ## Development
-This is a single page HTML/CSS/TypeScript/Svelte/Vite/Vitest/Cypress web app that runs as a Web page, PWA and Capacitor iOS and Android app. Everything was built with Node 26. 
+This is a single page HTML/CSS/TypeScript/Svelte/Vite/Vitest/Cypress web app that runs as a Web page, PWA and Capacitor iOS and Android app. Everything was built with Node/NPM v26.
 
 First Time Setup
 1. Initialize a self signed certificate for PWA `npm run cert`
@@ -17,19 +19,26 @@ First Time Setup
 4. [optional] Jump to [PWA](#pwa) below and setup certs for each simulator
 
 Here are the basics you'll need to work on it.
-```
+``` sh
 # Run site
 npm run dev
 
 # Unit Tests
 npm run test
+(cd plugins/timecard-scanner/ios/Core && swift test)
 
 # Integration Tests
 npm run dev
 npx cypress open
 
+# Debug Capacitor App w/Live Reloading
+npm run build:cap:dev
+npx cap open [ios|android]
+npm run dev:cap   # http:/localhost:5174
+
 # Deploy Web / PWA
 npm run build
+npm run dev       # https://localhost:5173
 npm run test
 npx cyrpress run
 git push origin main
@@ -40,13 +49,23 @@ npx cap sync ios android
 
 # Open Native Projects
 npx cap open [ios|android]
+
+# Publish to App Stores
+npm run build
+npm run test
+npm run dev       # in separate terminal
+npm run test:e2e
+npm run build:cap
+# Now open Android and Xcode and deploy to app stores
 ```
+
+## Time Card Scanner
+On-device time card scanning is done by a Capacitor plugin we built in [plugins/timecard-scanner](plugins/timecard-scanner/README.md), installed as an npm workspace. iOS requires iOS 26+, Android 8+ (SDK 24) for MLKit.
 
 ## PWA
 We still support PWA which means you need the openssl certificate trusted by your browser.  For iOS and Android simulators you need to add the cert.
 
 **iOS**
-
 Install Cert in simulator
 - XCode 26 and before - Drag and drop your cert.crt file directly from your computer's finder onto the running iOS Simulator screen. 
 - XCode 27+ - run `xcrun simctl keychain booted add-root-cert ./cert.crt`
@@ -67,8 +86,6 @@ Since Android runs on a virtualized internal network, typing localhost will fail
 	• Inside the emulator, open Settings -> Security -> More Security Settings -> Encryption & credentials -> Install a certificate -> CA certificate.
 	• Choose Install anyway, locate your cert.crt in the files explorer, and select it.
 3. Restart Mobile Chrome: Fully close and open Chrome inside the emulator. The Service Worker will now register flawlessly over https://10.0.2.2:5173, letting you test the PWA features.
-
-
 
 ## Wallaby.js
 

@@ -9,9 +9,11 @@ export default defineConfig(({ command, mode }) => {
   const isCapacitor = mode === 'capacitor'
   const keyPath = new URL('./cert.key', import.meta.url)
   const certPath = new URL('./cert.crt', import.meta.url)
-  // Self-signed SSL certificate for local PWA debugging (dev server only)
+  // Self-signed SSL certificate for local PWA debugging (dev server only).
+  // Capacitor's WebView rejects self-signed certs, so its dev server (mode
+  // capacitor, `npm run dev:cap`) stays plain http.
   const useHttps =
-    command === 'serve' && fs.existsSync(keyPath) && fs.existsSync(certPath)
+    command === 'serve' && !isCapacitor && fs.existsSync(keyPath) && fs.existsSync(certPath)
 
   return { 
     build: {

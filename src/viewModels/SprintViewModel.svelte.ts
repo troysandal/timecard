@@ -1,17 +1,12 @@
 import { type SprintRace, toSprint, type SprintTestData, sprintsAreEqual } from '../models/race';
 import { SprintEnduro } from '../models/sprint';
+import { scanToSprintTests, type ScanRow } from '../lib/scanCard';
+import { RaceViewModelBase } from './RaceViewModelBase.svelte';
 import type { RaceViewModel, SprintScore } from './ViewModelTypes';
 
-export class SprintViewModel implements RaceViewModel<SprintRace, SprintScore> {
+export class SprintViewModel extends RaceViewModelBase<SprintRace> implements RaceViewModel<SprintRace, SprintScore> {
   readonly kind = 'sprint'; // literal type: this is what makes AnyRaceViewModel narrowable
-  race: SprintRace;
-  raceLKG: SprintRace;
   raceSprint: SprintEnduro = $derived.by(() => toSprint(this.race.timeCard))
-
-  constructor(race: SprintRace) {
-    this.race = $state($state.snapshot(race));
-    this.raceLKG = $state($state.snapshot(race));
-  }
 
   get score(): SprintScore {
     const result: SprintScore =  {
@@ -40,25 +35,29 @@ export class SprintViewModel implements RaceViewModel<SprintRace, SprintScore> {
     });
   }
 
+  /** Called when Enter is pressed in a row; the last row grows the card. */
+  rowEntered(index: number) {
+    if (index === this.race.timeCard.tests.length - 1) this.addTestData()
+  }
+
   resetCard() {
     this.race.timeCard.tests = this.initialTests()
+    this.clearPhoto()
+  }
+
+  protected applyScanRows(rows: ScanRow[]): boolean {
+    const tests = scanToSprintTests(rows)
+    if (tests.length === 0) return false
+    this.race.timeCard.tests = tests
+    return true
   }
 
   deleteTest(item: SprintTestData) {
     this.race.timeCard.tests = this.race.timeCard.tests.filter((i) => i !== item)
   }
 
-  save(onSave: (race: SprintRace) => void) {
-    this.raceLKG = $state.snapshot(this.race)
-    onSave($state.snapshot(this.race))
-  }
-
   get isDirty(): boolean {
-    const l = $state.snapshot(this.race);
-    const r = $state.snapshot(this.raceLKG);
-
-    if (l.name !== r.name) return true;
-    return !sprintsAreEqual(l.timeCard, r.timeCard)
+    if (this.isBaseDirty()) return true;
+    return !sprintsAreEqual($state.snapshot(this.race).timeCard, $state.snapshot(this.raceLKG).timeCard)
   }
 }
-
