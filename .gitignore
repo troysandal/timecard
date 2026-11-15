@@ -142,3 +142,6 @@ cypress/screenshots
 # pwa certificates
 *.crt
 *.key
+# Screenshot harness output
+screenshots/
+.build/

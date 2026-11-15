@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Enduro Time Card</string>
     <string name="title_activity_main">Enduro Time Card</string>
-    <string name="package_name">com.troysandal.endurocomputer</string>
-    <string name="custom_url_scheme">com.troysandal.endurocomputer</string>
+    <string name="package_name">com.troysandal.enduroscorecard</string>
+    <string name="custom_url_scheme">com.troysandal.enduroscorecard</string>
 </resources>
