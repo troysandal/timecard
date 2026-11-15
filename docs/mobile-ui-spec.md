@@ -71,11 +71,13 @@ Split in two. Finding: Capacitor 8 has a built-in `SystemBars` plugin, so `@capa
 
 **Verify:** `cypress/e2e/touch.cy.ts` measures every tappable element on Home, the picker and both Edit screens. Manual tap check on a device is still open.
 
-### 5. Orientation and tablet layout
-- Phones locked to portrait (iOS Info.plist; Android at runtime with `@capacitor/screen-orientation` and a smallest-width check).
-- Tablets: all orientations, with a max-width column.
+### 5. Orientation and tablet layout (done)
+- Phones portrait-only: iPhone through `Info.plist`; Android through `MainActivity` below 600dp smallest width. `@capacitor/screen-orientation` was not needed (our own activity does it), so no new plugin.
+- Tablets: all orientations, `UIRequiresFullScreen` not set (Split View and Slide Over stay available), a centered column at most 672px wide.
+- Android re-applies the lock on configuration changes (foldables, resized windows), verified live on the emulator.
+- The web build and PWA can't lock orientation, so a phone held sideways got a layout fix: under 500px tall and at least 3:2 wide (`short:` variant), the Edit page scrolls and the list keeps a fixed height. Before it, the list was 0px tall at 852×393. Portrait with the keyboard up is excluded by the aspect ratio.
 
-**Verify:** iPad portrait, landscape and Split View screenshots; phone rotation stays locked.
+**Verify:** `orientation.cy.ts` (iPad portrait and landscape, mini, Split View thirds and halves, sideways phones) and `test.orientation.ts` (plist and `MainActivity`). The built iOS app's plist and Android's `requestedOrientation` were checked directly. Not observed: an actual iPad rotation or Split View (the simulators here have no rotate command), and the tablet-sized Android emulator never visibly rotated, so tablet rotation is verified from the setting, not by watching it.
 
 ### 6. Navigation and back
 - A visible back button in a consistent header.

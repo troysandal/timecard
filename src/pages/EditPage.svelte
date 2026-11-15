@@ -62,7 +62,7 @@
   }
 </script>
 
-<div class="h-app flex flex-col bg-background max-w-2xl w-full mx-auto overflow-hidden safe-x">
+<div class="h-app flex flex-col bg-background max-w-2xl w-full mx-auto overflow-hidden short:overflow-y-auto safe-x">
   <SafeAreaTop />
   <EditHeader {viewModel} {onBack} onSave={handleSave} />
   <div class="shrink-0" class:hidden={hideDetails} data-cy="race-details-wrap">
@@ -70,7 +70,7 @@
   </div>
 
   <section
-    class="flex-1 overflow-hidden border-b border-border bg-card"
+    class="flex-1 overflow-hidden border-b border-border bg-card short:flex-none short:h-72"
     onfocusin={() => (listFocused = true)}
     onfocusout={onListFocusOut}
   >

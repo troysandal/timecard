@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* `short:` variant: a phone held sideways in a browser or PWA (native phones are locked to
+   portrait): under 500px tall AND at least 3:2 wide. The aspect ratio matters: a portrait phone
+   with the keyboard up is also under 500px tall (375x407 on an SE with the number pad) and must
+   keep the portrait layout. Landscape phones are 1.8:1 or wider; portrait-with-keyboard is
+   about 1:1. See DESIGN.md "Orientation and tablets". */
+@custom-variant short (@media (max-height: 500px) and (min-aspect-ratio: 3/2));
+
 /* Fonts are bundled (latin subset, variable) so they work offline. See DESIGN.md. */
 @font-face {
   font-family: 'Nunito';

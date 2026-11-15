@@ -73,4 +73,25 @@ describe('keepFocusedVisible', () => {
     keepFocusedVisible()
     expect(list.scrollTop).toBe(0)
   })
+
+  it('also moves the page around the list when the input is inside the list but below the page fold', () => {
+    const page = document.createElement('div')
+    page.style.overflowY = 'auto'
+    Object.defineProperty(page, 'scrollHeight', { value: 700, configurable: true })
+    Object.defineProperty(page, 'clientHeight', { value: 200, configurable: true })
+    page.getBoundingClientRect = () => rect(0, 200)
+    list.remove()
+    page.appendChild(list)
+    document.body.appendChild(page)
+    input.focus()
+
+    // The list's box (0-300) holds the input at 250-290, but the page only shows 0-200.
+    layout(0, 300, 250)
+    page.scrollTop = 0
+    list.scrollTop = 0
+    keepFocusedVisible()
+    expect(list.scrollTop, 'the input is already inside the list box, so the list stays').toBe(0)
+    expect(page.scrollTop, 'the page moved to bring it into view').toBeGreaterThan(0)
+    page.remove()
+  })
 })
