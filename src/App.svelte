@@ -10,6 +10,7 @@
   import { onMount } from 'svelte'
   import { loadDB, saveDB } from './db/database'
   import { installAndroidBackButton } from './lib/backButton'
+  import { transitionPage } from './lib/pageTransition'
   import ConfirmHost from './components/ConfirmHost.svelte'
   import { confirmDialog } from './lib/dialogs.svelte'
   import { pruneRaceImages, deleteRaceImages } from './lib/photos'
@@ -75,14 +76,16 @@
       // The dialog is asynchronous, and by the time it is answered a second popstate may
       // already have taken us Home, so check again afterwards.
       if (await confirmLeave()) {
-        showHome()
+        await transitionPage('pop', showHome)
       } else if (editingId) {
         // popstate can't be cancelled, so put the Edit entry back
         pushEdit(editingId)
       }
-    } else if (!showEdit(id)) {
+    } else if (!items.some((i) => i.id === id)) {
       history.replaceState({ page: 'home' }, '', '#/')
       showHome()
+    } else {
+      await transitionPage('push', () => showEdit(id))
     }
   }
 
@@ -136,6 +139,16 @@
   }
 
   const handleSelectType = async (type: RaceType) => {
+    if (opening) return
+    opening = true
+    try {
+      await createAndOpen(type)
+    } finally {
+      opening = false
+    }
+  }
+
+  const createAndOpen = async (type: RaceType) => {
     const id = Math.random().toString(36).slice(2)
     const name = `Untitled ${type === 'sprint' ? 'Sprint' : 'Time Keeper'}`
     const createdAt = new Date()
@@ -147,9 +160,11 @@
 
     items.push(newItem)
     await save()
-    showEdit(newItem.id)
     pushEdit(newItem.id)
-    showTypePicker = false
+    await transitionPage('push', () => {
+      showEdit(newItem.id)
+      showTypePicker = false
+    })
   }
 
   const pageForType = (type: RaceType) => {
@@ -159,8 +174,16 @@
     return "timekeeper"
   }
 
+  // True from the tap until the slide has swapped the page. The swap is no longer synchronous,
+  // so without this a double tap would push two history entries.
+  let opening = false
   const handleEdit = (id: string) => {
-    if (showEdit(id)) pushEdit(id)
+    if (opening || !items.some((i) => i.id === id)) return
+    opening = true
+    pushEdit(id)
+    transitionPage('push', () => showEdit(id))
+      .catch((error) => console.error(error))
+      .finally(() => { opening = false })
   }
 
   const handleDelete = async (id: string) => {

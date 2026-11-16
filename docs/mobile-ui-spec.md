@@ -79,12 +79,13 @@ Split in two. Finding: Capacitor 8 has a built-in `SystemBars` plugin, so `@capa
 
 **Verify:** `orientation.cy.ts` (iPad portrait and landscape, mini, Split View thirds and halves, sideways phones) and `test.orientation.ts` (plist and `MainActivity`). The built iOS app's plist and Android's `requestedOrientation` were checked directly. Not observed: an actual iPad rotation or Split View (the simulators here have no rotate command), and the tablet-sized Android emulator never visibly rotated, so tablet rotation is verified from the setting, not by watching it.
 
-### 6. Navigation and back
-- A visible back button in a consistent header.
-- Android Back closes an open sheet, then hits the `editDirty` guard, then exits on root. Predictive back.
-- Push/pop transitions that respect reduced motion.
+### 6. Navigation and back (done)
+- The app has two screens, so the "consistent back button" is already consistent: Home is the root and has none; Edit has Back on the left of `EditHeader`. Giving Home a matching header bar is a visual change for 10a/10b.
+- Android Back (closes a sheet, then the `editDirty` guard, then exits) was finished in step 7.
+- Home <-> Edit slides with the View Transitions API (`lib/pageTransition.ts`, CSS in `app.css`), and happens at once where the API is missing or the OS asks for reduced motion.
+- Not changed: `aria-label="Go back"` on the Back button still overrides the visible "Back" (label-in-name); left for step 11.
 
-**Verify:** Cypress navigation specs; Android emulator back tests.
+**Verify:** `navigation.cy.ts` (direction of each slide, no API, reduced motion, deep link, stylesheet rule). On the Android emulator (API 36, gesture nav): open and Back return correctly; Back closes the keyboard first, then goes Home, then exits. Not observed: a frame mid-slide (screenshots could not catch the 250ms animation) or on iOS (no iOS check of the slide; it needs iOS 18 or later WebKit and falls back to instant before that). Predictive back's system preview was not checked visually.
 
 ### 7. Sheets and dialogs (done)
 - One Tailwind `Sheet` (bottom sheet on phones, centered dialog on tablets) with focus handling, Escape, tap-outside, scroll lock and reduced motion. The race picker and photo viewer use it.

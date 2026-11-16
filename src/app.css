@@ -203,6 +203,59 @@ html {
     }
   }
 }
+/* Page transitions (lib/pageTransition.ts): Edit slides in from the right and back out. */
+@layer components {
+  :root[data-nav] {
+    --nav-duration: 0.25s;
+  }
+  :root[data-nav]::view-transition-old(root),
+  :root[data-nav]::view-transition-new(root) {
+    animation-duration: var(--nav-duration);
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+    mix-blend-mode: normal;
+  }
+  :root[data-nav='push']::view-transition-old(root) {
+    animation-name: nav-cover;
+  }
+  :root[data-nav='push']::view-transition-new(root) {
+    animation-name: nav-in-from-right;
+    z-index: 2;
+  }
+  :root[data-nav='pop']::view-transition-old(root) {
+    animation-name: nav-out-to-right;
+    z-index: 2;
+  }
+  :root[data-nav='pop']::view-transition-new(root) {
+    animation-name: nav-uncover;
+  }
+  @keyframes nav-in-from-right {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes nav-out-to-right {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes nav-cover {
+    to {
+      transform: translateX(-20%);
+    }
+  }
+  @keyframes nav-uncover {
+    from {
+      transform: translateX(-20%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root[data-nav]::view-transition-old(root),
+    :root[data-nav]::view-transition-new(root) {
+      animation: none;
+    }
+  }
+}
 /* The page does not scroll behind an open sheet. */
 @layer base {
   html.sheet-open {
