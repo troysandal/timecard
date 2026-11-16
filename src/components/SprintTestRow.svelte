@@ -52,14 +52,6 @@
             onEnter={onEnterAny} />
     </td>
     <td>
-        <input class="score field h-8 w-full min-w-0" disabled value={score} />
+        <span class="mono text-base">{score}</span>
     </td>
 </tr>
-
-<style>
-
-    .score {
-        width: 8ch;
-        text-align: center;
-    }
-</style>
