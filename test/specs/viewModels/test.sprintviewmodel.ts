@@ -263,7 +263,7 @@ describe("SprintViewModel photo & scan", () => {
   })
 
   it('scan applies rows and keeps the photo', async () => {
-    scanMock.mockResolvedValue(okRows([{ c1: '1:00:00', c2: '1:01:00', c3: '' }]))
+    scanMock.mockResolvedValue(okRows([{ c1: '9', c2: '37', c3: '00' }, { c1: '9', c2: '55', c3: '34' }]))
     const vm = newVm()
     expect(await vm.scan()).toBe('applied')
     expect(vm.race.timeCard.tests.length).toBeGreaterThan(0)

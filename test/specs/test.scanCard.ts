@@ -86,6 +86,7 @@ describe('Time Card Scanning', () => {
         [['92629'], 9, 26, 29],
         [['9:26'], 9, 26, 0],
         [['12:30:15'], 12, 30, 15],
+        [['13:09:05'], 13, 9, 5],
         [['9:5:7'], 9, 5, 7],
         [['9:26', '29'], 9, 26, 29],
         [['158', '26'], 1, 58, 26],
@@ -115,31 +116,35 @@ describe('Time Card Scanning', () => {
     describe('scanToSprintTests', () => {
       const row = (c1 = '', c2 = '', c3 = '') => ({ c1, c2, c3 })
 
-      it('maps c1 to enter and c2+c3 to exit', () => {
-        expect(scanToSprintTests([row('153', '158', '26')])).toEqual([
-          { enter: { hour: 1, minute: 53, second: 0 }, exit: { hour: 1, minute: 58, second: 26 } },
-        ])
+      it('must have even number of rows', () => {
+        expect(scanToSprintTests([row('9', '27', '00')])).toEqual([])
+        expect(scanToSprintTests([row('9', '27', '00'), row('9', '55', '34'), row('10', '05', '00')])).toEqual([])
       })
 
       it('trims trailing empty rows', () => {
-        expect(scanToSprintTests([row('153', '158', '26'), row(), row()])).toHaveLength(1)
+        expect(scanToSprintTests([row('9', '27', '00'), row('9', '55', '34'), row()])).toHaveLength(1)
       })
 
       it('returns [] when every row is empty', () => {
         expect(scanToSprintTests([row(), row()])).toEqual([])
       })
 
-      it('keeps an empty row in the middle as an all-NaN test', () => {
-        const tests = scanToSprintTests([row('153', '158', '26'), row(), row('200', '205', '10')])
+      it('handles single time each row', () => {
+        const tests = scanToSprintTests([row('9', '27', '00'), row('9', '55', '34')])
+        expect(tests).toHaveLength(1)
+      })
+
+      it('handles empty rows in middle', () => {
+        const tests = scanToSprintTests([
+          row('9', '27', '00'), row('9', '55', '34'),
+          row(), row(),
+          row('10', '05', '00'), row('10', '23', '35')
+        ])
         expect(tests).toHaveLength(3)
-        for (const t of [tests[1]!.enter, tests[1]!.exit]) {
-          expect(t.hour).toBeNaN()
-          expect(t.minute).toBeNaN()
-          expect(t.second).toBeNaN()
-        }
       })
     })
   })
+
   describe('Image path handling', () => {
     it('keeps only the file name under <raceId>/scans', () => {
       expect(toImagePath('abc', '/var/mobile/Containers/Data/Application/X/Documents/abc/scans/timecard-1.jpg'))
@@ -148,5 +153,4 @@ describe('Time Card Scanning', () => {
         .toBe('abc/scans/timecard-2.jpg')
     })
   })
-
 })

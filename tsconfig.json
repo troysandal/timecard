@@ -25,9 +25,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": false
   },
-    "references": [{ "path": "./tsconfig.node.json" }],
+  "references": [
+    { "path": "./tsconfig.node.json" }
+  ],
   "include": [
-    "src/**/*"
+    "src/**/*", 
+    // For VSCode Referencs - vite tree shaking will drop these.
+    "test/specs/**/*.ts"
   ],
   "exclude": [
     "node_modules/**/*",

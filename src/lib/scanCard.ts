@@ -109,8 +109,20 @@ export function parseSprintTime(...parts: string[]): SprintTestTimeData {
 }
 
 export function scanToSprintTests(rows: ScanRow[]): SprintTestData[] {
-  return trimTrailingEmptyRows(rows).map(r => ({
-    enter: parseSprintTime(r.c1 ?? ''),
-    exit: parseSprintTime(r.c2 ?? '', r.c3 ?? ''),
-  }))
+  const trimmed = trimTrailingEmptyRows(rows)
+    .map((row) => `${row.c1 ?? ''}:${row.c2 ?? ''}:${row.c3 ?? ''}`);
+  
+  if ((trimmed.length % 2) !== 0) {
+    return []
+  }
+  
+  const result: SprintTestData[] = []
+  
+  for (let ix = 0 ; ix < trimmed.length ; ix = ix + 2) {
+    result.push({
+      enter: parseSprintTime(trimmed[ix]!),
+      exit: parseSprintTime(trimmed[ix + 1]!),
+    })
+  }
+  return result
 }
