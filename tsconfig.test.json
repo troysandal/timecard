@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.svelte.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["svelte", "node"],
+  },
+  "references": [{"path": "./tsconfig.app.json"}],
+  "include": [
+    "test/specs/**/*.ts", 
+    "test/fixtures/**/*.json"
+  ],
+  "exclude": [
+    "node_modules/**/*"
+  ]
+}

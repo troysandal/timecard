@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "emitDeclarationOnly": true,
-    "outDir": "node_modules/.tmp/tsconfig.node",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "noEmit": true,
     
     "lib": ["ESNext"],
     "target": "ESNext",
@@ -14,6 +13,7 @@
     "checkJs": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "skipLibCheck": true,
 
     // Strict Checks
     "strict": true,

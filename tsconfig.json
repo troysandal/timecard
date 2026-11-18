@@ -1,40 +1,8 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
-  "compilerOptions": {
-    "lib": ["ESNext", "dom"],
-    "target": "ESNext",
-    "module": "ESNext",
-
-    // Module resolution
-    "noEmit": true,
-    "allowJs": true,
-    "checkJs": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-
-    // Strict Checks
-    "strict": true,
-    "alwaysStrict": true,
-    "allowUnreachableCode": false,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-
-    // Linter Checks
-    "noImplicitReturns": true,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false
-  },
+  "files": [],
   "references": [
-    { "path": "./tsconfig.node.json" }
-  ],
-  "include": [
-    "src/**/*", 
-    // For VSCode Referencs - vite tree shaking will drop these.
-    "test/specs/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules/**/*",
-    "mobile/**/*"
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.test.json" }
   ]
 }

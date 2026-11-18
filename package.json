@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "vite --host",
     "dev:cap": "vite --host --mode capacitor --port 5174 --strictPort",
-    "compile": "tsc -p tsconfig.json --noEmit && tsc -p test/tsconfig.json --noEmit",
+    "compile": "tsc -b",
     "build": "vite build --base=/timecard/",
     "build:cap": "vite build --mode capacitor && npx cap sync",
     "build:cap:dev": "vite build --mode capacitor && CAP_DEV=true npx cap sync",
