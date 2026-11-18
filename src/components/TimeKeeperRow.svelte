@@ -40,16 +40,50 @@
         return FLAGS[checkDatum.type]
     }
 
+    let minuteRef: HTMLInputElement | undefined = $state();
+    let secondsRef: HTMLInputElement | undefined = $state();
+    // The element focused when the flag was pressed, captured before any blur can happen.
+    let focusedBeforeTap: Element | null = null;
+
+    function rememberFocus() {
+        focusedBeforeTap = document.activeElement;
+    }
+
+    // A press that is dragged off or cancelled never produces a click, so drop what it captured.
+    function forgetFocus() {
+        focusedBeforeTap = null;
+    }
+
+    // Keep the tap from moving focus to the button, so the input (and keyboard) stay put.
+    function preventButtonFocus(e: Event) {
+        e.preventDefault();
+    }
+
+    // Runs synchronously inside the tap gesture so iOS and Android keep the keyboard up.
+    // Call it before the type changes: leaving Emergency removes the seconds input.
+    function restoreFocus(next: CheckpointTypes) {
+        const prev = focusedBeforeTap ?? document.activeElement;
+        focusedBeforeTap = null;
+        if (!(prev instanceof HTMLInputElement) || !prev.isConnected) return
+
+        const leavingSeconds = prev === secondsRef && next !== CheckpointTypes.Emergency;
+        const target = leavingSeconds ? minuteRef : prev;
+        if (target && document.activeElement !== target) target.focus();
+    }
+
     function toggleType() {
-        // Order we cycle through check types    
+        // Order we cycle through check types
         const flagOrder = [
-            CheckpointTypes.Start, 
-            CheckpointTypes.Known, 
-            CheckpointTypes.Secret, 
+            CheckpointTypes.Start,
+            CheckpointTypes.Known,
+            CheckpointTypes.Secret,
             CheckpointTypes.Emergency
         ];
         let currentIndex = flagOrder.indexOf(check.type);
-        check.type = flagOrder[(currentIndex + 1) % flagOrder.length]!;
+        const next = flagOrder[(currentIndex + 1) % flagOrder.length]!;
+
+        restoreFocus(next);
+        check.type = next;
     }
 
     function initRow(row: HTMLElement) {
@@ -89,18 +123,25 @@
 <tr class={droppedRow} data-cy="tkr">   
     <td class="p-0 align-middle">
         <div class="size-touch md:size-12 flex items-center justify-center mx-auto">
-            <button onclick={toggleType} class="size-full">
+            <button
+                data-cy="row-flag"
+                onpointerdown={rememberFocus}
+                onpointercancel={forgetFocus}
+                onpointerleave={forgetFocus}
+                onmousedown={preventButtonFocus}
+                onclick={toggleType}
+                class="size-full">
                 <img src={flagSrc} alt="Flag" class="h-full w-full object-contain block"/>
             </button>
         </div>
     </td>
     <td class="p-1 text-center">{index + 1}</td>
     <td class="p-1">
-        <NumberInput bind:strValue={strMinute} bind:value={check.minute} pattern="-?[0-9]*"  inputmode={minuteInputMode} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} field-compact w-full min-w-0" size="3" />
+        <NumberInput bind:ref={minuteRef} bind:strValue={strMinute} bind:value={check.minute} pattern="-?[0-9]*"  inputmode={minuteInputMode} validator={validMinute} initRow={initRow} onEnter={onEnterMinOrSec} class="{droppedRow} field-compact w-full min-w-0" size="3" />
     </td>
     <td class="p-1">
         {#if check.type === CheckpointTypes.Emergency}
-            <NumberInput bind:strValue={strSeconds} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} field-compact w-full min-w-0" size="2" />
+            <NumberInput bind:ref={secondsRef} bind:strValue={strSeconds} bind:value={check.seconds} validator={validSeconds} onEnter={onEnterMinOrSec} class="{droppedRow} field-compact w-full min-w-0" size="2" />
         {/if}
     </td>
     <td class="p-1"><input class="{droppedRow} field field-compact h-8 w-full min-w-0" disabled value={points} size="3" /></td>

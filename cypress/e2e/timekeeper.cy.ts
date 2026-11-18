@@ -94,7 +94,7 @@ describe('Time Keeper Enduro', () => {
     })
 
     function verifyNumberOfChecks(expected: number) {
-      cy.get('[data-cy="tkr"]').its('length').should('eq', expected)
+      cy.getBySel('tkr').its('length').should('eq', expected)
     }
 
     it('does nothing when the last row is blank', () => {
@@ -153,7 +153,7 @@ describe('Time Keeper Enduro', () => {
   })
   describe('Focus on add check', () => {
     function noRowInputFocused() {
-      cy.get('[data-cy="tkr"] input:focus').should('not.exist')
+      cy.getBySel('tkr').find('input:focus').should('not.exist')
     }
 
     beforeEach(() => {
@@ -162,13 +162,43 @@ describe('Time Keeper Enduro', () => {
 
     it('does not focus a row when a new enduro opens; Add Check focuses the new row only', () => {
       noRowInputFocused()
-      cy.get('[data-cy="tkr"]').first().find('input').first().focus()
-      cy.get('[data-cy="tkr"]').first().find('input').first().should('have.focus')
+      cy.getBySel('tkr').first().find('input').first().focus()
+      cy.getBySel('tkr').first().find('input').first().should('have.focus')
 
       cy.getBySel('add-check').first().click()
-      cy.get('[data-cy="tkr"]').should('have.length', 2)
-      cy.get('[data-cy="tkr"]').last().find('input').first().should('have.focus')
-      cy.get('[data-cy="tkr"]').first().find('input').first().should('not.have.focus')
+      cy.getBySel('tkr').should('have.length', 2)
+      cy.getBySel('tkr').last().find('input').first().should('have.focus')
+      cy.getBySel('tkr').first().find('input').first().should('not.have.focus')
+    })
+
+    describe('Flag tap keeps focus', () => {
+      const firstRow = () => cy.getBySel('tkr').first()
+      const flagButton = () => cy.getBySel('row-flag').first()
+      const flagSrc = () => flagButton().find('img').invoke('attr', 'src')
+      const rowInputs = () => firstRow().find('input:not([disabled]):not([type=checkbox])')
+
+      it('keeps focus in the minute input when the flag changes the type', () => {
+        rowInputs().first().focus()
+        flagSrc().then((before: string | undefined) => {
+          flagButton().click()
+          flagSrc().should('not.eq', before)
+        })
+        rowInputs().first().should('have.focus')
+      })
+
+      it('moves focus from seconds to minute when leaving Emergency', () => {
+        flagButton().click()                   // a new row is Secret -> Emergency
+        rowInputs().should('have.length', 2)
+        rowInputs().eq(1).focus()
+        flagButton().click()                   // -> Start
+        rowInputs().should('have.length', 1)
+        rowInputs().first().should('have.focus')
+      })
+
+      it('does not focus anything when nothing was focused', () => {
+        flagButton().click()
+        noRowInputFocused()
+      })
     })
 
     it('does not focus any row when reopening a saved race', () => {
@@ -176,7 +206,7 @@ describe('Time Keeper Enduro', () => {
       saveAndExpectClean()
       cy.go('back')
       rows().first().find('[data-cy="race-edit"]').click()
-      cy.get('[data-cy="tkr"]').should('have.length', 2)
+      cy.getBySel('tkr').should('have.length', 2)
       noRowInputFocused()
     })
   })
