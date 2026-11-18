@@ -11,9 +11,10 @@
         check: Checkpoint,
         index: number,
         score: Score | undefined,
-        onEnter: (index: number) => void
+        onEnter: (index: number) => void,
+        autoFocus?: boolean
     }
-    let { check = $bindable(), index, score, onEnter = () => {} }: Props = $props();
+    let { check = $bindable(), index, score, onEnter = () => {}, autoFocus = false }: Props = $props();
 
     function onEnterMinOrSec() {
         if (score && !score.invalid) {
@@ -52,7 +53,7 @@
     }
 
     function initRow(row: HTMLElement) {
-        row.focus()
+        if (autoFocus) row.focus()
     }
 
     function validMinute(value: any) {

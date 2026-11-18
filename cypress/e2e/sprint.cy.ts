@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { visitHome, addRace, answerConfirm, expectClean, saveAndExpectClean } from './app_util'
+import { visitHome, addRace, answerConfirm, expectClean, saveAndExpectClean, rows } from './app_util'
 
 describe('Sprint Enduro', () => {
   function verifyNumberOfChecks(expected: number) {
@@ -163,6 +163,42 @@ describe('Sprint Enduro', () => {
       })
       verifyNumberOfChecks(2)
       saveAndExpectClean()
+    })
+  })
+  describe('Focus on add test', () => {
+    function noRowInputFocused() {
+      cy.get('tbody input:focus').should('not.exist')
+    }
+
+    beforeEach(() => {
+      visitHome()
+      addRace('sprint')
+      expectClean()
+    })
+
+    it('does not focus a row on a new sprint; Add Test focuses the new row only', () => {
+      noRowInputFocused()
+      cy.get('tbody tr').first().find('input.enterTime').eq(0).focus()
+      cy.get('tbody tr').first().find('input.enterTime').eq(0).should('have.focus')
+
+      cy.getBySel('add-test').first().click()
+      verifyNumberOfChecks(2)
+      cy.get('tbody tr').last().find('input.enterTime').eq(0).should('have.focus')
+      cy.get('tbody tr').first().find('input.enterTime').eq(0).should('not.have.focus')
+    })
+
+    it('does not move focus when reopening a saved, filled-in sprint', () => {
+      cy.get('tbody tr:last-child').within(() => {
+        ;['enterTime', 'exitTime'].forEach((cls, i) => {
+          const t = i === 0 ? ['09', '18', '00'] : ['09', '47', '19']
+          t.forEach((v, ix) => cy.get(`input.${cls}`).eq(ix).clear().type(v))
+        })
+      })
+      saveAndExpectClean()
+      cy.go('back')
+      rows().first().find('[data-cy="race-edit"]').click()
+      verifyNumberOfChecks(1)
+      noRowInputFocused()
     })
   })
 })

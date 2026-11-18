@@ -43,8 +43,8 @@ export class TimeKeeperViewModel extends RaceViewModelBase<TimeKeeperRace> imple
   }
 
   /** Called when Enter is pressed in a row; the last row grows the card. */
-  rowEntered(index: number) {
-    if (index === this.race.timeCard.checkpoints.length - 1) this.addCheck()
+  rowEntered(index: number): Checkpoint | undefined {
+    return index === this.race.timeCard.checkpoints.length - 1 ? this.addCheck() : undefined
   }
 
   resetCard() {

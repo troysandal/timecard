@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { saveAndExpectClean } from './app_util'
+import { saveAndExpectClean, rows } from './app_util'
 
 import {
   setSecret,
@@ -149,6 +149,35 @@ describe('Time Keeper Enduro', () => {
       })
       verifyNumberOfChecks(2)
       saveAndExpectClean()
+    })
+  })
+  describe('Focus on add check', () => {
+    function noRowInputFocused() {
+      cy.get('[data-cy="tkr"] input:focus').should('not.exist')
+    }
+
+    beforeEach(() => {
+      newTimeKeeper()
+    })
+
+    it('does not focus a row when a new enduro opens; Add Check focuses the new row only', () => {
+      noRowInputFocused()
+      cy.get('[data-cy="tkr"]').first().find('input').first().focus()
+      cy.get('[data-cy="tkr"]').first().find('input').first().should('have.focus')
+
+      cy.getBySel('add-check').first().click()
+      cy.get('[data-cy="tkr"]').should('have.length', 2)
+      cy.get('[data-cy="tkr"]').last().find('input').first().should('have.focus')
+      cy.get('[data-cy="tkr"]').first().find('input').first().should('not.have.focus')
+    })
+
+    it('does not focus any row when reopening a saved race', () => {
+      addSecret(17)
+      saveAndExpectClean()
+      cy.go('back')
+      rows().first().find('[data-cy="race-edit"]').click()
+      cy.get('[data-cy="tkr"]').should('have.length', 2)
+      noRowInputFocused()
     })
   })
 })

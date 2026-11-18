@@ -18,6 +18,11 @@
     let showPhoto = $state(false);
     onMount(async () => { available = await canScan(); });
 
+    // The test just added by the user; only its row grabs focus on mount.
+    let addedTest: SprintTestData | undefined = $state()
+    function addTest() { addedTest = viewModel.addTestData() }
+    function onRowEnter(i: number) { addedTest = viewModel.rowEntered(i) ?? addedTest }
+
     async function onReset() {
         if (await confirmDialog({
             title: 'Reset sprint?',
@@ -73,7 +78,7 @@
         </thead>
         <tbody>
             {#each tests as test, index (test)}
-                <SprintTestRow {index} bind:test={tests[index]!} deleteTest={() => onDeleteTest(test, index)} onEnter={() => viewModel.rowEntered(index)} />
+                <SprintTestRow {index} bind:test={tests[index]!} deleteTest={() => onDeleteTest(test, index)} autoFocus={test === addedTest} onEnter={() => onRowEnter(index)} />
             {/each}
         </tbody>
     </table>
@@ -81,7 +86,7 @@
   <div class="border-t border-border px-3 py-3 flex gap-2">
     <button
       data-cy="add-test"
-      onclick={() => viewModel.addTestData()}
+      onclick={addTest}
       class="flex-1 min-h-touch px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium
              hover:opacity-90 active:scale-95 transition"
     >

@@ -33,11 +33,12 @@ export class SprintViewModel extends RaceViewModelBase<SprintRace> implements Ra
         enter: {hour: NaN, minute: NaN, second: NaN},
         exit: {hour: NaN, minute: NaN, second: NaN}
     });
+    return this.race.timeCard.tests[this.race.timeCard.tests.length - 1]!
   }
 
   /** Called when Enter is pressed in a row; the last row grows the card. */
-  rowEntered(index: number) {
-    if (index === this.race.timeCard.tests.length - 1) this.addTestData()
+  rowEntered(index: number): SprintTestData | undefined {
+    return index === this.race.timeCard.tests.length - 1 ? this.addTestData() : undefined
   }
 
   resetCard() {

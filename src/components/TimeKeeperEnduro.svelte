@@ -3,6 +3,7 @@
     import TimeKeeperRow from "../components/TimeKeeperRow.svelte";
     import { TimeKeeperViewModel } from "../viewModels/viewModels.svelte"
     import { canScan } from '../lib/scanCard';
+    import type { Checkpoint } from '../models/timekeeper'
     import PhotoViewerModal from './PhotoViewerModal.svelte';
     import { alertDialog, confirmDialog } from '../lib/dialogs.svelte'
 
@@ -47,6 +48,11 @@
       }
     }
     
+    // The checkpoint just added by the user; only its row grabs focus on mount.
+    let addedCheck: Checkpoint | undefined = $state()
+    function addCheck() { addedCheck = viewModel.addCheck() }
+    function onRowEnter(i: number) { addedCheck = viewModel.rowEntered(i) ?? addedCheck }
+
     let scoreCard = $derived(viewModel.score.scoreCard)
 </script>
 
@@ -76,7 +82,7 @@
         </thead>
         <tbody>
             {#each checkpoints as check, index (check)}
-                <TimeKeeperRow bind:check={checkpoints[index]!} score={scoreCard.checkScores[index]} {index} onEnter={(i: number) => viewModel.rowEntered(i)} />
+                <TimeKeeperRow bind:check={checkpoints[index]!} score={scoreCard.checkScores[index]} {index} autoFocus={check === addedCheck} onEnter={onRowEnter} />
             {/each}
         </tbody>
     </table>  
@@ -84,7 +90,7 @@
   <div class="border-t border-border px-3 py-3 flex gap-2">
     <button
       data-cy="add-check"
-      onclick={() => viewModel.addCheck()}
+      onclick={addCheck}
       class="flex-1 min-h-touch px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium
              hover:opacity-90 active:scale-95 transition"
     >

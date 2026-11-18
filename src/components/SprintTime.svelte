@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from 'svelte'
     import SprintNumberInput from './SprintNumberInput.svelte'
     import type { SprintTestTimeData } from '../models/race';
 
@@ -50,9 +51,11 @@
     let strMinute: string = $state(strValue(timeData.minute));
     let strSecond: string = $state(strValue(timeData.second));
     
-    $effect(() => { nextInput(timeData.hour,   strHour,   () => { refMinute.focus() }) });
-    $effect(() => { nextInput(timeData.minute, strMinute, () => { refSecond.focus() }) });
-    $effect(() => { nextInput(timeData.second, strSecond, () => { onSeconds() }) });
+    // Advance only when the user edits a field, not when the row mounts with saved values.
+    let lastHour = untrack(() => strHour), lastMinute = untrack(() => strMinute), lastSecond = untrack(() => strSecond);
+    $effect(() => { if (strHour !== lastHour) { lastHour = strHour; nextInput(timeData.hour, strHour, () => { refMinute.focus() }) } });
+    $effect(() => { if (strMinute !== lastMinute) { lastMinute = strMinute; nextInput(timeData.minute, strMinute, () => { refSecond.focus() }) } });
+    $effect(() => { if (strSecond !== lastSecond) { lastSecond = strSecond; nextInput(timeData.second, strSecond, () => { onSeconds() }) } });
 </script>
 
 <!-- hh mm ss stay together on one line; the row scrolls sideways before a time splits. -->

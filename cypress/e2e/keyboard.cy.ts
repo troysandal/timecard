@@ -115,8 +115,7 @@ describe('on-screen keyboard (time keeper)', () => {
 
   it('does nothing when the viewport shrinks but nothing is focused', () => {
     openEdit(tk, 'tk1')
-    // The app focuses the last row's first input when Edit opens; let go of it.
-    cy.focused().blur()
+    cy.get('tbody tr input:focus').should('not.exist')
     resizeTo(NUMBER_PAD)
     cy.getBySel('summary').should('be.visible')
   })

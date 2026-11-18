@@ -8,19 +8,21 @@
         index: number,
         test: SprintTestData,
         deleteTest: () => void,
-        onEnter: () => void
+        onEnter: () => void,
+        autoFocus?: boolean
     }
-    
-    let { 
+
+    let {
         index,
         test = $bindable(),
         deleteTest,
-        onEnter = () => {}
+        onEnter = () => {},
+        autoFocus = false
     }: Props = $props();
 
 
     function initRow(row: HTMLElement) {
-        row.focus() 
+        if (autoFocus) row.focus()
     }
 
     function onEnterAny() {
