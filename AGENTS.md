@@ -4,7 +4,7 @@ This file provides guidance to AI Agents when working with code in this reposito
 
 ## Overview
 
-Enduro Time Card: a Svelte 5 + TypeScript + Vite + Tailwind 4 app that scores Time Keeping (AMA National, NETRA Brand X) and Sprint enduros. It ships as a GitHub Pages web app, a PWA, and Capacitor iOS/Android apps from one codebase. Targets Node 26.
+Enduro Score Card: a Svelte 5 + TypeScript + Vite + Tailwind 4 app that scores Time Keeping (AMA National, NETRA Brand X) and Sprint enduros. It ships as a GitHub Pages web app, a PWA, and Capacitor iOS/Android apps from one codebase. Targets Node 26.
 
 ## Commands
 

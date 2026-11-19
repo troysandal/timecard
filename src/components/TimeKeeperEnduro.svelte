@@ -20,8 +20,8 @@
 
     async function onReset() {
       if (await confirmDialog({
-        title: 'Reset time card?',
-        message: 'Are you sure you want to reset the time card?',
+        title: 'Reset score card?',
+        message: 'Are you sure you want to reset the score card?',
         confirmLabel: 'Reset',
         destructive: true,
       })) {
@@ -31,8 +31,8 @@
 
     async function onScan() {
       if (!(await confirmDialog({
-        title: 'Replace time card?',
-        message: 'Warning - This will replace the contents of your time card - are you sure?',
+        title: 'Replace score card?',
+        message: 'Warning - This will replace the contents of your score card - are you sure?',
         confirmLabel: 'Replace',
         destructive: true,
       }))) {
@@ -40,7 +40,7 @@
       }
       const result = await viewModel.scan()
       if (result === "applied") {
-        await alertDialog({ title: 'Scan complete', message: 'Scan Complete - WARNING - Double check time card, AI can make mistakes.' })
+        await alertDialog({ title: 'Scan complete', message: 'Scan Complete - WARNING - Double check card, AI can make mistakes.' })
       } else if (result === "empty") {
         await alertDialog({ title: 'Nothing found', message: 'No checkpoints found in scan.' })
       } else if (result === "failed") {

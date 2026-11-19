@@ -40,10 +40,10 @@ describe('safe areas', () => {
     cy.getBySel('safe-area-top').then(($s) => {
       expect($s[0].getBoundingClientRect().height).to.eq(NOTCH.top)
     })
-    cy.contains('h2', 'Enduro Time Cards').then(($h) => {
+    cy.contains('h2', 'Enduro Score Cards').then(($h) => {
       expect($h[0].getBoundingClientRect().top).to.be.at.least(NOTCH.top)
     })
-    // Home's page shell pads its bottom by the inset.
+    // Home's pinned footer pads its bottom by the inset.
     cy.getBySel('add-enduro').closest('.safe-bottom-edge').then(($p) => {
       expect(parseFloat(getComputedStyle($p[0]).paddingBottom)).to.eq(NOTCH.bottom)
     })
@@ -78,7 +78,7 @@ describe('safe areas', () => {
     cy.visit('about:blank')
     visitHome()
     applyInsets(LANDSCAPE)
-    cy.contains('h2', 'Enduro Time Cards').then(($h) => {
+    cy.contains('h2', 'Enduro Score Cards').then(($h) => {
       expect($h[0].getBoundingClientRect().left).to.be.at.least(LANDSCAPE.left)
     })
   })

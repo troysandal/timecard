@@ -3,8 +3,9 @@
 import {
   seedRace,
   visitHome,
-  expectConfirm,
-  answerConfirm,
+  expectNoConfirm,
+  openRaceActions,
+  deleteRow,
   rows,
   rowNames,
   addRace,
@@ -19,9 +20,9 @@ describe('Home Page', () => {
     beforeEach(() => visitHome())
 
     it('shows title, add button and empty message', () => {
-      cy.contains('h2', 'Enduro Time Cards').should('be.visible')
+      cy.contains('h2', 'Enduro Score Cards').should('be.visible')
       cy.getBySel('add-enduro').should('be.visible')
-      cy.getBySel('empty-state').should('contain.text', 'No items yet.')
+      cy.getBySel('empty-state').should('contain.text', 'No items yet.').and('contain.text', 'Tap + below')
       cy.getBySel('race-list').should('not.exist')
     })
   })
@@ -148,16 +149,23 @@ describe('Home Page', () => {
   describe('deleting', () => {
     beforeEach(() => visitHome([TK_OLD, SP_MID, TK_NEW]))
 
-    it('keeps the race when confirm is declined', () => {
-      rows().eq(0).find('[data-cy="race-delete"]').click()
-      expectConfirm('Are you sure you want to delete this race?')
-      answerConfirm(false)
+    it('keeps the race when the menu is cancelled', () => {
+      openRaceActions(rows().eq(0))
+      cy.getBySel('race-actions-cancel').click()
+      cy.getBySel('race-actions').should('not.exist')
       rows().should('have.length', 3)
     })
 
-    it('removes only the chosen race when confirmed', () => {
-      rows().eq(1).find('[data-cy="race-delete"]').click() // Middle Sprint
-      answerConfirm(true)
+    it('keeps the race when the menu is dismissed with a tap outside', () => {
+      openRaceActions(rows().eq(0))
+      cy.getBySel('sheet-backdrop').click('topLeft', { force: true })
+      cy.getBySel('race-actions').should('not.exist')
+      rows().should('have.length', 3)
+    })
+
+    it('removes only the chosen race, without a second confirm', () => {
+      deleteRow(rows().eq(1)) // Middle Sprint
+      expectNoConfirm()
       rows().should('have.length', 2)
       rowNames().eq(0).should('contain.text', 'New Time Keeper')
       rowNames().eq(1).should('contain.text', 'Old Time Keeper')
@@ -166,16 +174,46 @@ describe('Home Page', () => {
     it('shows the empty state after deleting the last race', () => {
       for (let i = 3; i > 0; i--) {
         rows().should('have.length', i)
-        rows().first().find('[data-cy="race-delete"]').click()
-        answerConfirm(true)
+        deleteRow(rows().first())
       }
       cy.getBySel('empty-state').should('be.visible')
       cy.getBySel('race-list').should('not.exist')
     })
 
+    it('opens the menu on a real long press and does not open Edit', () => {
+      cy.clock()
+      rows().eq(0).find('[data-cy="race-edit"]')
+        .trigger('pointerdown', { pointerType: 'touch', clientX: 50, clientY: 50 })
+      cy.tick(500)
+      // The finger lifts over the row; the click that follows must not open Edit.
+      rows().eq(0).find('[data-cy="race-edit"]')
+        .trigger('pointerup', { pointerType: 'touch', force: true })
+        .trigger('click', { force: true })
+      cy.getBySel('race-actions').should('be.visible')
+      cy.location('hash').should('not.contain', '/edit/')
+    })
+
+    it('focuses Cancel first, so Enter right after opening cannot delete', () => {
+      openRaceActions(rows().eq(0))
+      cy.focused().should('have.attr', 'data-cy', 'race-actions-cancel')
+    })
+
+    it('does not swallow the next tap after the menu was opened by the context-menu gesture', () => {
+      openRaceActions(rows().eq(0))
+      cy.getBySel('race-actions-cancel').click()
+      cy.getBySel('race-actions').should('not.exist')
+      rows().eq(0).find('[data-cy="race-edit"]').click()
+      cy.location('hash').should('contain', '/edit/')
+    })
+
+    it('still opens Edit on a short tap', () => {
+      rows().eq(0).find('[data-cy="race-edit"]').click()
+      cy.location('hash').should('contain', '/edit/')
+      cy.getBySel('race-actions').should('not.exist')
+    })
+
     it('persists a deletion across reload', () => {
-      rows().eq(0).find('[data-cy="race-delete"]').click()
-      answerConfirm(true)
+      deleteRow(rows().eq(0))
       rows().should('have.length', 2)
       cy.reload()
       rows().should('have.length', 2)
@@ -198,5 +236,25 @@ describe('Home Page', () => {
       rows().should('have.length', 1)
       cy.getBySel('race-name-input').should('not.exist')
     })
+  })
+})
+
+describe('Home layout', () => {
+  it('scrolls the list inside its own section while the header and Add stay put', () => {
+    cy.viewport(375, 667)
+    const many = Array.from({ length: 25 }, (_, i) =>
+      seedRace(`r${i}`, `Race ${i}`, 'time_keeper', `2026-01-${String(i + 1).padStart(2, '0')}T10:00:00Z`),
+    )
+    visitHome(many)
+    cy.getBySel('race-item').first().should('be.visible')
+    cy.get('main').then(($m) => {
+      expect($m[0].scrollHeight).to.be.greaterThan($m[0].clientHeight)
+      $m[0].scrollTop = 400
+    })
+    cy.document().then((doc) => {
+      expect(doc.documentElement.scrollHeight).to.be.at.most(doc.documentElement.clientHeight)
+    })
+    cy.contains('h2', 'Enduro Score Cards').should('be.visible')
+    cy.getBySel('add-enduro').should('be.visible')
   })
 })

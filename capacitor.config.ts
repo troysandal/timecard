@@ -22,7 +22,7 @@ function getLocalIp(): string {
 
 const config: CapacitorConfig = {
   appId: 'com.troysandal.enduroscorecard',
-  appName: 'Enduro Time Card',
+  appName: 'Enduro Score Card',
   webDir: 'dist',
   ...(isDev && {
     server: {

@@ -9,6 +9,14 @@ import { seedRace, visitHome } from './app_util'
 const tk = seedRace('tk1', 'Sheet TK', 'time_keeper', '2026-03-01T10:00:00Z')
 const sp = seedRace('sp1', 'Sheet Sprint', 'sprint', '2026-03-02T10:00:00Z')
 
+// The unsaved-changes dialog: edit a race, then press Back.
+const openDiscardConfirm = () => {
+  cy.getBySel('race-edit').first().click()
+  cy.getBySel('race-name-input').type('x')
+  cy.getBySel('back-button').click()
+  cy.getBySel('confirm-sheet').should('be.visible')
+}
+
 const openPicker = () => {
   cy.getBySel('add-enduro').click()
   cy.getBySel('race-picker').should('be.visible')
@@ -26,13 +34,13 @@ describe('race picker sheet', () => {
       .should('have.attr', 'aria-modal', 'true')
       .and('have.attr', 'aria-labelledby', 'race-picker-title')
     // The name is the visible heading, so a screen reader doesn't announce the title twice.
-    cy.get('#race-picker-title').should('have.text', 'New Item')
+    cy.get('#race-picker-title').should('have.text', 'New Score Card')
   })
 
   it('names the confirm dialog by its visible title', () => {
-    cy.getBySel('race-delete').first().click()
+    openDiscardConfirm()
     cy.get('[data-cy=confirm-sheet] [role=dialog]').should('have.attr', 'aria-labelledby', 'confirm-title')
-    cy.get('#confirm-title').should('have.text', 'Delete race?')
+    cy.get('#confirm-title').should('have.text', 'Discard changes?')
   })
 
   it('moves focus into the sheet, and back to the Add button when it closes', () => {
@@ -160,15 +168,14 @@ describe('confirm dialog (web)', () => {
   beforeEach(() => {
     cy.viewport(393, 852)
     visitHome([tk, sp])
-    cy.getBySel('race-delete').first().click()
-    cy.getBySel('confirm-sheet').should('be.visible')
+    openDiscardConfirm()
   })
 
-  it('shows a title and the message, with a red Delete and a Cancel', () => {
-    cy.getBySel('confirm-title').should('have.text', 'Delete race?')
-    cy.getBySel('confirm-message').should('have.text', 'Are you sure you want to delete this race?')
-    cy.getBySel('confirm-ok').should('contain.text', 'Delete').and('have.class', 'bg-red-600')
-    cy.getBySel('confirm-cancel').should('contain.text', 'Cancel')
+  it('shows a title and the message, with a red Discard and a Keep editing', () => {
+    cy.getBySel('confirm-title').should('have.text', 'Discard changes?')
+    cy.getBySel('confirm-message').should('have.text', 'You have unsaved changes. Are you sure you want to discard them?')
+    cy.getBySel('confirm-ok').should('contain.text', 'Discard').and('have.class', 'bg-destructive')
+    cy.getBySel('confirm-cancel').should('contain.text', 'Keep editing')
   })
 
   it('focuses Cancel first for a destructive action', () => {
@@ -178,18 +185,18 @@ describe('confirm dialog (web)', () => {
   it('treats Escape as No', () => {
     cy.get('body').type('{esc}')
     cy.getBySel('confirm-sheet').should('not.exist')
-    cy.getBySel('race-item').should('have.length', 2)
+    cy.getBySel('save-button').should('exist')
   })
 
   it('treats a tap outside as No', () => {
     cy.getBySel('sheet-backdrop').click('topLeft', { force: true })
     cy.getBySel('confirm-sheet').should('not.exist')
-    cy.getBySel('race-item').should('have.length', 2)
+    cy.getBySel('save-button').should('exist')
   })
 
-  it('deletes only when Delete is pressed', () => {
+  it('leaves the page only when Discard is pressed', () => {
     cy.getBySel('confirm-ok').click()
     cy.getBySel('confirm-sheet').should('not.exist')
-    cy.getBySel('race-item').should('have.length', 1)
+    cy.getBySel('race-item').should('have.length', 2)
   })
 })

@@ -1,4 +1,4 @@
-# Enduro Time Card
+# Enduro Score Card
 An app to compute your Enduro scores.  Supports Time Keeping (AMA National & NEI Brand X) and Sprint Enduro.  Type or scan in your time cards then quickly verify times posted by the club to make sure no errors were made (unless they are your own 😀). Web app is live on [Github Pages](https://troysandal.github.io/timecard/).  This is a PWA so you can install it onto your iOS or Android device from the browser. 
 
 ## Roadmap

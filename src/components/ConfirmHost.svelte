@@ -43,7 +43,7 @@
             data-cy="confirm-ok"
             data-autofocus={destructive ? undefined : ''}
             class="min-h-touch rounded-md px-4 text-sm font-medium
-                   {destructive ? 'bg-red-600 text-white' : 'bg-primary text-primary-foreground'}"
+                   {destructive ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'}"
             onclick={() => answerDialog(true)}
           >
             {current.options.confirmLabel ?? 'OK'}

@@ -47,6 +47,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-time-keeper: var(--time-keeper);
+  --color-sprint: var(--sprint);
   --radius-md: var(--radius);
 }
 
@@ -65,6 +69,12 @@
   --accent-foreground: #FFFFFF;
   --border: #DEDCD8;
   --ring: #D4420A;
+  /* Irreversible actions (Delete, Discard). Same red in both themes: white text on it passes contrast. */
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  /* Race-type identity colors: the type badge and the race picker share them. */
+  --time-keeper: #0A6ED4;
+  --sprint: #D4420A;
   --radius: 3px;
   color-scheme: light dark; /* native controls and scrollbars follow the system theme */
 }

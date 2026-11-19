@@ -53,6 +53,19 @@ export function rowNames() {
   return cy.getBySel('race-name')
 }
 
+/** Open a row's long-press menu (via the context-menu gesture, which is deterministic). */
+export function openRaceActions(row: Cypress.Chainable<JQuery<HTMLElement>>) {
+  row.find('[data-cy="race-edit"]').trigger('contextmenu')
+  cy.getBySel('race-actions').should('be.visible')
+}
+
+/** Delete a row through its long-press menu. */
+export function deleteRow(row: Cypress.Chainable<JQuery<HTMLElement>>) {
+  openRaceActions(row)
+  cy.getBySel('race-delete').click()
+  cy.getBySel('race-actions').should('not.exist')
+}
+
 export function addRace(type: 'time_keeper' | 'sprint') {
   cy.getBySel('add-enduro').click()
   cy.getBySel(type === 'sprint' ? 'add-sprint' : 'add-time-keeper').click()

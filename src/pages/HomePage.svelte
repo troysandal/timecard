@@ -1,6 +1,8 @@
 <script lang="ts">
+  import RaceActionsSheet from "../components/RaceActionsSheet.svelte";
   import SafeAreaTop from "../components/SafeAreaTop.svelte";
   import TypeBadge from "../components/TypeBadge.svelte";
+  import { longPress } from "../lib/longPress";
   import { type Race } from "../models/race";
 
   interface Props {
@@ -12,61 +14,42 @@
 
   let { items, onAdd, onEdit, onDelete }: Props = $props();
   let sortedItems = $derived(
-		items.toSorted((a, b) => {
-			return b.createdAt < a.createdAt ? -1 : 1;
-		})
-	);
+    items.toSorted((a, b) => {
+      return b.createdAt < a.createdAt ? -1 : 1;
+    })
+  );
+  let menuFor: Race | null = $state(null);
 </script>
 
-<div class="min-h-dvh bg-background flex flex-col safe-x safe-bottom-edge">
+<div class="h-app flex flex-col bg-background max-w-2xl w-full mx-auto overflow-hidden safe-x">
   <SafeAreaTop />
 
-  <main class="flex-1 px-4 py-4 max-w-2xl w-full mx-auto">
-    <h2
-      class="font-display font-800 text-2xl text-center tracking-tight text-foreground mb-6"
-    >
-      Enduro Time Cards
+  <header class="shrink-0 border-b border-border bg-card px-4 py-3">
+    <h2 class="font-display font-800 text-2xl tracking-tight text-foreground">
+      Enduro Score Cards
     </h2>
-    <p class="mb-8">
-      Verify your Enduro score cards using this tool. Races are busy places and sometimes a mistake is made.
-    </p>
-    <button
-      onclick={onAdd}
-      data-cy="add-enduro"
-      class="w-full flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-sm font-medium px-3 py-3 mb-4 hover:opacity-90 transition-opacity"
-      style="borderRadius: 'var(--radius)'"
-    >
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path
-          d="M7 1v12M1 7h12"
-          stroke="currentColor"
-          stroke-Width="2"
-          stroke-Linecap="square"
-        />
-      </svg>
-      Add Time Card
-    </button>
+  </header>
+
+  <main class="flex-1 min-h-0 overflow-y-auto overscroll-contain">
     {#if items.length === 0}
       <div
         data-cy="empty-state"
-        class="border border-dashed border-border rounded-none py-16 text-center"
+        class="m-4 border border-dashed border-border py-16 text-center"
       >
         <p class="text-muted-foreground text-sm">No items yet.</p>
         <p class="text-xs text-muted-foreground mt-1">
-          Click <span class="font-medium">Add Time Card</span> to get started.
+          Tap <span class="font-medium">+</span> below to add a score card.
         </p>
       </div>
     {:else}
-      <ul data-cy="race-list" class="divide-y divide-border border border-border bg-card">
+      <ul data-cy="race-list" class="divide-y divide-border border-b border-border bg-card">
         {#each sortedItems as item (item.id)}
-          <li
-            data-cy="race-item"
-            class="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors group"
-          >
+          <li data-cy="race-item">
             <button
               data-cy="race-edit"
-              class="flex-1 min-w-0 text-left flex items-center gap-3"
+              class="w-full min-h-touch px-4 py-3 text-left flex items-center gap-3"
               onclick={() => onEdit(item.id)}
+              use:longPress={() => (menuFor = item)}
             >
               <div class="min-w-0 flex-1">
                 <span
@@ -84,33 +67,19 @@
                 </div>
               </div>
               <svg
-                class="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                class="text-muted-foreground shrink-0"
                 width="14"
                 height="14"
                 viewBox="0 0 14 14"
                 fill="none"
+                aria-hidden="true"
               >
                 <path
-                  d="M2 7h10M8 3l4 4-4 4"
+                  d="M5 2l5 5-5 5"
                   stroke="currentColor"
-                  stroke-Width="1.5"
-                  stroke-Linecap="square"
-                />
-              </svg>
-            </button>
-            <button
-              onclick={() => onDelete(item.id)}
-              data-cy="race-delete"
-              class="flex items-center justify-center min-h-touch min-w-touch text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
-              style="borderRadius: 'var(--radius)'"
-              aria-label="Delete item"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path
-                  d="M2 3.5h10M5.5 3.5V2.5h3v1M5.5 6v4.5M8.5 6v4.5M3 3.5l.5 8h7l.5-8"
-                  stroke="currentColor"
-                  stroke-Width="1.4"
-                  stroke-Linecap="square"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 />
               </svg>
             </button>
@@ -119,4 +88,31 @@
       </ul>
     {/if}
   </main>
+
+  <footer class="safe-bottom-edge shrink-0 bg-card border-t-2 border-foreground/10">
+    <div class="px-4 py-2 flex justify-end">
+      <button
+        onclick={onAdd}
+        data-cy="add-enduro"
+        aria-label="Add Score Card"
+        class="size-touch rounded-full flex items-center justify-center bg-secondary text-secondary-foreground"
+      >
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </footer>
 </div>
+
+{#if menuFor}
+  <RaceActionsSheet
+    name={menuFor.name}
+    onClose={() => (menuFor = null)}
+    onDelete={() => {
+      const target = menuFor;
+      menuFor = null;
+      if (target) onDelete(target.id);
+    }}
+  />
+{/if}

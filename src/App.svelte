@@ -187,16 +187,10 @@
   }
 
   const handleDelete = async (id: string) => {
-    if (await confirmDialog({
-      title: 'Delete race?',
-      message: 'Are you sure you want to delete this race?',
-      confirmLabel: 'Delete',
-      destructive: true,
-    })) {
-      items = items.filter((i) => i.id !== id)
-      await save()
-      await deleteRaceImages(id)
-    }
+    // No confirm here: Home's long-press menu is already a deliberate second step.
+    items = items.filter((i) => i.id !== id)
+    await save()
+    await deleteRaceImages(id)
   }
 
   const handleSave = async (updated: Race) => {
