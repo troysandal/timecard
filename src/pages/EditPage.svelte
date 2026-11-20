@@ -6,6 +6,7 @@
   import SprintEnduro from "../components/SprintEnduro.svelte"
   import TimeKeeperFooter from "../components/TimeKeeperFooter.svelte"
   import SprintFooter from "../components/SprintFooter.svelte"
+  import ScanProgressSheet from "../components/ScanProgressSheet.svelte"
   import { type Race } from "../models/race"
   import { createViewModel } from "../viewModels/viewModels.svelte"
   import { keyboardState } from "../lib/keyboardState.svelte"
@@ -94,3 +95,7 @@
     {/if}
   </section>
 </div>
+
+{#if viewModel.scanning}
+  <ScanProgressSheet onCancel={() => viewModel.cancelScan()} />
+{/if}

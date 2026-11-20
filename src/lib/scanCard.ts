@@ -9,6 +9,7 @@ export type ScanOutcome =
   | { status: 'cancelled' }
   | { status: 'no-table'; imagePath?: string } // photo taken, nothing readable
   | { status: 'unavailable' }
+  | { status: 'busy' } // the plugin was already capturing
   | { status: 'error'; message: string };
 
 export async function canScan(): Promise<boolean> {
@@ -28,6 +29,8 @@ export async function scanCard(id:string): Promise<ScanOutcome> {
         return { status: 'cancelled' }; // user backed out; not an error
       case 'UNAVAILABLE':
         return { status: 'unavailable' };
+      case 'BUSY':
+        return { status: 'busy' };
       case 'NO_TABLE':
         // The photo was saved; e.data.image.path / webPath point at it.
         const path: string | undefined = e.data?.image?.path;

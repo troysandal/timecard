@@ -30,6 +30,7 @@
     }
 
     async function onScan() {
+      if (viewModel.scanning) return // one scan at a time
       if (!(await confirmDialog({
         title: 'Replace score card?',
         message: 'Warning - This will replace the contents of your score card - are you sure?',

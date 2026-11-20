@@ -51,6 +51,6 @@
     "@capacitor/keyboard": "^8.0.6",
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
-    "timecard-scanner": "github:troysandal/timecard-scanner#v0.2.1"
+    "timecard-scanner": "github:troysandal/timecard-scanner#v0.4.0"
   }
 }

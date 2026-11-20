@@ -292,4 +292,119 @@ describe("SprintViewModel photo & scan", () => {
     expect(deleteImage).not.toHaveBeenCalled()
     expect(vm.isDirty).toBe(false)
   })
+
+  it('is scanning from the call until the result is applied, and not afterwards', async () => {
+    let finish: (v: any) => void = () => {}
+    scanMock.mockReturnValue(new Promise((resolve) => { finish = resolve }))
+    const vm = newVm()
+    expect(vm.scanning).toBe(false)
+    const pending = vm.scan()
+    expect(vm.scanning).toBe(true)
+    finish({ status: 'cancelled' })
+    expect(await pending).toBe('cancelled')
+    expect(vm.scanning).toBe(false)
+  })
+
+  it('a second scan while one is running does nothing and reports busy', async () => {
+    let finish: (v: any) => void = () => {}
+    scanMock.mockReturnValue(new Promise((resolve) => { finish = resolve }))
+    const vm = newVm()
+    const first = vm.scan()
+    expect(await vm.scan()).toBe('busy')
+    expect(scanMock).toHaveBeenCalledTimes(1)
+    finish(okRows([{ c1: '9', c2: '37', c3: '00' }, { c1: '9', c2: '55', c3: '34' }]))
+    expect(await first).toBe('applied')
+  })
+
+  it('stops scanning when the scan throws, so the screen is not left disabled', async () => {
+    scanMock.mockRejectedValue(new Error('boom'))
+    const vm = newVm()
+    await expect(vm.scan()).rejects.toThrow('boom')
+    expect(vm.scanning).toBe(false)
+  })
+
+  it('maps the plugin being busy to busy, without touching the photo', async () => {
+    scanMock.mockResolvedValue({ status: 'busy' })
+    const vm = newVm()
+    expect(await vm.scan()).toBe('busy')
+    expect(deleteImage).not.toHaveBeenCalled()
+  })
+
+  describe('cancelling a scan', () => {
+    const pendingScan = () => {
+      let finish: (v: any) => void = () => {}
+      const promise = new Promise((resolve) => { finish = resolve })
+      return { promise, finish }
+    }
+    const twoRows = [{ c1: '9', c2: '37', c3: '00' }, { c1: '9', c2: '55', c3: '34' }]
+
+    it('throws the result away: nothing is applied and the saved photo is deleted when it arrives', async () => {
+      const p = pendingScan()
+      scanMock.mockReturnValue(p.promise as any)
+      const vm = newVm()
+      const run = vm.scan()
+      expect(vm.scanning).toBe(true)
+      vm.cancelScan()
+      expect(vm.scanning).toBe(false) // the dialog goes away at once, not when the read finishes
+      p.finish(okRows(twoRows))
+      expect(await run).toBe('cancelled')
+      expect(vm.race.timeCard.tests.length).toBe(0)
+      expect(vm.race.imagePath).toBeUndefined()
+      expect(deleteImage).toHaveBeenCalledWith('t/scans/a.jpg')
+      expect(vm.scanning).toBe(false)
+    })
+
+    it('also deletes the photo of a cancelled scan that found no table', async () => {
+      const p = pendingScan()
+      scanMock.mockReturnValue(p.promise as any)
+      const vm = newVm()
+      const run = vm.scan()
+      vm.cancelScan()
+      p.finish({ status: 'no-table', imagePath: 't/scans/b.jpg' })
+      expect(await run).toBe('cancelled')
+      expect(deleteImage).toHaveBeenCalledWith('t/scans/b.jpg')
+    })
+
+    it('does not delete anything when the user had already cancelled in the camera', async () => {
+      const p = pendingScan()
+      scanMock.mockReturnValue(p.promise as any)
+      const vm = newVm()
+      const run = vm.scan()
+      vm.cancelScan()
+      p.finish({ status: 'cancelled' })
+      expect(await run).toBe('cancelled')
+      expect(deleteImage).not.toHaveBeenCalled()
+    })
+
+    it('lets a new scan start at once, and the old result never touches it', async () => {
+      const first = pendingScan()
+      const second = pendingScan()
+      scanMock.mockReturnValueOnce(first.promise as any).mockReturnValueOnce(second.promise as any)
+      const vm = newVm()
+      const run1 = vm.scan()
+      vm.cancelScan()
+      const run2 = vm.scan() // not 'busy': the cancelled scan no longer counts
+      expect(vm.scanning).toBe(true)
+
+      // the cancelled read finishes first: it must not switch the dialog off or apply anything
+      first.finish({ ...okRows([{ c1: '1', c2: '11', c3: '11' }, { c1: '1', c2: '22', c3: '22' }]), imagePath: 't/scans/old.jpg' })
+      expect(await run1).toBe('cancelled')
+      expect(vm.scanning).toBe(true)
+      expect(vm.race.timeCard.tests.length).toBe(0)
+      expect(deleteImage).toHaveBeenCalledWith('t/scans/old.jpg')
+
+      second.finish(okRows(twoRows))
+      expect(await run2).toBe('applied')
+      expect(vm.race.imagePath).toBe('t/scans/a.jpg')
+      expect(vm.race.timeCard.tests.length).toBe(1)
+      expect(vm.scanning).toBe(false)
+    })
+
+    it('does nothing when no scan is running', () => {
+      const vm = newVm()
+      vm.cancelScan()
+      expect(vm.scanning).toBe(false)
+      expect(deleteImage).not.toHaveBeenCalled()
+    })
+  })
 })
